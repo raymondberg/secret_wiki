@@ -1,1 +1,1 @@
-pipenv run uvicorn app:app --reload
+pipenv run uvicorn secret_wiki.app:app --reload

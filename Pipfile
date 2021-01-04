@@ -8,6 +8,8 @@ verify_ssl = true
 [packages]
 fastapi = "*"
 uvicorn = {extras = ["standard"],version = "*"}
+jinja2 = "*"
+aiofiles = "*"
 
 [requires]
 python_version = "3.8"

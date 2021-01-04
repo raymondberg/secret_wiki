@@ -1,0 +1,21 @@
+a.header-wiki {
+  font-size: 2em;
+  margin-right: 2em;
+}
+
+a.header-wiki,a.tree-page {
+  cursor: pointer;
+}
+
+div.page-section-wrapper {
+  border-radius: 1em;
+  padding: 1em;
+}
+
+div.page-section-wrapper:hover {
+  background-color: #EEE;
+}
+
+div.page-section {
+  margin: 1em;
+}
