@@ -40,14 +40,16 @@ function pageLoadPage(newWikiId, newPageId) {
   newWikiId = newWikiId || wikiId
   newPageId = newPageId || pageId
 
-  $.ajax({
-    url: `api/w/${wikiId}/p/${newPageId}/s`,
-    type: 'get',
-    dataType: 'json',
-    cache: true,
-    success: receivePageSections,
-    async:true,
-  });
+  if (newPageId && newPageId != "null" && newPageId != "false" ) {
+    $.ajax({
+      url: `api/w/${wikiId}/p/${newPageId}/s`,
+      type: 'get',
+      dataType: 'json',
+      cache: true,
+      success: receivePageSections,
+      async:true,
+    });
+  }
 
   wikiId = newWikiId
   console.log("setting page id to " + newPageId)
