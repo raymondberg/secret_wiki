@@ -4,12 +4,15 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+pytest = "*"
+requests = "*"
 
 [packages]
 fastapi = "*"
 uvicorn = {extras = ["standard"],version = "*"}
 jinja2 = "*"
 aiofiles = "*"
+sqlalchemy = "*"
 
 [requires]
 python_version = "3.8"

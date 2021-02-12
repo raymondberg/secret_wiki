@@ -97,7 +97,7 @@ function receiveWikis(wikiList) {
       $("<a/>")
         .click(function() { pageLoadWiki(wiki.id) })
         .addClass("header-wiki")
-        .text(wiki.name)
+        .text(wiki.id)
     )
   })
 }

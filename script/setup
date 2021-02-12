@@ -1,1 +1,3 @@
 pipenv install --dev
+
+pipenv run python -c "from secret_wiki.db import Base, engine; from secret_wiki.models import *; Base.metadata.create_all(bind=engine)"

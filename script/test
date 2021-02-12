@@ -1,0 +1,1 @@
+PYTHONPATH=.:$PYTHONPATH pipenv run pytest "$@"

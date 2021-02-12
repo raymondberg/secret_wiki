@@ -19,3 +19,7 @@ div.page-section-wrapper:hover {
 div.page-section {
   margin: 1em;
 }
+
+a.tree-page {
+  display: block;
+}

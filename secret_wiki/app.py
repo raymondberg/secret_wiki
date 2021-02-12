@@ -20,4 +20,3 @@ routes = [
 
 app = FastAPI(routes=routes)
 app.include_router(api_router)
-
