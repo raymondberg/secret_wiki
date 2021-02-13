@@ -34,7 +34,7 @@ def get_or_create(session, model, defaults=None, **kwargs):
         params.update(defaults or {})
         instance = model(**params)
         try:
-            session.add(instance)
+            # session.add(instance)
             session.commit()
         # The actual exception depends on the specific database so we catch all
         # exceptions. This is similar to the official documentation:

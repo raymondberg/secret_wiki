@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel
 
 
@@ -13,7 +15,7 @@ class Section(BaseModel):
     id: int
     wiki_id: str
     page_id: str
-    section_index: int
+    section_index: Optional[int] = None
     content: str
 
     class Config:

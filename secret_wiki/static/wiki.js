@@ -27,12 +27,11 @@ function receivePageSections(sectionList) {
   clearPage()
   sectionList.forEach(function (section) {
     contentContainer.append(
-      $("<div/>").addClass('page-section-wrapper').append(
-        $("<div/>")
-          .addClass('page-section')
-          .html(marked(section.content))
-      )
+      $("<div/>")
+        .addClass('page-section-wrapper row')
+        .attr("id", `page-section-wrapper-id-${section.id}`)
     )
+    replaceWithSectionDisplay(section.id, section.content)
   })
 }
 
@@ -56,6 +55,87 @@ function pageLoadPage(newWikiId, newPageId) {
   pageId = newPageId
 
   updateUrlBar()
+}
+
+function replaceWithSectionDisplay(sectionId, content) {
+    console.log(`Unloading ${sectionId} with content=(${content})`)
+    $(`#page-section-wrapper-id-${sectionId}`)
+      .empty()
+      .removeClass("data-entry")
+      .append(
+        $("<div/>")
+          .addClass('page-section col-xs-12')
+          .attr("id", `page-section-id-${sectionId}`)
+          .attr("data-markdown", content)
+          .html(marked(content))
+      )
+      .one("dblclick", function () {
+        replaceWithTextBox(sectionId)
+      })
+}
+
+function replaceWithTextBox(sectionId) {
+  console.log("Loading " + sectionId)
+  wrapper = $(`#page-section-wrapper-id-${sectionId}`)
+  box = $(`#page-section-id-${sectionId}`)
+  if(! wrapper.hasClass("data-entry")) {
+    wrapper
+      .empty()
+      .addClass("data-entry")
+      .append(
+        $("<div/>")
+          .addClass("col-md-10")
+          .append(
+            $("<textarea/>")
+              .text(box.data("markdown"))
+              .attr("id", `page-section-id-${sectionId}`)
+              .attr("rows", (box.data("markdown").match(/\n/g) || []).length + 1)
+            )
+      )
+      .append(
+        $("<div/>")
+          .addClass("col-md-2")
+          .append(
+            $("<input/>")
+              .addClass("btn btn-primary section-button")
+              .attr("value", "Save")
+              .click(function () { saveSectionAndReset(sectionId) })
+          )
+          .append(
+            $("<input/>")
+              .addClass("btn btn-light section-button")
+              .attr("value", "Cancel")
+              .click(function () { closeSection(sectionId) })
+          )
+      )
+  }
+}
+
+function closeSection(sectionId) {
+  input_box = $(`#page-section-id-${sectionId}`)
+  replaceWithSectionDisplay(sectionId, input_box.val())
+}
+
+function jsonUnescape(str)  {
+  return str.replace(/\\\\n/g, "\n").replace(/\\\\r/g, "\r").replace(/\\\\t/g, "\t");
+}
+
+function saveSectionAndReset(sectionId) {
+  input_box = $(`#page-section-id-${sectionId}`)
+  content = input_box.val()
+  $.ajax({
+    type: "PATCH",
+    url: `api/w/${wikiId}/p/${pageId}/s/${sectionId}`,
+    data: JSON.stringify({
+        id: sectionId,
+        wiki_id: wikiId,
+        page_id: pageId,
+        content: content,
+    }),
+    dataType: "json"
+  })
+   .done(function(result) { replaceWithSectionDisplay(sectionId, jsonUnescape(result.content)) })
+   .fail(function (result) { alert("Error: " + result.statusText)})
 }
 
 function receivePageTree(pageList) {

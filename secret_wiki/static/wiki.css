@@ -23,3 +23,12 @@ div.page-section {
 a.tree-page {
   display: block;
 }
+
+.data-entry textarea {
+  padding: 1em;
+  width: 100%;
+}
+
+.section-button {
+  width: 100%;
+}

@@ -15,11 +15,12 @@ from secret_wiki.models import *
 TEST_DB_URL = "sqlite:///./test.db"
 
 
-@pytest.fixture(scope="session")
-def cleared_db():
+@pytest.fixture(scope="module", autouse=True)
+def cleared_db(db):
     db_path = Path(re.sub(r".*:///", "", TEST_DB_URL))
     if db_path.exists():
         db_path.unlink()
+    Base.metadata.create_all(bind=create_engine(TEST_DB_URL))
 
 
 @pytest.fixture(scope="session")
@@ -36,12 +37,10 @@ def test_app(override_get_db):
 
 
 @pytest.fixture(scope="session")
-def testing_session_local(cleared_db):
+def testing_session_local():
     engine = create_engine(
         TEST_DB_URL, connect_args={"check_same_thread": False}
     )
-    Base.metadata.create_all(bind=engine)
-
     return sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
