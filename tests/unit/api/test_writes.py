@@ -41,11 +41,21 @@ def sections(db, pages):
     return [section1, section2]
 
 
+
+def test_create_sections(client, db):
+    response = client.post(f"/api/w/my_wiki/p/page_1/s", json={"content": "Some new content"})
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["content"] == "Some new content"
+
+    assert db.query(Section).filter_by(content="Some new content").first()
+
+
 def test_patch_sections(client, db, sections):
     section = sections[0]
 
     section.content = section.content + "\n\nbut better"
-    print(jsonable_encoder(section))
     response = client.patch(f"/api/w/my_wiki/p/page_1/s/{section.id}", json=jsonable_encoder(section))
     assert response.status_code == 200
 

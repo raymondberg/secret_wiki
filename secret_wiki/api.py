@@ -26,6 +26,15 @@ def wiki_page(wiki_id: str, page_id: str, db: db.Session = Depends(db.get_db)):
 def wiki_sections(wiki_id:str, page_id: str, db: db.Session = Depends(db.get_db)):
     return db.query(models.Section).filter_by(wiki_id=wiki_id, page_id=page_id).order_by("section_index").all()
 
+
+@router.post("/w/{wiki_id}/p/{page_id}/s", response_model=schemas.Section)
+def wiki_sections(wiki_id:str, page_id: str, section_create: schemas.SectionCreate, db: db.Session = Depends(db.get_db)):
+    with db.begin_nested():
+        section = models.Section(wiki_id=wiki_id, page_id=page_id, content=section_create.content)
+        db.add(section)
+    return section
+
+
 @router.patch("/w/{wiki_id}/p/{page_id}/s/{section_id}", response_model=schemas.Section)
 def wiki_sections(wiki_id:str, page_id: str, section_id: int, section: schemas.Section, db: db.Session = Depends(db.get_db)):
     with db.begin_nested():

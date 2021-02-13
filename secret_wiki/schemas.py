@@ -11,15 +11,17 @@ class Page(BaseModel):
     class Config:
         orm_mode = True
 
-class Section(BaseModel):
-    id: int
-    wiki_id: str
-    page_id: str
-    section_index: Optional[int] = None
+class SectionCreate(BaseModel):
     content: str
 
     class Config:
         orm_mode = True
+
+class Section(SectionCreate):
+    id: int
+    wiki_id: str
+    page_id: str
+    section_index: Optional[int] = None
 
 
 class Wiki(BaseModel):
