@@ -20,6 +20,6 @@ factoid,_ = get_or_create(db, Section, wiki_id=mulan.id, page_id=p_mushu.id, con
  * Very cowardly, but improves over the film
 """)
 
-db.add(intro)
-db.add(factoid)
+for entry in (lion_king, mulan, p_mulan, p_mushu, intro, factoid):
+    db.add(entry)
 db.commit()

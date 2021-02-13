@@ -13,9 +13,14 @@ class Page(BaseModel):
 
 class SectionCreate(BaseModel):
     content: str
+    section_index: Optional[int] = None
 
     class Config:
         orm_mode = True
+
+class SectionUpdate(BaseModel):
+    content: Optional[str] = None
+    section_index: Optional[int] = None
 
 class Section(SectionCreate):
     id: int

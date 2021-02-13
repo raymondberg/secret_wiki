@@ -30,19 +30,27 @@ def wiki_sections(wiki_id:str, page_id: str, db: db.Session = Depends(db.get_db)
 @router.post("/w/{wiki_id}/p/{page_id}/s", response_model=schemas.Section)
 def wiki_sections(wiki_id:str, page_id: str, section_create: schemas.SectionCreate, db: db.Session = Depends(db.get_db)):
     with db.begin_nested():
-        section = models.Section(wiki_id=wiki_id, page_id=page_id, content=section_create.content)
+        section = models.Section(
+            wiki_id=wiki_id,
+            page_id=page_id,
+            content=section_create.content,
+            section_index=section_create.section_index)
         db.add(section)
     return section
 
 
 @router.patch("/w/{wiki_id}/p/{page_id}/s/{section_id}", response_model=schemas.Section)
-def wiki_sections(wiki_id:str, page_id: str, section_id: int, section: schemas.Section, db: db.Session = Depends(db.get_db)):
-    with db.begin_nested():
-        updated_section = (
-            db.query(models.Section)
-            .filter_by(id=section_id, wiki_id=wiki_id, page_id=page_id)
-            .order_by("section_index")
-            .first()
-        )
+def wiki_sections(wiki_id:str, page_id: str, section_id: int, section: schemas.SectionUpdate, db: db.Session = Depends(db.get_db)):
+    updated_section = (
+        db.query(models.Section)
+        .filter_by(id=section_id, wiki_id=wiki_id, page_id=page_id)
+        .order_by("section_index")
+        .first()
+    )
+    if section.content is not None:
         updated_section.content = section.content
+    if section.section_index is not None:
+        updated_section.section_index = section.section_index
+    db.commit()
+
     return updated_section

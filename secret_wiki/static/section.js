@@ -8,8 +8,8 @@ function makeGutter() {
 }
 
 function closeSection(sectionId) {
-  input_box = $(`#page-section-id-${sectionId}`)
-  replaceWithSectionDisplay(sectionId, input_box.val())
+  inputBox = $(`#page-section-id-${sectionId}`)
+  replaceWithSectionDisplay(sectionId, inputBox.val())
 }
 
 function destroySection(sectionId) {
@@ -17,17 +17,59 @@ function destroySection(sectionId) {
   wrapper.replaceWith(gutter)
 }
 
+function makeRoomAndGetIndex(object) {
+  maxBefore = -1
+  needingFanout = []
+  minAfter = 999999999999999999999
+  lookingForObject = true
+  $(".page-section").each((index, obj) => {
+    obj = $(obj)
+    if (obj.attr("id") == object.attr("id")) {
+      lookingForObject = false
+    } else if (lookingForObject) {
+      maxBefore = Math.max(maxBefore, obj.data("section-index"))
+    } else {
+      minAfter = Math.min(minAfter, obj.data("section-index"))
+      if (obj.data("section-index") <= maxBefore + 2 || obj.data("section-index") < 2) {
+        console.log("BAAAAAAH")
+        needingFanout.push(obj)
+      }
+    }
+  })
+
+  console.log(needingFanout, maxBefore, minAfter)
+  needingFanout.forEach((obj, idx) => {pushSectionIndex(obj, idx)})
+  object.data("section-index", maxBefore + 1)
+  return object.data("section-index")
+}
+
+function pushSectionIndex(object, index) {
+  $.ajax({
+    type: "PATCH",
+    url: `api/w/${wikiId}/p/${pageId}/s/${object.data("id")}`,
+    data: JSON.stringify({
+      section_index: object.data("section-index") + 2 + index
+    }),
+    dataType: "json"
+  })
+}
+
 function receivePageSections(sectionList) {
   var contentContainer = $("#content")
   clearPage()
+  itemsReceived = 0
   sectionList.forEach(function (section) {
+    itemsReceived += 1
     contentContainer.append(
       $("<div/>")
         .addClass('page-section-wrapper row')
         .attr("id", `page-section-wrapper-id-${section.id}`)
     )
-    replaceWithSectionDisplay(section.id, section.content)
+    replaceWithSectionDisplay(section.id, section.content, section.section_index)
   })
+  if(itemsReceived == 0) {
+    contentContainer.append(makeGutter())
+  }
 }
 
 function replaceGutterWithTextBox(gutterId){
@@ -45,8 +87,7 @@ function replaceGutterWithTextBox(gutterId){
   replaceWithTextBox(gutterId, true)
 }
 
-
-function replaceWithSectionDisplay(sectionId, content, renameSectionId=null) {
+function replaceWithSectionDisplay(sectionId, content, sectionIndex=0, renameSectionId=null) {
     wrapper = $(`#page-section-wrapper-id-${sectionId}`)
     wrapper
       .empty()
@@ -55,7 +96,9 @@ function replaceWithSectionDisplay(sectionId, content, renameSectionId=null) {
         $("<div/>")
           .addClass('page-section col-xs-12')
           .attr("id", `page-section-id-${sectionId}`)
+          .attr("data-id", sectionId)
           .attr("data-markdown", content)
+          .attr("data-section-index", sectionIndex)
           .html(marked(content))
       )
       .one("dblclick", function () {
@@ -74,8 +117,6 @@ function replaceWithSectionDisplay(sectionId, content, renameSectionId=null) {
 function replaceWithTextBox(sectionId, cancelDestroys=false) {
   wrapper = $(`#page-section-wrapper-id-${sectionId}`)
   box = $(`#page-section-id-${sectionId}`)
-  console.log(`#page-section-id-${sectionId}`)
-  console.log(box)
   if(! wrapper.hasClass("data-entry")) {
     wrapper
       .empty()
@@ -85,9 +126,13 @@ function replaceWithTextBox(sectionId, cancelDestroys=false) {
           .addClass("col-md-10")
           .append(
             $("<textarea/>")
-              .text(box.data("markdown"))
+              .addClass("page-section")
               .attr("id", `page-section-id-${sectionId}`)
               .attr("rows", (box.data("markdown").match(/\n/g) || []).length + 1)
+              .attr("data-id", sectionId)
+              .attr("data-markdown", box.data("markdown"))
+              .attr("data-section-index", box.data("section-index"))
+              .text(box.data("markdown"))
             )
       )
       .append(
@@ -110,18 +155,20 @@ function replaceWithTextBox(sectionId, cancelDestroys=false) {
 }
 
 function saveSectionAndReset(sectionId) {
-  input_box = $(`#page-section-id-${sectionId}`)
-  content = input_box.val()
+  inputBox = $(`#page-section-id-${sectionId}`)
+  content = inputBox.val()
   if (isNaN(sectionId)) { // The create case, we use uuids for yet-to-be-created-sections
+    sectionIndex = makeRoomAndGetIndex(inputBox)
     $.ajax({
       type: "POST",
       url: `api/w/${wikiId}/p/${pageId}/s`,
       data: JSON.stringify({
           content: content,
+          section_index: sectionIndex,
       }),
       dataType: "json"
     })
-     .done(function(result) { replaceWithSectionDisplay(sectionId, jsonUnescape(result.content), result.id) })
+     .done(function(result) { replaceWithSectionDisplay(sectionId, jsonUnescape(result.content), result.section_index, result.id) })
      .fail(function (result) { alert("Error: " + result.statusText)})
   } else {
     $.ajax({
@@ -135,7 +182,7 @@ function saveSectionAndReset(sectionId) {
       }),
       dataType: "json"
     })
-     .done(function(result) { replaceWithSectionDisplay(sectionId, jsonUnescape(result.content)) })
+     .done(function(result) { replaceWithSectionDisplay(sectionId, jsonUnescape(result.content), result.section_index) })
      .fail(function (result) { alert("Error: " + result.statusText)})
   }
 }

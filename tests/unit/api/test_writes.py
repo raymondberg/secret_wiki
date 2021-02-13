@@ -63,3 +63,17 @@ def test_patch_sections(client, db, sections):
     assert data["content"] == section.content
 
     assert db.query(Section).filter_by(id=section.id).first().content == section.content
+
+
+def test_patch_sections_can_just_do_section_index(client, db, sections):
+    section = sections[0]
+
+    section.content = section.content + "\n\nbut better"
+    response = client.patch(f"/api/w/my_wiki/p/page_1/s/{section.id}", json={"section_index": 94321})
+    assert response.status_code == 200
+
+    data = response.json()
+    assert data["section_index"] == 94321
+
+    db.commit() # I think the time it takes the db to update might make this work, shrug
+    assert db.query(Section).filter_by(id=section.id).first().section_index == 94321
