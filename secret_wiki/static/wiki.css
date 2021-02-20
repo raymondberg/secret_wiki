@@ -7,6 +7,20 @@ a.header-wiki,a.tree-page {
   cursor: pointer;
 }
 
+button.page-gutter {
+  height: 3em;
+  width: 100%;
+  margin-top: 3em;
+  background-image: url('/static/plus.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 2em;
+}
+
+div.page-gutter:hover {
+  cursor: pointer;
+}
+
 div.page-section-gutter {
   height: 1.5em;
   border-radius: 1em;

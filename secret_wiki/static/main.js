@@ -17,4 +17,8 @@ $( document ).ready(function() {
 
   pageId = preservedPageId;
   pageLoadPage()
+
+  $('#newPageModal').on('shown.bs.modal', function() {
+      $('#new-page-title-input').trigger('focus');
+  });
 });

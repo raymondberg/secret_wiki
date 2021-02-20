@@ -41,6 +41,16 @@ def sections(db, pages):
     return [section1, section2]
 
 
+def test_create_page(client, db):
+    response = client.post(f"/api/w/my_wiki/p", json={"id": "my_page", "title": "my page"})
+
+    assert response.status_code == 200
+    data = response.json()
+
+    assert data["id"] == "my_page"
+    assert data["title"] == "my page"
+
+    assert db.query(Page).filter_by(id="my_page").first().title == "my page"
 
 def test_create_sections(client, db):
     response = client.post(f"/api/w/my_wiki/p/page_1/s", json={"content": "Some new content"})

@@ -1,5 +1,29 @@
 function clearPage() {
   $("#content").empty()
+  clearPageModal()
+}
+
+function clearPageModal() {
+  $('#newPageModal').modal('hide');
+  $('#new-page-title-input').val('');
+  $('#new-page-slug-input').val('');
+}
+function createPage() {
+  newPageTitle = $("#new-page-title-input").val()
+  newPageId = $("#new-page-slug-input").val()
+  console.log(newPageTitle, newPageId)
+
+  $.ajax({
+    type: "POST",
+    url: `api/w/${wikiId}/p`,
+    data: JSON.stringify({
+        id: newPageId,
+        title: newPageTitle,
+    }),
+    dataType: "json"
+  })
+   .done(function(result) { pageLoadPage(wikiId, newPageId) })
+   .fail(function (result) { alert("Error: " + result.statusText)})
 }
 
 function loadWikis() {
@@ -52,6 +76,7 @@ function pageLoadPage(newWikiId, newPageId) {
   pageId = newPageId
 
   updateUrlBar()
+  pageLoadPageTree()
 }
 
 function receivePageTree(pageList) {

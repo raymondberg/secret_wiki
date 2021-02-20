@@ -17,6 +17,18 @@ def wiki(wiki_id: str, db: db.Session = Depends(db.get_db)):
     return db.query(models.Page).filter_by(wiki_id=wiki_id).order_by("title").all()
 
 
+@router.post("/w/{wiki_id}/p", response_model=schemas.Page)
+def wiki(wiki_id: str, page_create: schemas.PageCreate, db: db.Session = Depends(db.get_db)):
+    with db.begin_nested():
+        page = models.Page(
+            wiki_id=wiki_id,
+            id=page_create.id,
+            title=page_create.title,
+            )
+        db.add(page)
+    return page
+
+
 @router.get("/w/{wiki_id}/p/{page_id}", response_model=schemas.Page)
 def wiki_page(wiki_id: str, page_id: str, db: db.Session = Depends(db.get_db)):
     return db.query(models.Page).filter_by(wiki_id=wiki_id, id=page_id).first()

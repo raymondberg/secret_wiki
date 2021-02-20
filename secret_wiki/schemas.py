@@ -2,6 +2,9 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+class PageCreate(BaseModel):
+    id: str
+    title: str
 
 class Page(BaseModel):
     wiki_id: str
