@@ -9,9 +9,10 @@ from sqlalchemy import (
     Text
 )
 
+
 from sqlalchemy.orm import relationship
 
-from .db import Base
+from ..db import Base
 
 class Wiki(Base):
     __tablename__ = "wikis"
