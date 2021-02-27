@@ -1,3 +1,8 @@
+SECRET=put_a_real_secret_here_in_production
+[ -f .env ] || echo "PYTHONPATH=.:\$PYTHONPATH
+GOOGLE_OAUTH_CLIENT_ID=
+GOOGLE_OAUTH_CLIENT_SECRET=" > .env
+
 pipenv install --dev
 
 pipenv run python -c "from secret_wiki.db import Base, engine; from secret_wiki.models import *; Base.metadata.create_all(bind=engine)"
