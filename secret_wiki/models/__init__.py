@@ -1,2 +1,2 @@
-from .wiki import Wiki, Page, Base
+from .wiki import Base, Page, Section, Wiki
 
