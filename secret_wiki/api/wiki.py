@@ -1,11 +1,16 @@
 from typing import List
 
+from fastapi import APIRouter, Depends
 
-from fastapi import Depends, APIRouter
-
-from . import db, models, schemas
+from .. import db, models, schemas
+from .auth import fastapi_users
 
 router = APIRouter(prefix="/api")
+
+@router.get("/greeting")
+def protected_route(user: models.User = Depends(fastapi_users.current_user())):
+        return f"Hello, {user.email}"
+
 
 @router.get("/w", response_model=List[schemas.Wiki])
 def root(db: db.Session = Depends(db.get_db)):

@@ -1,2 +1,2 @@
-from .wiki import Base, Page, Section, Wiki
-
+from .auth import *
+from .wiki import *

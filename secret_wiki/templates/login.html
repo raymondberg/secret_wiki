@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+  <a id="google-login" class="btn btn-info d-none">Login with Google</a>
+</div>
+{% endblock %}
+
+{% block extra_javascript %}
+  <script src="{{ url_for('static', path='login.js') }}"></script>
+{% endblock %}

@@ -13,6 +13,7 @@ uvicorn = {extras = ["standard"],version = "*"}
 jinja2 = "*"
 aiofiles = "*"
 sqlalchemy = "*"
+fastapi-users = {extras = ["sqlalchemy", "oauth"], version = "*"}
 
 [requires]
 python_version = "3.8"
