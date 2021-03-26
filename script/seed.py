@@ -1,7 +1,11 @@
+from fastapi_users.password import get_password_hash
+
 from secret_wiki.db import get_db, get_or_create
-from secret_wiki.models import Wiki, Page, Section
+from secret_wiki.models import Wiki, Page, Section, User
 
 db = next(get_db())
+
+user,thing = get_or_create(db, User, email="admin@example.com", hashed_password=get_password_hash("admin"), is_superuser=True)
 
 lion_king,_ = get_or_create(db, Wiki, id="Lion King")
 mulan,_ = get_or_create(db, Wiki, id="Mulan")

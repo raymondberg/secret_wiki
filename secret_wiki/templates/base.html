@@ -26,8 +26,10 @@
       <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" crossorigin="anonymous"></script>
 
 
+   {% block extra_javascript %}
       {% for resource in ["state", "page", "section", "main"] %}
         <script src="{{ url_for('static', path=resource+'.js') }}"></script>
       {% endfor %}
+    {% endblock %}
   </body>
 </html>

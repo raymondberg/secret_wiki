@@ -1,5 +1,6 @@
 SECRET=put_a_real_secret_here_in_production
 [ -f .env ] || echo "PYTHONPATH=.:\$PYTHONPATH
+SECRET=
 GOOGLE_OAUTH_CLIENT_ID=
 GOOGLE_OAUTH_CLIENT_SECRET=" > .env
 

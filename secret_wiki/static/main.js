@@ -8,7 +8,17 @@ function jsonUnescape(str)  {
   return str.replace(/\\\\n/g, "\n").replace(/\\\\r/g, "\r").replace(/\\\\t/g, "\t");
 }
 
+function checkLogin(){
+  $.ajax({
+    url: "/api/users/me"
+  })
+   .fail(function(result) {
+    window.location.replace('/login')
+   })
+}
+
 $( document ).ready(function() {
+  checkLogin()
   loadWikis()
 
   wikiId = $.urlParam('w');
