@@ -1,11 +1,28 @@
-from fastapi_users.password import get_password_hash
+import asyncio
 
+from fastapi_users.user import UserNotExists
+
+from secret_wiki.api.auth import fastapi_users
 from secret_wiki.db import get_db, get_or_create
-from secret_wiki.models import Wiki, Page, Section, User
+from secret_wiki.models import Wiki, Page, Section
+from secret_wiki.schemas import UserCreate
 
 db = next(get_db())
 
-user,thing = get_or_create(db, User, email="admin@example.com", hashed_password=get_password_hash("admin"), is_superuser=True)
+async def create_user():
+    try:
+        user = await fastapi_users.get_user("admin@example.com")
+    except UserNotExists:
+        user = await fastapi_users.create_user(
+            UserCreate(
+                email="admin@example.com",
+                password="admin",
+                is_superuser=True,
+                is_verified=True,
+            )
+        )
+    return user
+user = asyncio.run(create_user())
 
 lion_king,_ = get_or_create(db, Wiki, id="Lion King")
 mulan,_ = get_or_create(db, Wiki, id="Mulan")
