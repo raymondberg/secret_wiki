@@ -5,7 +5,7 @@ from fastapi_users.user import UserNotExists
 from secret_wiki.api.auth import fastapi_users
 from secret_wiki.db import get_db, get_or_create
 from secret_wiki.models import Wiki, Page, Section
-from secret_wiki.schemas import UserCreate
+from secret_wiki.schemas import UserShellCreate
 
 db = next(get_db())
 
@@ -14,9 +14,10 @@ async def create_user():
         user = await fastapi_users.get_user("admin@example.com")
     except UserNotExists:
         user = await fastapi_users.create_user(
-            UserCreate(
+            UserShellCreate(
                 email="admin@example.com",
                 password="admin",
+                is_active=True,
                 is_superuser=True,
                 is_verified=True,
             )
