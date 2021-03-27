@@ -1,13 +1,18 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container">
-  <div class="row">
-    <div class="col-md-12">
-      <div id="wiki-list"></div>
+<div id="main-container" class="container">
+  <div id="header-row" class="row">
+    <div class="col-md-3">
+      <div class="header-section">
+        <h3>Secret Wiki</h3>
+      </div>
+    </div>
+    <div class="col-md-9">
+      <div id="wiki-list" class="header-section"></div>
     </div>
   </div>
   <div class="row">
-    <div class="col-md-3">
+    <div id="left-bar" class="col-md-3">
       <div id="page-tree"></div>
       <div id="add-new">
         <!-- Vertically centered scrollable modal -->
@@ -25,7 +30,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+          <h5 class="modal-title" id="exampleModalLabel">Create new Page</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">

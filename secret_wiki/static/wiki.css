@@ -1,3 +1,33 @@
+body {
+  background-color: #293132;
+}
+
+.header-section {
+  background-color: #CC8B86;
+  padding: 2em;
+  height: 6em;
+}
+
+#wiki-list > a {
+  color: #293132;
+  text-decoration: none;
+}
+
+#page-tree, #add-new {
+  background-color: #547AA5;
+}
+
+#page-tree {
+  padding: .5em
+}
+#page-tree > a {
+  color: #FFE;
+}
+
+#content {
+  background-color: #F9EAE1;
+}
+
 a.header-wiki {
   font-size: 2em;
   margin-right: 2em;
@@ -40,7 +70,7 @@ div.page-section-wrapper {
 }
 
 div.page-section-wrapper:hover {
-  background-color: #EEE;
+  background-color: #50D8D7;
 }
 
 div.page-section {
