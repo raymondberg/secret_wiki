@@ -8,7 +8,7 @@ body {
   height: 6em;
 }
 
-#wiki-list > a {
+#wiki-list > a, .header-link{
   color: #293132;
   text-decoration: none;
 }

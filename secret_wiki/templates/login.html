@@ -1,12 +1,21 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container">
-  <form>
-    <label>Email:</label> <input id="email-input" type="text" name="email"/>
-    <label>Password:</label> <input id="password-input" type="password" name="email"/>
-    <input id="register-button" type="button" value="Register" />
-    <input id="sign-in-button" type="button" value="Sign In" />
-  </form>
+<div id="main-container" class="container">
+  <div class="row">
+    <div class="d-flex justify-content-between header-section p-0">
+      <div class="p-2">
+        <h3>Secret Wiki</h3>
+      </div>
+    </div>
+  </div>
+  <div id="content" class="p-4">
+    <form>
+      <label>Email:</label> <input id="email-input" type="text" name="email"/>
+      <label>Password:</label> <input id="password-input" type="password" name="email"/>
+      <input id="register-button" type="button" value="Register" />
+      <input id="sign-in-button" type="button" value="Sign In" />
+    </form>
+  </div>
 </div>
 {% endblock %}
 

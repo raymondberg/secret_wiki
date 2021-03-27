@@ -1,14 +1,13 @@
 {% extends 'base.html' %}
 {% block content %}
 <div id="main-container" class="container">
-  <div id="header-row" class="row">
-    <div class="col-md-3">
-      <div class="header-section">
+  <div class="row">
+    <div class="d-flex justify-content-between header-section p-0">
+      <div class="p-2">
         <h3>Secret Wiki</h3>
       </div>
-    </div>
-    <div class="col-md-9">
-      <div id="wiki-list" class="header-section"></div>
+      <div id="wiki-list" class="p-2"></div>
+      <div id="status" class="p-2"></div>
     </div>
   </div>
   <div class="row">
