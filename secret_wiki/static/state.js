@@ -1,5 +1,7 @@
 var wikiId = null
 var pageId = null
+var user = null
+var edit_mode_enabled = false
 
 $.urlParam = function (name) {
   var results = new RegExp('[\?&]' + name + '=([^&#]*)')

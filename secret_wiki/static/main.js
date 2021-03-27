@@ -25,16 +25,35 @@ function checkLogin(){
      status.empty()
 
      status.append(
-       $("<a>")
-         .addClass("header-link")
-         .attr("href", "#")
-         .click(logout)
-         .text("Logout")
+       $("<div>").append("Edit Mode: ").append(
+         $("<input>")
+          .attr("id", "edit-mode-toggle")
+          .attr("type", "checkbox")
+          .attr("checked", edit_mode_enabled)
+          .click(toggleEditMode)
+       )
      )
+     .append(
+       $("<div>")
+         .addClass("text-end")
+         .append(
+           $("<a>")
+             .addClass("header-link")
+             .attr("href", "#")
+             .click(logout)
+             .text("Logout")
+       )
+     )
+
    })
    .fail(function(result) {
      window.location.replace('/login')
    })
+}
+
+function toggleEditMode() {
+  edit_mode_enabled = ! edit_mode_enabled
+  $("edit-mode-toggle").attr("checked", edit_mode_enabled)
 }
 
 $( document ).ready(function() {
