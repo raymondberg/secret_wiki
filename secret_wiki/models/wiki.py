@@ -26,6 +26,14 @@ class Page(Base):
     id = Column(String, primary_key=True)
     wiki_id = Column(String, ForeignKey("wikis.id"), primary_key=True)
     title = Column(String)
+    is_admin_only = Column(Boolean, default=False)
+
+    @classmethod
+    def for_user(cls, db, user, wiki_id=None):
+        query = db.query(cls).filter_by(wiki_id=wiki_id)
+        if not user.is_superuser:
+            query = query.filter_by(is_admin_only=False)
+        return query
 
 
 class Section(Base):

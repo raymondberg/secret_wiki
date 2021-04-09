@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
 from .. import db, models, schemas
 from .auth import fastapi_users
@@ -16,7 +16,7 @@ def root(db: db.Session = Depends(db.get_db), user: schemas.User = Depends(curre
 
 @router.get("/w/{wiki_id}/p", response_model=List[schemas.Page])
 def wiki(wiki_id: str, db: db.Session = Depends(db.get_db), user: schemas.User = Depends(current_active_user)):
-    return db.query(models.Page).filter_by(wiki_id=wiki_id).order_by("title").all()
+    return models.Page.for_user(db, user, wiki_id=wiki_id).order_by("title").all()
 
 
 @router.post("/w/{wiki_id}/p", response_model=schemas.Page)
@@ -26,6 +26,7 @@ def wiki(wiki_id: str, page_create: schemas.PageCreate, db: db.Session = Depends
             wiki_id=wiki_id,
             id=page_create.id,
             title=page_create.title,
+            is_admin_only=page_create.is_admin_only,
             )
         db.add(page)
     return page
@@ -33,7 +34,10 @@ def wiki(wiki_id: str, page_create: schemas.PageCreate, db: db.Session = Depends
 
 @router.get("/w/{wiki_id}/p/{page_id}", response_model=schemas.Page)
 def wiki_page(wiki_id: str, page_id: str, db: db.Session = Depends(db.get_db), user: schemas.User = Depends(current_active_user)):
-    return db.query(models.Page).filter_by(wiki_id=wiki_id, id=page_id).first()
+    page = models.Page.for_user(db, user, wiki_id=wiki_id).filter_by(id=page_id).first()
+    if not page:
+        raise HTTPException(status_code=404, detail="Page not found")
+    return page
 
 
 @router.get("/w/{wiki_id}/p/{page_id}/s", response_model=List[schemas.Section])

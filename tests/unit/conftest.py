@@ -10,54 +10,41 @@ import pytest
 
 from secret_wiki.api.wiki import current_active_user
 from secret_wiki.db import Base, get_db
-from secret_wiki.models import *
 from secret_wiki.schemas import User
-
+import secret_wiki.models as models
 
 TEST_DB_URL = "sqlite:///./test.db"
 
 
-@pytest.fixture(scope="module", autouse=True)
-def cleared_db(db):
-    db_path = Path(re.sub(r".*:///", "", TEST_DB_URL))
-    if db_path.exists():
-        db_path.unlink()
-    Base.metadata.create_all(bind=create_engine(TEST_DB_URL))
-
-
-@pytest.fixture(scope="session")
-def db(testing_session_local):
-    return testing_session_local()
-
-
-@pytest.fixture(scope="session")
-def test_app(override_get_db, override_current_active_user):
-    # with patch.dict('secret_wiki.db.os.environ', {"DATABASE_URL": "sqlite:///./database-test.db"}):
-    from secret_wiki.app import app
-    app.dependency_overrides[get_db] = override_get_db
-    app.dependency_overrides[current_active_user] = override_current_active_user
-    yield app
-
-
-@pytest.fixture(scope="session")
-def testing_session_local():
+@pytest.fixture
+def engine():
     engine = create_engine(
         TEST_DB_URL, connect_args={"check_same_thread": False}
     )
-    return sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    Base.metadata.create_all(bind=engine)
+    return engine
 
 
-@pytest.fixture(scope="session")
-def override_get_db(testing_session_local):
+@pytest.fixture
+def db(engine):
+    Session = sessionmaker(autocommit=False, autoflush=True, bind=engine)
+    db = Session()
+    for model in [models.Section, models.Page, models.Wiki]:
+        db.query(model).delete()
+    yield db
+    db.close()
+
+
+@pytest.fixture
+def test_app(override_get_db):
+    # with patch.dict('secret_wiki.db.os.environ', {"DATABASE_URL": "sqlite:///./database-test.db"}):
+    from secret_wiki.app import app
+    app.dependency_overrides[get_db] = override_get_db
+    yield app
+
+
+@pytest.fixture
+def override_get_db(db):
     def override_get_db_():
-        try:
-            db = testing_session_local()
-            yield db
-        finally:
-            db.close()
+        yield db
     return override_get_db_
-
-@pytest.fixture(scope="session")
-def override_current_active_user():
-
-    return lambda: User(email='test-user@example.com')

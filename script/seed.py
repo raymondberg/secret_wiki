@@ -9,21 +9,23 @@ from secret_wiki.schemas import UserShellCreate
 
 db = next(get_db())
 
-async def create_user():
+async def create_user(name):
+    email = f"{name}@example.com"
     try:
-        user = await fastapi_users.get_user("admin@example.com")
+        user = await fastapi_users.get_user(email)
     except UserNotExists:
         user = await fastapi_users.create_user(
             UserShellCreate(
-                email="admin@example.com",
-                password="admin",
+                email=email,
+                password=name,
                 is_active=True,
-                is_superuser=True,
+                is_superuser=name == "admin",
                 is_verified=True,
             )
         )
     return user
-user = asyncio.run(create_user())
+admin = asyncio.run(create_user("admin"))
+admin = asyncio.run(create_user("user"))
 
 lion_king,_ = get_or_create(db, Wiki, id="Lion King")
 mulan,_ = get_or_create(db, Wiki, id="Mulan")

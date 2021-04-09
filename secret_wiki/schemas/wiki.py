@@ -5,11 +5,13 @@ from pydantic import BaseModel
 class PageCreate(BaseModel):
     id: str
     title: str
+    is_admin_only: Optional[bool] = False
 
 class Page(BaseModel):
     wiki_id: str
     id: str
     title: str
+    is_admin_only: bool
 
     class Config:
         orm_mode = True

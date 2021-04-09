@@ -7,11 +7,13 @@ function clearPageModal() {
   $('#newPageModal').modal('hide');
   $('#new-page-title-input').val('');
   $('#new-page-slug-input').val('');
+  $('#new-page-is-admin-only').prop('checked', false);
 }
 function createPage() {
   newPageTitle = $("#new-page-title-input").val()
   newPageId = $("#new-page-slug-input").val()
-  console.log(newPageTitle, newPageId)
+  isAdminOnly = $("#new-page-is-admin-only").prop("checked")
+
 
   $.ajax({
     type: "POST",
@@ -19,6 +21,7 @@ function createPage() {
     data: JSON.stringify({
         id: newPageId,
         title: newPageTitle,
+        is_admin_only: isAdminOnly,
     }),
     dataType: "json"
   })
