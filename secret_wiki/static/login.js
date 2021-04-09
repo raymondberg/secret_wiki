@@ -33,8 +33,7 @@ function doSignIn() {
 
       if (result.status == 200 ) {
         window.location.replace("/")
-      }
-      if (result.detail == "LOGIN_USER_NOT_VERIFIED") {
+      } else if (result.detail == "LOGIN_USER_NOT_VERIFIED") {
         alert("Please contact the administrator to get your account verified before proceeding");
       } else {
         alert("Error: " + result.detail)
@@ -43,6 +42,12 @@ function doSignIn() {
 }
 
 $( document ).ready(function() {
+  $('#password-input').keyup(function(event) {
+    if (event.which === 13) {
+      event.preventDefault()
+      doSignIn()
+    }
+  });
   $("#register-button").click(doRegister)
   $("#sign-in-button").click(doSignIn)
 });
