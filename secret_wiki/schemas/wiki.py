@@ -2,10 +2,12 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+
 class PageCreate(BaseModel):
     id: str
     title: str
     is_admin_only: Optional[bool] = False
+
 
 class Page(BaseModel):
     wiki_id: str
@@ -16,6 +18,7 @@ class Page(BaseModel):
     class Config:
         orm_mode = True
 
+
 class SectionCreate(BaseModel):
     content: str
     section_index: Optional[int] = None
@@ -23,9 +26,11 @@ class SectionCreate(BaseModel):
     class Config:
         orm_mode = True
 
+
 class SectionUpdate(BaseModel):
     content: Optional[str] = None
     section_index: Optional[int] = None
+
 
 class Section(SectionCreate):
     id: int

@@ -20,7 +20,9 @@ def after_verification_request(user: UserDB, token: str, request: Request):
     print(f"Verification requested for user {user.id}. Verification token: {token}")
 
 
-cookie_authentication = CookieAuthentication(secret=os.environ["SECRET"], lifetime_seconds=3600)
+cookie_authentication = CookieAuthentication(
+    secret=os.environ["SECRET"], lifetime_seconds=3600
+)
 
 fastapi_users = FastAPIUsers(
     db=user_db,
@@ -40,7 +42,7 @@ routers = [
     dict(
         router=fastapi_users.get_register_router(on_after_register),
         prefix="/api/auth",
-        tags=["auth"]
+        tags=["auth"],
     ),
     # dict(
     #     router=fastapi_users.get_reset_password_router(
@@ -56,9 +58,5 @@ routers = [
     #     prefix="/api/auth",
     #     tags=["auth"],
     # ),
-    dict(
-        router=fastapi_users.get_users_router(),
-        prefix="/api/users",
-        tags=["users"]
-    ),
+    dict(router=fastapi_users.get_users_router(), prefix="/api/users", tags=["users"]),
 ]

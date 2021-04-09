@@ -6,13 +6,14 @@ from sqlalchemy import (
     Integer,
     Sequence,
     String,
-    Text
+    Text,
 )
 
 
 from sqlalchemy.orm import relationship
 
 from ..db import Base
+
 
 class Wiki(Base):
     __tablename__ = "wikis"
@@ -39,10 +40,7 @@ class Page(Base):
 class Section(Base):
     __tablename__ = "sections"
     __table_args__ = (
-        ForeignKeyConstraint(
-            ['wiki_id', 'page_id'],
-            ['pages.wiki_id', 'pages.id']
-            ),
+        ForeignKeyConstraint(["wiki_id", "page_id"], ["pages.wiki_id", "pages.id"]),
     )
 
     id = Column(Integer, primary_key=True)

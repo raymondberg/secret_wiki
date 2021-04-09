@@ -6,6 +6,7 @@ verify_ssl = true
 [dev-packages]
 pytest = "*"
 requests = "*"
+black = "==20.8b1"
 
 [packages]
 fastapi = "*"
