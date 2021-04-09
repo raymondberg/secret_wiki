@@ -8,8 +8,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import pytest
 
+from secret_wiki.api.wiki import current_active_user
 from secret_wiki.db import Base, get_db
 from secret_wiki.models import *
+from secret_wiki.schemas import User
 
 
 TEST_DB_URL = "sqlite:///./test.db"
@@ -29,10 +31,11 @@ def db(testing_session_local):
 
 
 @pytest.fixture(scope="session")
-def test_app(override_get_db):
+def test_app(override_get_db, override_current_active_user):
     # with patch.dict('secret_wiki.db.os.environ', {"DATABASE_URL": "sqlite:///./database-test.db"}):
     from secret_wiki.app import app
     app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[current_active_user] = override_current_active_user
     yield app
 
 
@@ -53,3 +56,8 @@ def override_get_db(testing_session_local):
         finally:
             db.close()
     return override_get_db_
+
+@pytest.fixture(scope="session")
+def override_current_active_user():
+
+    return lambda: User(email='test-user@example.com')
