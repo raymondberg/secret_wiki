@@ -1,3 +1,3 @@
-pipenv run uvicorn secret_wiki.app:app --reload --log-level trace
+pipenv run uvicorn secret_wiki.app:app --reload --reload-dir secret_wiki --log-level trace
 
 # PYTHONPATH=.:$PYTHONPATH pipenv run python -m pdb script/server_debug.py
