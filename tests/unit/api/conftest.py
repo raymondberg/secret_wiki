@@ -76,6 +76,22 @@ def sections(db, pages):
 
 
 @pytest.fixture
+def admin_only_section(db, pages):
+    page = pages[0]
+    admin_section = Section(
+        wiki_id=page.wiki_id,
+        page_id=page.id,
+        is_admin_only=True,
+        section_index=5,
+        content="Admin only section",
+    )
+    db.add(admin_section)
+    db.commit()
+
+    return admin_section
+
+
+@pytest.fixture
 def wikis(db):
     wiki1 = Wiki(id="my_wiki")
     db.add(wiki1)

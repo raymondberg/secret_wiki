@@ -9,7 +9,9 @@ function makeGutter() {
 
 function closeSection(sectionId) {
   inputBox = $(`#page-section-id-${sectionId}`)
-  replaceWithSectionDisplay(sectionId, inputBox.val())
+  isAdminOnly = $("#page-section-is-admin-only").prop("checked")
+  console.log(isAdminOnly)
+  replaceWithSectionDisplay(sectionId, inputBox.val(), isAdminOnly)
 }
 
 function destroySection(sectionId) {
@@ -31,7 +33,6 @@ function makeRoomAndGetIndex(object) {
     } else {
       minAfter = Math.min(minAfter, obj.data("section-index"))
       if (obj.data("section-index") <= maxBefore + 2 || obj.data("section-index") < 2) {
-        console.log("BAAAAAAH")
         needingFanout.push(obj)
       }
     }
@@ -65,7 +66,7 @@ function receivePageSections(sectionList) {
         .addClass('page-section-wrapper row')
         .attr("id", `page-section-wrapper-id-${section.id}`)
     )
-    replaceWithSectionDisplay(section.id, section.content, section.section_index)
+    replaceWithSectionDisplay(section.id, section.content, section.is_admin_only, section.section_index,)
   })
   if(itemsReceived == 0) {
     contentContainer.append(makeGutter())
@@ -87,7 +88,7 @@ function replaceGutterWithTextBox(gutterId){
   replaceWithTextBox(gutterId, true)
 }
 
-function replaceWithSectionDisplay(sectionId, content, sectionIndex=0, renameSectionId=null) {
+function replaceWithSectionDisplay(sectionId, content, isAdminOnly=false, sectionIndex=0, renameSectionId=null) {
     wrapper = $(`#page-section-wrapper-id-${sectionId}`)
     wrapper
       .empty()
@@ -99,6 +100,7 @@ function replaceWithSectionDisplay(sectionId, content, sectionIndex=0, renameSec
           .attr("data-id", sectionId)
           .attr("data-markdown", content)
           .attr("data-section-index", sectionIndex)
+          .attr("data-section-is-admin-only", isAdminOnly)
           .html(marked(content))
       )
       .one("dblclick", function () {
@@ -110,7 +112,7 @@ function replaceWithSectionDisplay(sectionId, content, sectionIndex=0, renameSec
 
     if (renameSectionId) {
       $(`#page-section-wrapper-id-${sectionId}`).attr("id", renameSectionId)
-      $(`#page-section--id-${sectionId}`).attr("id", renameSectionId)
+      $(`#page-section-id-${sectionId}`).attr("id", renameSectionId)
     }
 }
 
@@ -132,12 +134,22 @@ function replaceWithTextBox(sectionId, cancelDestroys=false) {
               .attr("data-id", sectionId)
               .attr("data-markdown", box.data("markdown"))
               .attr("data-section-index", box.data("section-index"))
+              .attr("data-section-is-admin-only", box.data("section-is-admin-only"))
               .text(box.data("markdown"))
             )
       )
       .append(
         $("<div/>")
           .addClass("col-md-2")
+          .append(
+            $("<div/>")
+              .text("Admin Only: ")
+              .append(
+                $("<input/>", {id: "page-section-is-admin-only"})
+                  .prop("type", "checkbox")
+                  .prop("checked", box.data("section-is-admin-only"))
+              )
+          )
           .append(
             $("<input/>")
               .addClass("btn btn-primary section-button")
@@ -157,6 +169,7 @@ function replaceWithTextBox(sectionId, cancelDestroys=false) {
 function saveSectionAndReset(sectionId) {
   inputBox = $(`#page-section-id-${sectionId}`)
   content = inputBox.val()
+  isAdminOnly = $("#page-section-is-admin-only").prop("checked")
   if (isNaN(sectionId)) { // The create case, we use uuids for yet-to-be-created-sections
     sectionIndex = makeRoomAndGetIndex(inputBox)
     $.ajax({
@@ -165,10 +178,11 @@ function saveSectionAndReset(sectionId) {
       data: JSON.stringify({
           content: content,
           section_index: sectionIndex,
+          is_admin_only: isAdminOnly,
       }),
       dataType: "json"
     })
-     .done(function(result) { replaceWithSectionDisplay(sectionId, jsonUnescape(result.content), result.section_index, result.id) })
+     .done(function(result) {  replaceWithSectionDisplay(sectionId, jsonUnescape(result.content), result.is_admin_only, result.section_index, result.id) })
      .fail(function (result) { alert("Error: " + result.statusText)})
   } else {
     $.ajax({
@@ -179,10 +193,11 @@ function saveSectionAndReset(sectionId) {
           wiki_id: wikiId,
           page_id: pageId,
           content: content,
+          is_admin_only: isAdminOnly,
       }),
       dataType: "json"
     })
-     .done(function(result) { replaceWithSectionDisplay(sectionId, jsonUnescape(result.content), result.section_index) })
+     .done(function(result) { replaceWithSectionDisplay(sectionId, jsonUnescape(result.content), result.is_admin_only, result.section_index) })
      .fail(function (result) { alert("Error: " + result.statusText)})
   }
 }

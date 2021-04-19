@@ -46,6 +46,21 @@ class Section(Base):
     id = Column(Integer, primary_key=True)
     wiki_id = Column(String, ForeignKey("wikis.id"))
     section_index = Column(Integer, default=5000)
+    is_admin_only = Column(Boolean, default=False)
     content = Column(Text)
 
     page_id = Column(String, ForeignKey("pages.id"))
+
+    @classmethod
+    def for_user(cls, db, user, wiki_id=None, page_id=None, section_id=None):
+        query = db.query(cls).filter_by(wiki_id=wiki_id, page_id=page_id)
+        if section_id is not None:
+            query = query.filter_by(id=section_id)
+        if not user.is_superuser:
+            query = query.filter_by(is_admin_only=False)
+        return query
+
+    def update(self, section_update):
+        for attr in ("content", "is_admin_only", "section_index"):
+            if (value := getattr(section_update, attr)) is not None:
+                setattr(self, attr, value)

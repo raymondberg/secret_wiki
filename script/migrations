@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [ "$1" == "generate" ]; then
+  pipenv run alembic revision --autogenerate
+elif [ "$1" == "run" ]; then
+  pipenv run alembic upgrade head
+else
+  echo "Expected one of generate|run"
+  exit 1
+fi

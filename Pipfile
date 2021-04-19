@@ -16,6 +16,7 @@ aiofiles = "*"
 sqlalchemy = "*"
 fastapi-users = {extras = ["sqlalchemy"], version = "*"}
 aiosqlite = "*"
+alembic = "*"
 
 [requires]
 python_version = "3.8"

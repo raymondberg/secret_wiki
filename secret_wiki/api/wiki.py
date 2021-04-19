@@ -66,8 +66,7 @@ def wiki_sections(
     user: schemas.User = Depends(current_active_user),
 ):
     return (
-        db.query(models.Section)
-        .filter_by(wiki_id=wiki_id, page_id=page_id)
+        models.Section.for_user(db, user, wiki_id=wiki_id, page_id=page_id)
         .order_by("section_index")
         .all()
     )
@@ -85,6 +84,7 @@ def wiki_sections(
         section = models.Section(
             wiki_id=wiki_id,
             page_id=page_id,
+            is_admin_only=section_create.is_admin_only,
             content=section_create.content,
             section_index=section_create.section_index,
         )
@@ -102,15 +102,16 @@ def wiki_sections(
     user: schemas.User = Depends(current_active_user),
 ):
     updated_section = (
-        db.query(models.Section)
-        .filter_by(id=section_id, wiki_id=wiki_id, page_id=page_id)
+        models.Section.for_user(
+            db, user, section_id=section_id, wiki_id=wiki_id, page_id=page_id
+        )
         .order_by("section_index")
         .first()
     )
-    if section.content is not None:
-        updated_section.content = section.content
-    if section.section_index is not None:
-        updated_section.section_index = section.section_index
+    if not updated_section:
+        raise HTTPException(status_code=404, detail="Section not found")
+    # updated_section.update_if_present(section)
+    updated_section.update(section)
     db.commit()
 
     return updated_section

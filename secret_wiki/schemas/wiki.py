@@ -22,6 +22,7 @@ class Page(BaseModel):
 class SectionCreate(BaseModel):
     content: str
     section_index: Optional[int] = None
+    is_admin_only: bool = False
 
     class Config:
         orm_mode = True
@@ -30,6 +31,7 @@ class SectionCreate(BaseModel):
 class SectionUpdate(BaseModel):
     content: Optional[str] = None
     section_index: Optional[int] = None
+    is_admin_only: Optional[bool] = None
 
 
 class Section(SectionCreate):
@@ -37,6 +39,7 @@ class Section(SectionCreate):
     wiki_id: str
     page_id: str
     section_index: Optional[int] = None
+    is_admin_only: bool = False
 
 
 class Wiki(BaseModel):
