@@ -1,3 +1,9 @@
-pipenv run uvicorn secret_wiki.app:app --reload --reload-dir secret_wiki --log-level trace
+MODE=$1
+
+if [[ "$MODE" == "--frontend" ]]; then
+  cd frontend && npm start
+else
+  pipenv run uvicorn secret_wiki.app:app --reload --reload-dir secret_wiki --log-level trace
+fi
 
 # PYTHONPATH=.:$PYTHONPATH pipenv run python -m pdb script/server_debug.py
