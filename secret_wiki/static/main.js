@@ -10,7 +10,8 @@ function jsonUnescape(str)  {
 
 function logout() {
   $.ajax({
-     url: "/api/auth/logout",
+     type: "POST",
+     url: "/api/auth/cookie/logout",
      action: "POST",
   })
   .always(function() { window.location.replace('/login') })
