@@ -13,7 +13,7 @@ current_active_user = fastapi_users.current_user(active=True)
 @router.get("/w", response_model=List[schemas.Wiki])
 def root(
     db: db.Session = Depends(db.get_db),
-    user: schemas.User = Depends(current_active_user),
+    # user: schemas.User = Depends(current_active_user),
 ):
     return db.query(models.Wiki).all()
 
@@ -22,9 +22,9 @@ def root(
 def wiki(
     wiki_id: str,
     db: db.Session = Depends(db.get_db),
-    user: schemas.User = Depends(current_active_user),
+    # user: schemas.User = Depends(current_active_user),
 ):
-    return models.Page.for_user(db, user, wiki_id=wiki_id).order_by("title").all()
+    return models.Page.filter(db, wiki_id=wiki_id).order_by("title").all()
 
 
 @router.post("/w/{wiki_id}/p", response_model=schemas.Page)
@@ -32,7 +32,7 @@ def wiki(
     wiki_id: str,
     page_create: schemas.PageCreate,
     db: db.Session = Depends(db.get_db),
-    user: schemas.User = Depends(current_active_user),
+    # user: schemas.User = Depends(current_active_user),
 ):
     with db.begin_nested():
         page = models.Page(
@@ -50,9 +50,9 @@ def wiki_page(
     wiki_id: str,
     page_id: str,
     db: db.Session = Depends(db.get_db),
-    user: schemas.User = Depends(current_active_user),
+    # user: schemas.User = Depends(current_active_user),
 ):
-    page = models.Page.for_user(db, user, wiki_id=wiki_id).filter_by(id=page_id).first()
+    page = models.Page.filter(db, wiki_id=wiki_id).filter_by(id=page_id).first()
     if not page:
         raise HTTPException(status_code=404, detail="Page not found")
     return page
@@ -63,10 +63,10 @@ def wiki_sections(
     wiki_id: str,
     page_id: str,
     db: db.Session = Depends(db.get_db),
-    user: schemas.User = Depends(current_active_user),
+    # user: schemas.User = Depends(current_active_user),
 ):
     return (
-        models.Section.for_user(db, user, wiki_id=wiki_id, page_id=page_id)
+        models.Section.filter(db, wiki_id=wiki_id, page_id=page_id)
         .order_by("section_index")
         .all()
     )
@@ -78,7 +78,7 @@ def wiki_sections(
     page_id: str,
     section_create: schemas.SectionCreate,
     db: db.Session = Depends(db.get_db),
-    user: schemas.User = Depends(current_active_user),
+    # user: schemas.User = Depends(current_active_user),
 ):
     with db.begin_nested():
         section = models.Section(
@@ -99,11 +99,11 @@ def wiki_sections(
     section_id: int,
     section: schemas.SectionUpdate,
     db: db.Session = Depends(db.get_db),
-    user: schemas.User = Depends(current_active_user),
+    # user: schemas.User = Depends(current_active_user),
 ):
     updated_section = (
-        models.Section.for_user(
-            db, user, section_id=section_id, wiki_id=wiki_id, page_id=page_id
+        models.Section.filter(
+            db, section_id=section_id, wiki_id=wiki_id, page_id=page_id
         )
         .order_by("section_index")
         .first()

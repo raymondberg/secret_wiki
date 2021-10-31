@@ -1,38 +1,97 @@
+body {
+  background-color: #293132;
+}
+
 .App {
-  text-align: center;
+  background-color: #293132;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.header-section {
+  background-color: #CC8B86;
+  padding: 2em;
+  height: 6em;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.header-wiki, .header-link{
+  cursor: pointer;
+  color: #293132;
+  text-decoration: none;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+#page-tree, #add-new {
+  background-color: #547AA5;
 }
 
-.App-link {
-  color: #61dafb;
+#page-tree {
+  padding: .5em
+}
+#page-tree > a {
+  color: #FFE;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+#content {
+  background-color: #F9EAE1;
+}
+
+a.header-wiki {
+  font-size: 2em;
+  margin-right: 2em;
+}
+
+a.header-wiki,a.tree-page {
+  cursor: pointer;
+}
+
+button.page-gutter {
+  height: 3em;
+  width: 100%;
+  margin-top: 3em;
+  background-image: url('./images/plus.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 2em;
+}
+
+div.page-gutter:hover {
+  cursor: pointer;
+}
+
+div.page-section-gutter {
+  height: 1.5em;
+  border-radius: 1em;
+}
+
+div.page-section-gutter:hover {
+  background-color: #EEF;
+  background-image: url('./images/plus.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 1em;
+}
+
+div.page-section-wrapper {
+  border-radius: 1em;
+  padding: 1em;
+}
+
+div.page-section-wrapper:hover {
+  background-color: #50D8D7;
+}
+
+div.page-section {
+  margin: 1em;
+}
+
+.tree-page {
+  display: block;
+  cursor: pointer;
+}
+
+.data-entry textarea {
+  padding: 1em;
+  width: 100%;
+}
+
+.section-button {
+  width: 100%;
 }
