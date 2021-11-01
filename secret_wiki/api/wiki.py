@@ -92,7 +92,7 @@ def wiki_sections(
     return section
 
 
-@router.patch("/w/{wiki_id}/p/{page_id}/s/{section_id}", response_model=schemas.Section)
+@router.post("/w/{wiki_id}/p/{page_id}/s/{section_id}", response_model=schemas.Section)
 def wiki_sections(
     wiki_id: str,
     page_id: str,

@@ -41,11 +41,11 @@ def test_create_sections(client, db):
     )
 
 
-def test_patch_sections(client, db, sections):
+def test_post_sections(client, db, sections):
     section = sections[0]
 
     section.content = section.content + "\n\nbut better"
-    response = client.patch(
+    response = client.post(
         f"/api/w/my_wiki/p/page_1/s/{section.id}", json=jsonable_encoder(section)
     )
     assert response.status_code == 200
@@ -56,28 +56,30 @@ def test_patch_sections(client, db, sections):
     assert db.query(Section).filter_by(id=section.id).first().content == section.content
 
 
-def test_cannot_patch_admin_sections(client, db, admin_only_section):
-    response = client.patch(
+def test_cannot_post_admin_sections(client, db, admin_only_section):
+    response = client.post(
         f"/api/w/my_wiki/p/page_1/s/{admin_only_section.id}",
         json=jsonable_encoder(admin_only_section),
     )
     assert response.status_code == 404
 
 
-def test_admin_can_patch_admin_sections(admin_client, db, admin_only_section):
-    response = admin_client.patch(
+def test_admin_can_post_admin_sections(admin_client, db, admin_only_section):
+    response = admin_client.post(
         f"/api/w/my_wiki/p/page_1/s/{admin_only_section.id}",
         json={"is_admin_only": False},
     )
     assert response.status_code == 200
-    assert not db.query(Section).filter_by(id=admin_only_section.id).first().is_admin_only
+    assert (
+        not db.query(Section).filter_by(id=admin_only_section.id).first().is_admin_only
+    )
 
 
-def test_patch_sections_can_just_do_section_index(client, db, sections):
+def test_post_sections_can_just_do_section_index(client, db, sections):
     section = sections[0]
 
     section.content = section.content + "\n\nbut better"
-    response = client.patch(
+    response = client.post(
         f"/api/w/my_wiki/p/page_1/s/{section.id}", json={"section_index": 94321}
     )
     assert response.status_code == 200

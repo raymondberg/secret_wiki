@@ -1,5 +1,5 @@
 import React from "react";
-import marked from "marked";
+import Section from "./Section";
 
 class PageContent extends React.Component {
   constructor(props) {
@@ -9,19 +9,17 @@ class PageContent extends React.Component {
   }
 
   componentDidMount() {
-    this.updatePage()
+    this.updatePageFromServer()
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.wikiId !== prevProps.wikiId || this.props.pageId !== prevProps.pageId) {
-      this.updatePage()
+      this.updatePageFromServer()
     }
   }
 
-  updatePage() {
-    console.log("could" + this.props.wikiId + this.props.pageId)
+  updatePageFromServer() {
     if (this.props.wikiId === null || this.props.pageId === null) return
-    console.log("did")
 
     fetch(`http://localhost:8000/api/w/${this.props.wikiId}/p/${this.props.pageId}/s`, { crossDomain: true })
       .then((res) => res.json())
@@ -43,23 +41,9 @@ class PageContent extends React.Component {
   render() {
     return (
       <div id="content">
-        { this.state.sections.map((section) => <Section key={section.id} section={section} />) }
-      </div>
-    )
-  }
-}
-
-class Section extends React.Component {
-  markdownContent(thing) {
-    return { __html: marked(this.props.section.content, {sanitize: true}) };
-  }
-
-  render() {
-    return (
-      <div className="page-section-wrapper row">
-        <div class="page-section-wrapper row">
-          <div class="page-section col-xs-12" dangerouslySetInnerHTML={this.markdownContent()}/>
-        </div>
+      { this.state.sections.map((section) =>
+        <Section key={section.id} wikiId={this.props.wikiId} pageId={this.props.pageId} section={section} />
+      ) }
       </div>
     )
   }
