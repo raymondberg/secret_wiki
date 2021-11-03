@@ -27,13 +27,13 @@ class PageContent extends React.Component {
         (returnedSections) => {
           console.log(returnedSections)
             if (Array.isArray(returnedSections)) {
-              this.setState({sections: returnedSections});
+              this.setState({sections: returnedSections, error: null});
             } else {
-              this.setState({error: "Invalid response"})
+              this.setState({sections: [], error: "Invalid response"})
             }
         },
         (e) => {
-          this.setState({error: e});
+          this.setState({sections: [], error: e});
         }
       );
   }

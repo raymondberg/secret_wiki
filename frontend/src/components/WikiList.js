@@ -18,13 +18,13 @@ class WikiList extends React.Component {
       .then(
         (returnedWikis) => {
             if (Array.isArray(returnedWikis)) {
-              this.setState({wikis: returnedWikis});
+              this.setState({wikis: returnedWikis, error: null});
             } else {
-              this.setState({error: "Invalid response"})
+              this.setState({wikis: [], error: "Invalid response"})
             }
         },
         (e) => {
-          this.setState({error: e});
+          this.setState({wikis: [], error: e});
         }
       );
   }

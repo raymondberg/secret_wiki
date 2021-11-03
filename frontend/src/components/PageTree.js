@@ -26,13 +26,13 @@ class PageTree extends React.Component {
         (returnedPages) => {
           console.log(returnedPages)
             if (Array.isArray(returnedPages)) {
-              this.setState({pages: returnedPages});
+              this.setState({pages: returnedPages, error: null});
             } else {
-              this.setState({error: "Invalid response"})
+              this.setState({pages: [], error: "Invalid response"})
             }
         },
         (e) => {
-          this.setState({error: e});
+          this.setState({pages: [], error: e});
         }
       );
   }
