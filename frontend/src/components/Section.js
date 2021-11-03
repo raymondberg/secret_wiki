@@ -25,10 +25,9 @@ class Section extends React.Component {
   }
 
   handleChange(event) {
-    if (event.target.name == 'content') {
+    if (event.target.name === 'content') {
       this.setState({content: event.target.value})
-    } else if ( event.target.name == 'isAdminOnly') {
-      console.log(event.target.checked)
+    } else if ( event.target.name === 'isAdminOnly') {
       this.setState({isAdminOnly: event.target.checked})
     }
   }

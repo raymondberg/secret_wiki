@@ -25,7 +25,6 @@ class PageContent extends React.Component {
       .then((res) => res.json())
       .then(
         (returnedSections) => {
-          console.log(returnedSections)
             if (Array.isArray(returnedSections)) {
               this.setState({sections: returnedSections, error: null});
             } else {

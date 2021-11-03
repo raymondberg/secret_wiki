@@ -1,5 +1,5 @@
 import React from "react";
-import NewPageModal from "./NewPageModal";
+import PageCreateModal from "./PageCreateModal";
 import PageContent from "./PageContent";
 import PageTree from "./PageTree";
 import WikiList from "./WikiList";
@@ -7,10 +7,18 @@ import WikiList from "./WikiList";
 class Main extends React.Component {
   constructor(props) {
     super(props)
-    this.state = { wikiId: null, pageId: null }
+    this.state = { wikiId: null, pageId: null, pageCreateModalShow: false}
 
+    this.handlePageCreate = this.handlePageCreate.bind(this)
     this.handleWikiChange = this.handleWikiChange.bind(this)
     this.handlePageChange = this.handlePageChange.bind(this)
+  }
+
+  handlePageCreate(newPageId) {
+    this.setState({
+      pageCreateModalShow: !this.state.pageCreateModalShow,
+    })
+    this.handlePageChange(newPageId)
   }
 
   handleWikiChange(newWikiId) {
@@ -35,18 +43,22 @@ class Main extends React.Component {
             <div id="status" className="p-2"></div>
           </div>
         </div>
-        <div className="row">
-          <div id="left-bar" className="col-md-3">
-            <div id="add-new">
-              <PageTree wikiId={this.state.wikiId} pageId={this.state.pageId} handlePageChange={this.handlePageChange}/>
-              <button onClick={() => NewPageModal} className="page-gutter btn btn-primary">
-              </button>
+        { this.state.wikiId ? (
+          <div className="row">
+            <div id="left-bar" className="col-md-3">
+              <div id="add-new">
+                <PageTree wikiId={this.state.wikiId} pageId={this.state.pageId} handlePageChange={this.handlePageChange}/>
+                <button onClick={this.handlePageCreate} className="page-gutter btn btn-primary"/>
+              </div>
+            </div>
+            <div className="col-md-9">
+              <PageContent wikiId={this.state.wikiId} pageId={this.state.pageId}/>
             </div>
           </div>
-          <div className="col-md-9">
-            <PageContent wikiId={this.state.wikiId} pageId={this.state.pageId}/>
-          </div>
-        </div>
+        ) : null }
+      <PageCreateModal wikiId={this.state.wikiId}
+                       shouldShow={this.state.pageCreateModalShow}
+                       handlePageCreate={this.handlePageCreate}/>
       </div>
     )
   }

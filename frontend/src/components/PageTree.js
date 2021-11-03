@@ -12,7 +12,7 @@ class PageTree extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.wikiId !== prevProps.wikiId) {
+    if (this.props.wikiId !== prevProps.wikiId || this.props.pageId !== prevProps.pageId) {
       this.updateTree()
     }
   }
@@ -24,7 +24,6 @@ class PageTree extends React.Component {
       .then((res) => res.json())
       .then(
         (returnedPages) => {
-          console.log(returnedPages)
             if (Array.isArray(returnedPages)) {
               this.setState({pages: returnedPages, error: null});
             } else {
