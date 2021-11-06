@@ -1,13 +1,15 @@
+import { React } from "react";
+import { BrowserRouter as Router} from "react-router-dom";
+import Main from "./components/Main";
 import "./App.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Main from "./components/Main";
 
 function App() {
-  return (
-    <div className="App">
+    return (
+      <Router>
        <Main/>
-    </div>
-  );
+      </Router>
+    )
 }
 
 export default App;
