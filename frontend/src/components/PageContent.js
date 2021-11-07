@@ -6,9 +6,15 @@ class PageContent extends React.Component {
       super(props);
 
       this.state = {error: null, sections: []};
+      this.reloadPageHandler = this.reloadPageHandler.bind(this)
   }
 
   componentDidMount() {
+    this.updatePageFromServer()
+  }
+
+  reloadPageHandler() {
+    console.log("reloading page")
     this.updatePageFromServer()
   }
 
@@ -37,12 +43,37 @@ class PageContent extends React.Component {
       );
   }
 
+  gutterFor(id) {
+    return (
+      <Section key={`gutter-${id}`}
+               wikiId={this.props.wikiId}
+               pageId={this.props.pageId}
+               isGutter={true}
+               reloadPageHandler={this.reloadPageHandler}/>
+    );
+
+  }
+
+  addGutters(sections) {
+    for (var i = 0; i < sections.length; i+=2) {
+      sections.splice(i, 0, this.gutterFor(i))
+    }
+
+    if (sections.length > 0 && sections[sections.length - 1].type.name === 'Section') {
+      sections.push(this.gutterFor(sections.length))
+    }
+  }
+
   render() {
+    var sections =  this.state.sections.map((section) =>
+        <Section key={section.id} wikiId={this.props.wikiId} pageId={this.props.pageId} section={section} />
+    )
+
+    this.addGutters(sections)
+
     return (
       <div id="content">
-      { this.state.sections.map((section) =>
-        <Section key={section.id} wikiId={this.props.wikiId} pageId={this.props.pageId} section={section} />
-      ) }
+        {sections}
       </div>
     )
   }

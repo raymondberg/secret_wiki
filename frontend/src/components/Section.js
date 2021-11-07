@@ -10,11 +10,13 @@ class Section extends React.Component {
     this.toggleEdit = this.toggleEdit.bind(this)
     this.toggleEdit = this.toggleEdit.bind(this)
     this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
     this.saveContentToServer = this.saveContentToServer.bind(this)
   }
 
   stateFromSection(section) {
+    if (section == null) {
+      return {}
+    }
     return {
       sectionId: section.id,
       content: section.content,
@@ -32,11 +34,6 @@ class Section extends React.Component {
     }
   }
 
-  handleSubmit(event) {
-    alert('a Thing was submitted' + this.state.value);
-    event.preventDefault();
-  }
-
   saveContentToServer() {
      const requestOptions = {
        method: 'POST',
@@ -49,10 +46,23 @@ class Section extends React.Component {
             is_admin_only: this.state.isAdminOnly,
          })
      };
-     fetch(`http://localhost:8000/api/w/${this.props.wikiId}/p/${this.props.pageId}/s/${this.state.sectionId}`, requestOptions)
+     var url = `http://localhost:8000/api/w/${this.props.wikiId}/p/${this.props.pageId}/s`
+     var isCreate = true
+     if (this.state.sectionId) {
+        url += `/${this.state.sectionId}`
+        isCreate = false
+     }
+     fetch(url, requestOptions)
         .then(response => response.json())
         .then(section => {
-          this.setState(Object.assign({}, { editMode: false }, this.stateFromSection(section)))
+          if (isCreate) {
+            // Introducing a bad behavior as a shortcut: if this is called the entire page will reload.
+            // The consequence is that some edits will allow other edits to still be made, but adding a section
+            // will reset the entire page and destroy any active edits.
+            this.props.reloadPageHandler()
+          } else {
+            this.setState(Object.assign({}, { editMode: false }, this.stateFromSection(section)))
+          }
         });
   }
 
@@ -65,11 +75,18 @@ class Section extends React.Component {
   }
 
   markdownContent(thing) {
-    return { __html: marked(this.state.priorContent, {sanitize: true}) };
+    if (this.state.content) {
+      return { __html: marked(this.state.priorContent, {sanitize: true}) };
+    }
   }
 
   render() {
-    if (this.state.editMode) {
+    if (this.props.isGutter && ! this.state.editMode)  {
+      return (
+        <div className="page-section-gutter"
+             onDoubleClick={this.toggleEdit}/>
+      )
+    } else if (this.state.editMode) {
       return (
         <div className="page-section-wrapper row data-entry">
           <div className="col-md-10">
