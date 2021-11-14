@@ -23,9 +23,7 @@ async def login(request):
 
 
 routes = [
-    Route("/", homepage),
     Route("/login", login),
-    Mount("/static", StaticFiles(directory=project_root / "static"), name="static"),
 ]
 
 app = FastAPI(routes=routes)
@@ -44,3 +42,11 @@ app.add_middleware(
 app.include_router(wiki_router)
 for router_config in auth_routers:
     app.include_router(**router_config)
+
+app.router.routes.append(
+    Mount(
+        "/",
+        app=StaticFiles(directory=project_root / "static", html=True),
+        name="static",
+    ),
+)
