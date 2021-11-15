@@ -86,6 +86,11 @@ div.page-section {
   margin: 1em;
 }
 
+div.section-squash {
+  margin: 1em;
+  padding:1em;
+}
+
 .tree-page {
   display: block;
   cursor: pointer;
@@ -98,4 +103,8 @@ div.page-section {
 
 .section-button {
   width: 100%;
+}
+
+.pencil {
+padding-top: .3em;
 }

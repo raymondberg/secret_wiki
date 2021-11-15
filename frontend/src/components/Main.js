@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import PageCreateModal from "./PageCreateModal";
 import PageContent from "./PageContent";
 import PageTree from "./PageTree";
+import Status from "./Status";
 import WikiList from "./WikiList";
 import { useLocation } from "react-router-dom";
 
@@ -13,6 +14,8 @@ function useQuery() {
 
 function Main(props) {
     let query = useQuery();
+
+    const [editMode, setEditMode] = useState(false);
     const [wikiId, setWikiId] = useState(query.get("w"));
     const [pageId, setPageId] = useState(query.get("p"));
     const [pages, setPages] = useState([]);
@@ -51,7 +54,7 @@ function Main(props) {
       wikiList = <WikiList handleWikiChange={handleWikiChange} api={props.api} />
         if (wikiId !== null) {
           var pageTree = <PageTree wikiId={wikiId} pageId={pageId} pages={pages} setPages={setPages} handlePageChange={handlePageChange} api={props.api}/>
-          var pageContent = <PageContent wikiId={wikiId} page={pageForId(pageId)} api={props.api} />
+          var pageContent = <PageContent wikiId={wikiId} page={pageForId(pageId)} api={props.api} editMode={editMode} />
           content = (
             <div className="row">
               <div id="left-bar" className="col-md-3">
@@ -73,10 +76,10 @@ function Main(props) {
         <div className="row">
           <div className="d-flex justify-content-between header-section p-0">
             <div className="p-2">
-              <h3>Secret Wiki</h3>
+            <h3>Secret Wiki</h3>
             </div>
             { wikiList }
-            <div id="status" className="p-2"></div>
+            <Status editMode={editMode} setEditMode={setEditMode}/>
           </div>
         </div>
       { content }

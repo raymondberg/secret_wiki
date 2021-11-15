@@ -3,6 +3,7 @@ import { BrowserRouter as Router} from "react-router-dom";
 import Main from "./components/Main";
 import LoginModal from "./components/LoginModal";
 import "./App.css";
+import './react-toggle.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {

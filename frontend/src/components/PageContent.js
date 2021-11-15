@@ -1,6 +1,7 @@
 import React from "react";
 
 import SectionList from "./SectionList";
+import SectionSquash from "./SectionSquash";
 
 function sectionFromAPI(apiSection) {
   return Object.assign(
@@ -124,12 +125,16 @@ class PageContent extends React.Component {
 
   render() {
     const title = (this.props.page === undefined) ? null : <h2 class="page-title">{this.props.page.title}</h2>
-    var content = <SectionList
-                     sections={this.state.sections}
-                     insertSectionAt={this.insertSectionAt}
-                     updateSection={this.updateSection}
-                     destroySection={this.destroySection}
-                     toggleEdit={this.toggleEdit}/>
+    var content = (this.props.editMode)? (
+      <SectionList
+         sections={this.state.sections}
+         insertSectionAt={this.insertSectionAt}
+         updateSection={this.updateSection}
+         destroySection={this.destroySection}
+         toggleEdit={this.toggleEdit}/>
+    ):(
+      <SectionSquash sections={this.state.sections} />
+    )
     return (
       <div id="content">
         { title }
