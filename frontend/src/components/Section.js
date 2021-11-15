@@ -59,6 +59,7 @@ export class SectionEdit extends React.Component {
       <div className="page-section-wrapper row data-entry">
         <div className="col-md-10">
           <textarea name="content" className="page-section"
+                    rows={(this.state.content.match(/\n/g) || []).length}
                     onChange={this.handleChange} value={this.state.content}/>
         </div>
         <div className="col-md-2">
