@@ -1,8 +1,9 @@
 MODE=$1
 
+
 if [[ "$MODE" == "--frontend" ]]; then
   cd frontend && npm start
 else
-  cd frontend && npm run build && cp -r build/* ../secret_wiki/static/ && cd -
+  script/update
   pipenv run uvicorn secret_wiki.app:app --reload --reload-dir secret_wiki --log-level trace
 fi
