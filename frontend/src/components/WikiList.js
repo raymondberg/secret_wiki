@@ -35,7 +35,9 @@ class WikiList extends React.Component {
     } else {
       return (
         <div id="wiki-list" className="p-2">
-        { this.state.wikis.map((wiki) => <WikiLink key={wiki.id} wikiId={wiki.id} handleWikiChange={this.handleWikiChange}/>) }
+        { this.state.wikis.map((wiki) =>
+          <WikiLink key={wiki.id} wikiId={wiki.id} selected={this.props.wikiId === wiki.id} handleWikiChange={this.handleWikiChange}/>
+        ) }
         </div>
       );
     }
@@ -43,15 +45,13 @@ class WikiList extends React.Component {
 }
 
 
-class WikiLink extends React.Component {
-  render() {
-      const wikiUpdater = this.props.handleWikiChange
-      return (
-        <span className="header-wiki" key={this.props.wikiId} onClick={(e) => { wikiUpdater(this.props.wikiId) }}>
-          {this.props.wikiId}
-        </span>
-      )
-  }
+function WikiLink(props) {
+  return (
+    <span className={"header-wiki " + (props.selected ? "header-wiki-selected":"")}
+          key={props.wikiId} onClick={(e) => { props.handleWikiChange(props.wikiId) }}>
+      {props.wikiId}
+    </span>
+  )
 }
 
 export default WikiList;

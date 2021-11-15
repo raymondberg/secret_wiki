@@ -51,7 +51,7 @@ function Main(props) {
 
     var wikiList = null; var content = null
     if (props.api.isLoggedIn()) {
-      wikiList = <WikiList handleWikiChange={handleWikiChange} api={props.api} />
+      wikiList = <WikiList handleWikiChange={handleWikiChange} wikiId={wikiId} api={props.api} />
         if (wikiId !== null) {
           var pageTree = <PageTree wikiId={wikiId} pageId={pageId} pages={pages} setPages={setPages} handlePageChange={handlePageChange} api={props.api}/>
           var pageContent = <PageContent wikiId={wikiId} page={pageForId(pageId)} api={props.api} editMode={editMode} />
@@ -72,11 +72,11 @@ function Main(props) {
     }
 
     return (
-      <div id="main-container" className="container">
+      <div className="main-container">
         <div className="row">
           <div className="d-flex justify-content-between header-section p-0">
             <div className="p-2">
-            <h3>Secret Wiki</h3>
+            <h3 id="app-name">Secret Wiki</h3>
             </div>
             { wikiList }
             <Status editMode={editMode} setEditMode={setEditMode}/>
