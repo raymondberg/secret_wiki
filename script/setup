@@ -7,3 +7,5 @@ GOOGLE_OAUTH_CLIENT_SECRET=" > .env
 pipenv install --dev
 
 script/migrations run
+
+cd frontend && npm install
