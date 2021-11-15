@@ -55,11 +55,16 @@ export class SectionEdit extends React.Component {
       (e) => this.props.destroySection(this.props.section.section_index)
     )
 
+    var rows = 2
+    if (this.state.content) {
+      rows = Math.max((this.state.content.match(/\n/g) || []).length, rows)
+    }
+
     return (
       <div className="page-section-wrapper row data-entry">
         <div className="col-md-10">
           <textarea name="content" className="page-section"
-                    rows={Math.max((this.state.content.match(/\n/g) || []).length, 2)}
+                    rows={rows}
                     onChange={this.handleChange} value={this.state.content}/>
         </div>
         <div className="col-md-2">
