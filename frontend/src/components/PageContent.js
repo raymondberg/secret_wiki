@@ -1,7 +1,6 @@
 import React from "react";
-import { SectionEdit, SectionShow, Gutter } from "./Section";
 
-const SECTION_SPACER = 10
+import SectionList from "./SectionList";
 
 function sectionFromAPI(apiSection) {
   return Object.assign(
@@ -15,9 +14,8 @@ class PageContent extends React.Component {
       super(props);
 
       this.state = {error: null, sections: []};
-      this.convertGutter = this.convertGutter.bind(this)
       this.destroySection = this.destroySection.bind(this)
-      this.gutterAt = this.gutterAt.bind(this)
+      this.insertSectionAt = this.insertSectionAt.bind(this)
       this.reloadPageHandler = this.reloadPageHandler.bind(this)
       this.toggleEdit = this.toggleEdit.bind(this)
       this.updateSection = this.updateSection.bind(this)
@@ -49,26 +47,12 @@ class PageContent extends React.Component {
     this.setState({sections: this.state.sections.filter((s) => s.id != null || s.section_index !== sectionIndex)})
   }
 
-  convertGutter(sectionIndex) {
+  insertSectionAt(sectionIndex, newSection) {
     //Warning, permuting state in a dumb way then storing it. Could improve.
-    console.log(`Converting gutter at ${sectionIndex}`)
-    var newSection = {
-      section_index: sectionIndex,
-      edit_mode: true,
-      exists_on_server: false,
-    }
-    for(var i=0; i < this.state.sections.length; i++) {
-      var convertedGutter = false
-      if ( this.state.sections[i].section_index >= sectionIndex ) {
-        console.log("Converting gutter at sectionIndex ", sectionIndex)
-        this.state.sections.splice(i, 0, newSection)
-        convertedGutter = true
-        break
-      }
-    }
-    if (!convertedGutter) {
-      console.log("Pushing gutter at end", newSection)
+    if (sectionIndex === -1) {
       this.state.sections.push(newSection)
+    } else {
+      this.state.sections.splice(sectionIndex, 0, newSection)
     }
     this.setState({sections: this.state.sections})
   }
@@ -138,36 +122,18 @@ class PageContent extends React.Component {
         });
   }
 
-  minGutterIndex() {
-    var all_indexes = this.state.sections.map((s) => s.section_index)
-    return Math.min(Math.min.apply(Math, all_indexes), 5000) - SECTION_SPACER
-  }
-
-  gutterAt(sectionId, sectionIndex) {
-     return <Gutter key={`gutter-after-${sectionId}-${sectionIndex}`} sectionIndex={sectionIndex} editCallback={this.convertGutter}/>
-  }
-
   render() {
-    var elements = (this.props.page === undefined)? [] : [this.gutterAt(null, this.minGutterIndex())]
-    this.state.sections.forEach((section) => {
-        if (section.edit_mode) {
-          elements.push(<SectionEdit key={section.id}
-                                     section={section}
-                                     toggleEdit={this.toggleEdit}
-                                     destroySection={this.destroySection}
-                                     updateSectionCallback={this.updateSection}/>)
-        } else {
-          elements.push( <SectionShow key={section.id} section={section} toggleEdit={this.toggleEdit}/>)
-        }
-        elements.push( this.gutterAt(section.id, section.section_index + SECTION_SPACER) )
-      }
-    )
-
     const title = (this.props.page === undefined) ? null : <h2 class="page-title">{this.props.page.title}</h2>
+    var content = <SectionList
+                     sections={this.state.sections}
+                     insertSectionAt={this.insertSectionAt}
+                     updateSection={this.updateSection}
+                     destroySection={this.destroySection}
+                     toggleEdit={this.toggleEdit}/>
     return (
       <div id="content">
         { title }
-        { elements }
+        { content }
       </div>
     )
   }
