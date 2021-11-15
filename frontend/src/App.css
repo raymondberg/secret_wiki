@@ -19,7 +19,6 @@ body {
 
 .header-section {
   font-family: Trebuchet;
-  font-size: 2em;
 }
 
 .header-wiki, .header-link{
@@ -27,6 +26,7 @@ body {
   color: #293132;
   text-decoration: none;
   margin-left: 1em;
+  font-size: 2em;
 }
 
 .header-wiki-selected {
@@ -53,7 +53,6 @@ body {
 }
 
 a.header-wiki {
-  font-size: 2em;
   margin-right: 2em;
 }
 
