@@ -20,7 +20,7 @@ class PageTree extends React.Component {
   updateTree() {
     if (this.props.wikiId === null ) return
 
-    fetch(`http://localhost:8000/api/w/${this.props.wikiId}/p`, { crossDomain: true })
+    this.props.api.get(`w/${this.props.wikiId}/p`)
       .then((res) => res.json())
       .then(
         (returnedPages) => {

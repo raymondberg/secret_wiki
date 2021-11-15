@@ -5,28 +5,13 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
-from starlette.templating import Jinja2Templates
 
 from .api.wiki import router as wiki_router
 from .api.auth import routers as auth_routers
 
 project_root = Path(__file__).parent
-templates = Jinja2Templates(directory=project_root / "templates")
 
-
-async def homepage(request):
-    return templates.TemplateResponse("index.html", {"request": request})
-
-
-async def login(request):
-    return templates.TemplateResponse("login.html", {"request": request})
-
-
-routes = [
-    Route("/login", login),
-]
-
-app = FastAPI(routes=routes)
+app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,

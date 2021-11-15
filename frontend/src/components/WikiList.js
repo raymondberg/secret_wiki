@@ -13,7 +13,7 @@ class WikiList extends React.Component {
   }
 
   componentDidMount() {
-    fetch("http://localhost:8000/api/w", { crossDomain: true })
+    this.props.api.get("w")
       .then((res) => res.json())
       .then(
         (returnedWikis) => {

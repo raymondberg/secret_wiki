@@ -12,22 +12,18 @@ class PageCreateModal extends React.Component {
   }
 
   handlePageCreate() {
-     const requestOptions = {
-       method: 'POST',
-       headers: { 'Content-Type': 'application/json' },
-       body: JSON.stringify({
-            wiki_id: this.props.wikiId,
-            id: this.state.slug,
-            title: this.state.title,
-            is_admin_only: this.state.isAdminOnly,
-         })
-     };
-     fetch(`http://localhost:8000/api/w/${this.props.wikiId}/p`, requestOptions)
-        .then(response => response.json())
-        .then(page => {
-          this.setState({title: null, slug: null})
-          this.props.handlePageCreate(page.id)
-        });
+    var body= {
+      wiki_id: this.props.wikiId,
+      id: this.state.slug,
+      title: this.state.title,
+      is_admin_only: this.state.isAdminOnly,
+    }
+    this.props.api.post(`w/${this.props.wikiId}/p`, body)
+      .then(response => response.json())
+      .then(page => {
+        this.setState({title: null, slug: null})
+        this.props.handlePageCreate(page.id)
+      });
   }
 
   handleChange(event) {

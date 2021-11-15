@@ -90,7 +90,7 @@ class PageContent extends React.Component {
   updatePageFromServer() {
     if (this.props.wikiId === null || this.props.pageId === null) return
 
-    fetch(`http://localhost:8000/api/w/${this.props.wikiId}/p/${this.props.pageId}/s`, { crossDomain: true })
+    this.props.api.get(`w/${this.props.wikiId}/p/${this.props.pageId}/s`)
       .then((res) => res.json())
       .then(
         (returnedSections) => {
@@ -107,25 +107,21 @@ class PageContent extends React.Component {
   }
 
   updateSection(sectionId, content, section_index, isAdminOnly) {
-     const requestOptions = {
-       method: 'POST',
-       headers: { 'Content-Type': 'application/json' },
-       body: JSON.stringify({
-            id: sectionId,
-            content: content,
-            section_index: section_index,
-            is_admin_only: isAdminOnly,
-            wiki_id: this.props.wikiId,
-            page_id: this.props.pageId,
-         })
+      var body = {
+        id: sectionId,
+        content: content,
+        section_index: section_index,
+        is_admin_only: isAdminOnly,
+        wiki_id: this.props.wikiId,
+        page_id: this.props.pageId,
      };
-     var url = `http://localhost:8000/api/w/${this.props.wikiId}/p/${this.props.pageId}/s`
+     var url = `w/${this.props.wikiId}/p/${this.props.pageId}/s`
      var isCreate = true
      if (sectionId) {
         url += `/${sectionId}`
         isCreate = false
      }
-     fetch(url, requestOptions)
+     this.props.api.post(url, body)
         .then(response => response.json())
         .then(section => {
           if (isCreate) {
