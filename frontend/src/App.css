@@ -2,13 +2,18 @@ body {
   background-color: #293132;
 }
 
+.App {
+  background-color: #293132;
+}
+
 .header-section {
   background-color: #CC8B86;
   padding: 2em;
   height: 6em;
 }
 
-#wiki-list > a, .header-link{
+.header-wiki, .header-link{
+  cursor: pointer;
   color: #293132;
   text-decoration: none;
 }
@@ -41,7 +46,7 @@ button.page-gutter {
   height: 3em;
   width: 100%;
   margin-top: 3em;
-  background-image: url('/static/plus.png');
+  background-image: url('./images/plus.png');
   background-repeat: no-repeat;
   background-position: center;
   background-size: 2em;
@@ -58,7 +63,7 @@ div.page-section-gutter {
 
 div.page-section-gutter:hover {
   background-color: #EEF;
-  background-image: url('/static/plus.png');
+  background-image: url('./images/plus.png');
   background-repeat: no-repeat;
   background-position: center;
   background-size: 1em;
@@ -77,8 +82,9 @@ div.page-section {
   margin: 1em;
 }
 
-a.tree-page {
+.tree-page {
   display: block;
+  cursor: pointer;
 }
 
 .data-entry textarea {

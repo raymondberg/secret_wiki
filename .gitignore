@@ -4,3 +4,8 @@
 .cache
 
 tags
+
+build/
+node_modules/
+
+secret_wiki/static

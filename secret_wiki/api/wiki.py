@@ -24,7 +24,7 @@ def wiki(
     db: db.Session = Depends(db.get_db),
     user: schemas.User = Depends(current_active_user),
 ):
-    return models.Page.for_user(db, user, wiki_id=wiki_id).order_by("title").all()
+    return models.Page.filter(db, wiki_id=wiki_id).order_by("title").all()
 
 
 @router.post("/w/{wiki_id}/p", response_model=schemas.Page)
@@ -52,7 +52,7 @@ def wiki_page(
     db: db.Session = Depends(db.get_db),
     user: schemas.User = Depends(current_active_user),
 ):
-    page = models.Page.for_user(db, user, wiki_id=wiki_id).filter_by(id=page_id).first()
+    page = models.Page.filter(db, wiki_id=wiki_id).filter_by(id=page_id).first()
     if not page:
         raise HTTPException(status_code=404, detail="Page not found")
     return page
@@ -66,7 +66,7 @@ def wiki_sections(
     user: schemas.User = Depends(current_active_user),
 ):
     return (
-        models.Section.for_user(db, user, wiki_id=wiki_id, page_id=page_id)
+        models.Section.filter(db, wiki_id=wiki_id, page_id=page_id)
         .order_by("section_index")
         .all()
     )
@@ -92,7 +92,7 @@ def wiki_sections(
     return section
 
 
-@router.patch("/w/{wiki_id}/p/{page_id}/s/{section_id}", response_model=schemas.Section)
+@router.post("/w/{wiki_id}/p/{page_id}/s/{section_id}", response_model=schemas.Section)
 def wiki_sections(
     wiki_id: str,
     page_id: str,
@@ -102,8 +102,8 @@ def wiki_sections(
     user: schemas.User = Depends(current_active_user),
 ):
     updated_section = (
-        models.Section.for_user(
-            db, user, section_id=section_id, wiki_id=wiki_id, page_id=page_id
+        models.Section.filter(
+            db, section_id=section_id, wiki_id=wiki_id, page_id=page_id
         )
         .order_by("section_index")
         .first()

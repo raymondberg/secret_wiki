@@ -1,8 +1,9 @@
 import os
 
-from fastapi import Request
+from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi_users import FastAPIUsers
-from fastapi_users.authentication import CookieAuthentication
+from fastapi_users.authentication import JWTAuthentication
 
 from ..schemas import User, UserCreate, UserUpdate, UserDB
 from ..user_db import user_db
@@ -20,13 +21,13 @@ def after_verification_request(user: UserDB, token: str, request: Request):
     print(f"Verification requested for user {user.id}. Verification token: {token}")
 
 
-cookie_authentication = CookieAuthentication(
-    secret=os.environ["SECRET"], lifetime_seconds=3600
+jwt_authentication = JWTAuthentication(
+    secret=os.environ["SECRET"], lifetime_seconds=3600, tokenUrl="/api/auth/jwt/login"
 )
 
 fastapi_users = FastAPIUsers(
     db=user_db,
-    auth_backends=[cookie_authentication],
+    auth_backends=[jwt_authentication],
     user_model=User,
     user_create_model=UserCreate,
     user_update_model=UserUpdate,
@@ -35,8 +36,8 @@ fastapi_users = FastAPIUsers(
 
 routers = [
     dict(
-        router=fastapi_users.get_auth_router(cookie_authentication, "password"),
-        prefix="/api/auth/cookie",
+        router=fastapi_users.get_auth_router(jwt_authentication, "password"),
+        prefix="/api/auth/jwt",
         tags=["auth"],
     ),
     dict(

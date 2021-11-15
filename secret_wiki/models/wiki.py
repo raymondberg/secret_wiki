@@ -30,10 +30,10 @@ class Page(Base):
     is_admin_only = Column(Boolean, default=False)
 
     @classmethod
-    def for_user(cls, db, user, wiki_id=None):
+    def filter(cls, db, user=None, wiki_id=None):
         query = db.query(cls).filter_by(wiki_id=wiki_id)
-        if not user.is_superuser:
-            query = query.filter_by(is_admin_only=False)
+        # if not user.is_superuser:
+        #     query = query.filter_by(is_admin_only=False)
         return query
 
 
@@ -52,12 +52,12 @@ class Section(Base):
     page_id = Column(String, ForeignKey("pages.id"))
 
     @classmethod
-    def for_user(cls, db, user, wiki_id=None, page_id=None, section_id=None):
+    def filter(cls, db, user=None, wiki_id=None, page_id=None, section_id=None):
         query = db.query(cls).filter_by(wiki_id=wiki_id, page_id=page_id)
         if section_id is not None:
             query = query.filter_by(id=section_id)
-        if not user.is_superuser:
-            query = query.filter_by(is_admin_only=False)
+        # if not user.is_superuser:
+        #     query = query.filter_by(is_admin_only=False)
         return query
 
     def update(self, section_update):

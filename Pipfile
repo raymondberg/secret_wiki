@@ -14,9 +14,10 @@ uvicorn = {extras = ["standard"],version = "*"}
 jinja2 = "*"
 aiofiles = "*"
 sqlalchemy = "*"
-fastapi-users = {extras = ["sqlalchemy"], version = "*"}
+fastapi-users = {extras = ["sqlalchemy"], version = "<6.0.0"}
 aiosqlite = "*"
 alembic = "*"
+python-multipart = "*"
 
 [requires]
 python_version = "3.8"
