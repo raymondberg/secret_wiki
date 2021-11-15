@@ -15,7 +15,12 @@ function Main(props) {
     let query = useQuery();
     const [wikiId, setWikiId] = useState(query.get("w"));
     const [pageId, setPageId] = useState(query.get("p"));
+    const [pages, setPages] = useState([]);
     const [pageCreateModalShow, setPageCreateModalShow] = useState(false);
+
+    function pageForId(pageId) {
+      return pages.filter((p) => p.id === pageId)[0]
+    }
 
     function updateUrlBar(newWikiId, newPageId) {
       var baseUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}`
@@ -41,20 +46,22 @@ function Main(props) {
       handlePageChange(newPageId)
     }
 
-    var wikiList = null; var pageTree = null
+    var wikiList = null; var content = null
     if (props.api.isLoggedIn()) {
       wikiList = <WikiList handleWikiChange={handleWikiChange} api={props.api} />
         if (wikiId !== null) {
-          pageTree = (
+          var pageTree = <PageTree wikiId={wikiId} pageId={pageId} pages={pages} setPages={setPages} handlePageChange={handlePageChange} api={props.api}/>
+          var pageContent = <PageContent wikiId={wikiId} page={pageForId(pageId)} api={props.api} />
+          content = (
             <div className="row">
               <div id="left-bar" className="col-md-3">
                 <div id="add-new">
-                  <PageTree wikiId={wikiId} pageId={pageId} handlePageChange={handlePageChange} api={props.api}/>
+                  { pageTree }
                   <button onClick={handlePageCreate} className="page-gutter btn btn-primary"/>
                 </div>
               </div>
               <div className="col-md-9">
-                <PageContent wikiId={wikiId} pageId={pageId} api={props.api} />
+                {pageContent}
               </div>
             </div>
           )
@@ -72,7 +79,7 @@ function Main(props) {
             <div id="status" className="p-2"></div>
           </div>
         </div>
-      { pageTree }
+      { content }
       <PageCreateModal wikiId={wikiId}
                        api={props.api}
                        shouldShow={pageCreateModalShow}

@@ -4,7 +4,7 @@ class PageTree extends React.Component {
   constructor(props) {
       super(props);
 
-      this.state = {wikiId: props.wikiId, pages: []};
+      this.state = {wikiId: props.wikiId};
   }
 
   componentDidMount() {
@@ -25,13 +25,16 @@ class PageTree extends React.Component {
       .then(
         (returnedPages) => {
             if (Array.isArray(returnedPages)) {
-              this.setState({pages: returnedPages, error: null});
+              this.props.setPages(returnedPages)
+              this.setState({error: null});
             } else {
-              this.setState({pages: [], error: "Invalid response"})
+              this.props.setPages([])
+              this.setState({error: "Invalid response"})
             }
         },
         (e) => {
-          this.setState({pages: [], error: e});
+          this.props.setPages([])
+          this.setState({error: e})
         }
       );
   }
@@ -39,7 +42,7 @@ class PageTree extends React.Component {
   render() {
     return (
       <div id="wiki-list" className="p-2">
-      { this.state.pages.map(
+      { this.props.pages.map(
         (page) => <PageLink key={page.id} title={page.title} pageId={page.id} handlePageChange={this.props.handlePageChange}/>
          ) }
       </div>

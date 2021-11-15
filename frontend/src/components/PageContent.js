@@ -51,7 +51,7 @@ class PageContent extends React.Component {
 
   convertGutter(sectionIndex) {
     //Warning, permuting state in a dumb way then storing it. Could improve.
-    console.log(`Converting cutter at ${sectionIndex}`)
+    console.log(`Converting gutter at ${sectionIndex}`)
     var newSection = {
       section_index: sectionIndex,
       edit_mode: true,
@@ -82,15 +82,17 @@ class PageContent extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.wikiId !== prevProps.wikiId || this.props.pageId !== prevProps.pageId) {
+    if (this.props.page === undefined || this.props.page.id === undefined) return
+
+    if (this.props.wikiId !== prevProps.wikiId || prevProps.page === undefined || this.props.page.id !== prevProps.page.id) {
       this.updatePageFromServer()
     }
   }
 
   updatePageFromServer() {
-    if (this.props.wikiId === null || this.props.pageId === null) return
+    if (this.props.wikiId === null || this.props.page === undefined || this.props.page === null) return
 
-    this.props.api.get(`w/${this.props.wikiId}/p/${this.props.pageId}/s`)
+    this.props.api.get(`w/${this.props.wikiId}/p/${this.props.page.id}/s`)
       .then((res) => res.json())
       .then(
         (returnedSections) => {
@@ -113,9 +115,9 @@ class PageContent extends React.Component {
         section_index: section_index,
         is_admin_only: isAdminOnly,
         wiki_id: this.props.wikiId,
-        page_id: this.props.pageId,
+        page_id: this.props.page.id,
      };
-     var url = `w/${this.props.wikiId}/p/${this.props.pageId}/s`
+     var url = `w/${this.props.wikiId}/p/${this.props.page.id}/s`
      var isCreate = true
      if (sectionId) {
         url += `/${sectionId}`
@@ -137,7 +139,6 @@ class PageContent extends React.Component {
   }
 
   minGutterIndex() {
-    console.log(this.state.sections)
     var all_indexes = this.state.sections.map((s) => s.section_index)
     return Math.min(Math.min.apply(Math, all_indexes), 5000) - SECTION_SPACER
   }
@@ -147,7 +148,7 @@ class PageContent extends React.Component {
   }
 
   render() {
-    var elements = [this.gutterAt(null, this.minGutterIndex())]
+    var elements = (this.props.page === undefined)? [] : [this.gutterAt(null, this.minGutterIndex())]
     this.state.sections.forEach((section) => {
         if (section.edit_mode) {
           elements.push(<SectionEdit key={section.id}
@@ -162,9 +163,11 @@ class PageContent extends React.Component {
       }
     )
 
+    const title = (this.props.page === undefined) ? null : <h2 class="page-title">{this.props.page.title}</h2>
     return (
       <div id="content">
-        {elements}
+        { title }
+        { elements }
       </div>
     )
   }
