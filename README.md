@@ -2,6 +2,7 @@
 
 A wiki for sharing data...and secrets.
 
+
 ## Use-Case
 
 If you've ever played a Tabletop RPG you know that there's a lot of information
@@ -19,19 +20,24 @@ This repo follows Github's Scripts To Rule them All. These scripts will do every
 script/setup
 script/test
 
-# In two shells (a temporary solution)
+# Build front-end components AND start webserver
 script/server
+
+# If you are doing extensive work in the frontend, you can run it separately
+# and get on-write-refreshes rather than rerunning script/update
 script/server --frontend
+
+# Or you can just build the front-end components as you need
+script/update
 ```
 
-## Status
+## Provisioning
 
-Currently in prototyping with a lot on the table:
+You must create users using the console at this time. A helper function
+exists to make this easier:
 
-- [ ] Data Store
-- [ ] User Authentication
-- [ ] Owner-level secrets
-- [ ] User-level secrets
-- [ ] A Nifty Style
-- [ ] Test Suite
-- [ ] Import/Export functionality
+```
+script/shell
+
+> create_user(email= , password= , is_superuser=False, is_verified=True)
+```
