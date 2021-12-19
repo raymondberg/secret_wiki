@@ -2,12 +2,11 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
-from starlette.routing import Mount, Route
+from starlette.routing import Mount
 from starlette.staticfiles import StaticFiles
 
-from .api.wiki import router as wiki_router
 from .api.auth import routers as auth_routers
+from .api.wiki import router as wiki_router
 
 project_root = Path(__file__).parent
 

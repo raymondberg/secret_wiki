@@ -1,19 +1,13 @@
-from pathlib import Path
-from unittest.mock import patch
-import os
-import re
-
-from fastapi.testclient import TestClient
+import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-import pytest
 
-from secret_wiki.api.wiki import current_active_user
+from secret_wiki import models
 from secret_wiki.db import Base, get_db
-from secret_wiki.schemas import User
-import secret_wiki.models as models
 
 TEST_DB_URL = "sqlite:///./test.db"
+
+# pylint: disable=redefined-outer-name
 
 
 @pytest.fixture
@@ -25,8 +19,7 @@ def engine():
 
 @pytest.fixture
 def db(engine):
-    Session = sessionmaker(autocommit=False, autoflush=True, bind=engine)
-    db = Session()
+    db = sessionmaker(autocommit=False, autoflush=True, bind=engine)()
     for model in [models.Section, models.Page, models.Wiki]:
         db.query(model).delete()
     yield db
@@ -35,7 +28,8 @@ def db(engine):
 
 @pytest.fixture
 def test_app(override_get_db):
-    # with patch.dict('secret_wiki.db.os.environ', {"DATABASE_URL": "sqlite:///./database-test.db"}):
+    # with patch.dict('secret_wiki.db.os.environ',
+    # {"DATABASE_URL": "sqlite:///./database-test.db"}):
     from secret_wiki.app import app
 
     app.dependency_overrides[get_db] = override_get_db

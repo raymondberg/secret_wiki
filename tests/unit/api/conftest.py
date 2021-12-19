@@ -1,9 +1,11 @@
-from fastapi.testclient import TestClient
 import pytest
+from fastapi.testclient import TestClient
 
-from secret_wiki.models import Wiki, Page, Section
 from secret_wiki.api.wiki import current_active_user
+from secret_wiki.models import Page, Section, Wiki
 from secret_wiki.schemas import User
+
+# pylint: disable=redefined-outer-name
 
 
 @pytest.fixture
@@ -31,28 +33,28 @@ def override_current_active_user():
 @pytest.fixture
 def pages(db, wikis):
     wiki = wikis[0]
-    p1 = Page(wiki_id=wiki.id, id="page_1", title="Page One")
-    db.add(p1)
+    page_1 = Page(wiki_id=wiki.id, id="page_1", title="Page One")
+    db.add(page_1)
 
-    p2 = Page(wiki_id=wiki.id, id="page_2", title="Page Two")
-    db.add(p2)
+    page_2 = Page(wiki_id=wiki.id, id="page_2", title="Page Two")
+    db.add(page_2)
     db.commit()
 
-    return [p1, p2]
+    return [page_1, page_2]
 
 
 @pytest.fixture
 def admin_only_page(db, wikis):
     wiki = wikis[0]
-    p1 = Page(
+    page_1 = Page(
         wiki_id=wiki.id,
         id="admin_only_page",
         title="Admin Only Page",
         is_admin_only=True,
     )
-    db.add(p1)
+    db.add(page_1)
     db.commit()
-    return p1
+    return page_1
 
 
 @pytest.fixture
@@ -66,9 +68,7 @@ def sections(db, pages):
     )
     db.add(section1)
 
-    section2 = Section(
-        wiki_id=page.wiki_id, page_id=page.id, section_index=2, content="A section"
-    )
+    section2 = Section(wiki_id=page.wiki_id, page_id=page.id, section_index=2, content="A section")
     db.add(section2)
     db.commit()
 

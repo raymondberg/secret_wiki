@@ -1,5 +1,25 @@
+[tool.black]
+line-length = 99
+
+[tool.isort]
+profile = "black"
+
+[tool.pylint.master]
+load-plugins = [
+  "pylint_plugin",
+]
+
+[tool.pylint.basic]
+good-names = [
+  "db",
+]
+
+[tool.pylint.format]
+max-line-length = 99
+
 [tool.pylint."MESSAGES CONTROL"]
 disable = [
+  "import-outside-toplevel",
   "missing-class-docstring",
   "missing-function-docstring",
   "missing-module-docstring",
