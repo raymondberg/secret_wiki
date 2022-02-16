@@ -110,7 +110,7 @@ def wiki_sections(
         .order_by("section_index")
         .first()
     )
-    if not updated_section:
+    if not updated_section or not user.can_update_section(updated_section):
         raise HTTPException(status_code=404, detail="Section not found")
     # updated_section.update_if_present(section)
     updated_section.update(section)

@@ -8,8 +8,6 @@ from sqlalchemy import (
     String,
     Text,
 )
-
-
 from sqlalchemy.orm import relationship
 
 from ..db import Base
@@ -32,16 +30,14 @@ class Page(Base):
     @classmethod
     def filter(cls, db, user=None, wiki_id=None):
         query = db.query(cls).filter_by(wiki_id=wiki_id)
-        # if not user.is_superuser:
-        #     query = query.filter_by(is_admin_only=False)
+        if not user.is_superuser:
+            query = query.filter_by(is_admin_only=False)
         return query
 
 
 class Section(Base):
     __tablename__ = "sections"
-    __table_args__ = (
-        ForeignKeyConstraint(["wiki_id", "page_id"], ["pages.wiki_id", "pages.id"]),
-    )
+    __table_args__ = (ForeignKeyConstraint(["wiki_id", "page_id"], ["pages.wiki_id", "pages.id"]),)
 
     id = Column(Integer, primary_key=True)
     wiki_id = Column(String, ForeignKey("wikis.id"))
@@ -56,8 +52,8 @@ class Section(Base):
         query = db.query(cls).filter_by(wiki_id=wiki_id, page_id=page_id)
         if section_id is not None:
             query = query.filter_by(id=section_id)
-        # if not user.is_superuser:
-        #     query = query.filter_by(is_admin_only=False)
+        if not user.is_superuser:
+            query = query.filter_by(is_admin_only=False)
         return query
 
     def update(self, section_update):

@@ -5,7 +5,8 @@ from pydantic import EmailStr
 
 
 class User(models.BaseUser, models.BaseOAuthAccountMixin):
-    pass
+    def can_update_section(self, section):
+        return self.is_superuser or not section.is_admin_only
 
 
 class UserCreate(models.CreateUpdateDictModel):
