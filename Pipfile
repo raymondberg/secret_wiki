@@ -4,21 +4,27 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-pytest = "*"
-requests = "*"
 black = "==20.8b1"
+httpx = "*"
+isort = "*"
+pycln = "*"
 pylint = "*"
+pytest = "*"
+pytest-asyncio = "*"
+requests = "*"
 
 [packages]
-fastapi = "*"
-uvicorn = {extras = ["standard"],version = "*"}
-jinja2 = "*"
 aiofiles = "*"
-sqlalchemy = "*"
-fastapi-users = {extras = ["sqlalchemy"], version = "<6.0.0"}
 aiosqlite = "*"
 alembic = "*"
+fastapi = "*"
+fastapi-users = {extras = ["sqlalchemy2"], version = "<10.0"}
+greenlet = "*"
+jinja2 = "*"
 python-multipart = "*"
+sqlalchemy = "*"
+uvicorn = {extras = ["standard"],version = "*"}
+pytest-asyncio = "*"
 
 [requires]
 python_version = "3.8"

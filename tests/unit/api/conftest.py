@@ -1,28 +1,36 @@
-import pytest
-from fastapi.testclient import TestClient
+from typing import List
+
+import pytest_asyncio
+from httpx import AsyncClient
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from secret_wiki.api.wiki import current_active_user
-from secret_wiki.models import Page, Section, Wiki
+from secret_wiki.models.wiki import Page, Section, Wiki
 from secret_wiki.schemas import User
 
 # pylint: disable=redefined-outer-name
 
 
-@pytest.fixture
-def admin_client(test_app, override_current_active_user):
+@pytest_asyncio.fixture
+async def admin_client(test_app, override_current_active_user):
     test_app.dependency_overrides[current_active_user] = override_current_active_user(
         is_admin=True
     )
-    return TestClient(test_app)
+
+    async with AsyncClient(app=test_app, base_url="http://test") as client_:
+        yield client_
 
 
-@pytest.fixture
-def client(test_app, override_current_active_user):
+@pytest_asyncio.fixture
+async def client(test_app, override_current_active_user):
     test_app.dependency_overrides[current_active_user] = override_current_active_user()
-    return TestClient(test_app)
+
+    async with AsyncClient(app=test_app, base_url="http://test") as client_:
+        yield client_
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 def override_current_active_user():
     def override_current_active_user_(is_admin=False):
         return lambda: User(email="test-user@example.com", is_superuser=is_admin)
@@ -30,21 +38,24 @@ def override_current_active_user():
     return override_current_active_user_
 
 
-@pytest.fixture
-def pages(db, wikis):
+@pytest_asyncio.fixture
+async def pages(db: AsyncSession, wikis: List[Wiki]) -> List[Page]:
     wiki = wikis[0]
-    page_1 = Page(wiki_id=wiki.id, id="page_1", title="Page One")
-    db.add(page_1)
 
-    page_2 = Page(wiki_id=wiki.id, id="page_2", title="Page Two")
-    db.add(page_2)
-    db.commit()
+    db.add_all(
+        [
+            Page(wiki_id=wiki.id, id="page_1", title="Page One"),
+            Page(wiki_id=wiki.id, id="page_2", title="Page Two"),
+        ]
+    )
+    await db.commit()
 
-    return [page_1, page_2]
+    pages = await db.execute(select(Page).where(Page.id.in_({"page_1", "page_2"})))
+    return pages.scalars().all()
 
 
-@pytest.fixture
-def admin_only_page(db, wikis):
+@pytest_asyncio.fixture
+async def admin_only_page(db, wikis):
     wiki = wikis[0]
     page_1 = Page(
         wiki_id=wiki.id,
@@ -53,31 +64,45 @@ def admin_only_page(db, wikis):
         is_admin_only=True,
     )
     db.add(page_1)
-    db.commit()
-    return page_1
+    await db.commit()
+    pages = await db.execute(select(Page).where(Page.id == "admin_only_page"))
+    return pages.scalars().first()
 
 
-@pytest.fixture
-def sections(db, pages):
+@pytest_asyncio.fixture
+async def sections(db, pages: List[Page]) -> List[Section]:
     page = pages[0]
-    section1 = Section(
-        wiki_id=page.wiki_id,
-        page_id=page.id,
-        section_index=5,
-        content="A later section",
+    query = (
+        select(Section).where(Section.wiki_id == page.wiki_id).where(Section.page_id == page.id)
     )
-    db.add(section1)
 
-    section2 = Section(wiki_id=page.wiki_id, page_id=page.id, section_index=2, content="A section")
-    db.add(section2)
-    db.commit()
+    db.add_all(
+        [
+            Section(
+                wiki_id=page.wiki_id,
+                page_id=page.id,
+                section_index=5,
+                content="A later section",
+            ),
+            Section(
+                wiki_id=page.wiki_id,
+                page_id=page.id,
+                section_index=2,
+                content="An earlier section",
+            ),
+        ]
+    )
+    await db.commit()
 
-    return [section1, section2]
+    sections = await db.execute(query)
+    return sections.scalars().all()
 
 
-@pytest.fixture
-def admin_only_section(db, pages):
+@pytest_asyncio.fixture
+async def admin_only_section(db, pages: List[Page]) -> Section:
     page = pages[0]
+    query = select(Section).where(Section.wiki_id == page.wiki_id, Section.page_id == page.id)
+
     admin_section = Section(
         wiki_id=page.wiki_id,
         page_id=page.id,
@@ -86,18 +111,17 @@ def admin_only_section(db, pages):
         content="Admin only section",
     )
     db.add(admin_section)
-    db.commit()
+    await db.commit()
 
-    return admin_section
+    sections = await db.execute(query)
+    return sections.scalars().first()
 
 
-@pytest.fixture
-def wikis(db):
-    wiki1 = Wiki(id="my_wiki")
-    db.add(wiki1)
+@pytest_asyncio.fixture
+async def wikis(db: AsyncSession) -> List[Wiki]:
+    db.add_all([Wiki(id="my_wiki"), Wiki(id="your_wiki")])
+    await db.commit()
 
-    wiki2 = Wiki(id="your_wiki")
-    db.add(wiki2)
-    db.commit()
+    wikis = await db.execute(select(Wiki).where(Wiki.id.in_({"my_wiki", "your_wiki"})))
 
-    return [wiki1, wiki2]
+    return wikis.scalars().all()

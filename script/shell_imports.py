@@ -1,10 +1,12 @@
 import asyncio
+
 starting_locals = set(locals())
 
 from secret_wiki.api.auth import fastapi_users
 from secret_wiki.db import get_db
-from secret_wiki.models import Wiki, Page, Section
+from secret_wiki.models import Page, Section, Wiki
 from secret_wiki.schemas import UserShellCreate
+
 
 def create_user(*args, **kwargs):
     async def create_user_(email, password, is_active=False, is_superuser=False, is_verified=True):

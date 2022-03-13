@@ -4,19 +4,24 @@ from sqlalchemy import (
     ForeignKey,
     ForeignKeyConstraint,
     Integer,
-    Sequence,
     String,
     Text,
+    select,
 )
-from sqlalchemy.orm import relationship
 
 from ..db import Base
+
+# pylint: disable=too-few-public-methods
 
 
 class Wiki(Base):
     __tablename__ = "wikis"
 
     id = Column(String, primary_key=True)
+
+    @classmethod
+    def all(cls):
+        return select(cls)
 
 
 class Page(Base):
@@ -28,11 +33,13 @@ class Page(Base):
     is_admin_only = Column(Boolean, default=False)
 
     @classmethod
-    def filter(cls, db, user=None, wiki_id=None):
-        query = db.query(cls).filter_by(wiki_id=wiki_id)
+    def filter(cls, user=None, page_id=None, wiki_id=None):
+        query = select(cls).filter_by(wiki_id=wiki_id)
         if not user.is_superuser:
             query = query.filter_by(is_admin_only=False)
-        return query
+        if page_id:
+            query = query.filter_by(id=page_id)
+        return query.order_by("title")
 
 
 class Section(Base):
@@ -48,8 +55,8 @@ class Section(Base):
     page_id = Column(String, ForeignKey("pages.id"))
 
     @classmethod
-    def filter(cls, db, user=None, wiki_id=None, page_id=None, section_id=None):
-        query = db.query(cls).filter_by(wiki_id=wiki_id, page_id=page_id)
+    def filter(cls, user=None, wiki_id=None, page_id=None, section_id=None):
+        query = select(cls).filter_by(wiki_id=wiki_id, page_id=page_id)
         if section_id is not None:
             query = query.filter_by(id=section_id)
         if not user.is_superuser:

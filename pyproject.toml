@@ -24,3 +24,6 @@ disable = [
   "missing-function-docstring",
   "missing-module-docstring",
 ]
+
+[tool.pytest.ini_options]
+asyncio_mode = "strict"

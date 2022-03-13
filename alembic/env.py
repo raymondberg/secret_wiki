@@ -1,7 +1,6 @@
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
+from sqlalchemy import engine_from_config, pool
 
 from alembic import context
 
@@ -13,12 +12,13 @@ config = context.config
 # This line sets up loggers basically.
 fileConfig(config.config_file_name)
 
+import secret_wiki.models
+
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 from secret_wiki.db import Base
-import secret_wiki.models
 
 target_metadata = Base.metadata
 

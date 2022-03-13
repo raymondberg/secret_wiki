@@ -20,7 +20,7 @@ class UserShellCreate(UserCreate):
     is_verified: Optional[bool] = False
 
 
-class UserUpdate(User, models.BaseUserUpdate):
+class UserUpdate(models.BaseUserUpdate):
     pass
 
 

@@ -2,31 +2,50 @@ import os
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from fastapi_users import FastAPIUsers
-from fastapi_users.authentication import JWTAuthentication
+from fastapi_users import BaseUserManager, FastAPIUsers
+from fastapi_users.authentication import (
+    AuthenticationBackend,
+    BearerTransport,
+    JWTStrategy,
+)
+from fastapi_users.db import SQLAlchemyBaseUserTable, SQLAlchemyUserDatabase
 
-from ..schemas import User, UserCreate, UserUpdate, UserDB
-from ..user_db import user_db
+from secret_wiki.db import get_user_db
 
-
-def on_after_register(user: UserDB, request: Request):
-    print(f"User {user.id} has registered.")
-
-
-def on_after_forgot_password(user: UserDB, token: str, request: Request):
-    print(f"User {user.id} has forgot their password. Reset token: {token}")
+from ..schemas import User, UserCreate, UserDB, UserUpdate
 
 
-def after_verification_request(user: UserDB, token: str, request: Request):
-    print(f"Verification requested for user {user.id}. Verification token: {token}")
+async def get_user_manager(user_db: SQLAlchemyUserDatabase = Depends(get_user_db)):
+    yield UserManager(user_db)
 
 
-jwt_authentication = JWTAuthentication(
-    secret=os.environ["SECRET"], lifetime_seconds=3600, tokenUrl="/api/auth/jwt/login"
+class UserManager(BaseUserManager[UserCreate, UserDB]):
+    def on_after_register(user: UserDB, request: Request):
+        print(f"User {user.id} has registered.")
+
+    def on_after_forgot_password(user: UserDB, token: str, request: Request):
+        print(f"User {user.id} has forgot their password. Reset token: {token}")
+
+    def after_verification_request(user: UserDB, token: str, request: Request):
+        print(f"Verification requested for user {user.id}. Verification token: {token}")
+
+
+bearer_transport = BearerTransport(tokenUrl="auth/jwt/login")
+
+
+def get_jwt_strategy() -> JWTStrategy:
+    return JWTStrategy(secret=os.environ["SECRET"], lifetime_seconds=3600)
+
+
+jwt_authentication = AuthenticationBackend(
+    name="jwt",
+    transport=bearer_transport,
+    get_strategy=get_jwt_strategy,
 )
 
+
 fastapi_users = FastAPIUsers(
-    db=user_db,
+    get_user_manager,
     auth_backends=[jwt_authentication],
     user_model=User,
     user_create_model=UserCreate,
@@ -41,23 +60,9 @@ routers = [
         tags=["auth"],
     ),
     dict(
-        router=fastapi_users.get_register_router(on_after_register),
+        router=fastapi_users.get_register_router(),
         prefix="/api/auth",
         tags=["auth"],
     ),
-    # dict(
-    #     router=fastapi_users.get_reset_password_router(
-    #         os.getenv("SECRET"), after_forgot_password=on_after_forgot_password
-    #     ),
-    #     prefix="/api/auth",
-    #     tags=["auth"],
-    # ),
-    # dict(
-    #     router=fastapi_users.get_verify_router(
-    #         os.getenv("SECRET"), after_verification_request=after_verification_request
-    #     ),
-    #     prefix="/api/auth",
-    #     tags=["auth"],
-    # ),
     dict(router=fastapi_users.get_users_router(), prefix="/api/users", tags=["users"]),
 ]
