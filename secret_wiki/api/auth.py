@@ -20,13 +20,15 @@ async def get_user_manager(user_db: SQLAlchemyUserDatabase = Depends(get_user_db
 
 
 class UserManager(BaseUserManager[UserCreate, UserDB]):
-    def on_after_register(user: UserDB, request: Request):
+    user_db_model = UserDB
+
+    async def on_after_register(self, user: UserDB, request: Request):
         print(f"User {user.id} has registered.")
 
-    def on_after_forgot_password(user: UserDB, token: str, request: Request):
+    async def on_after_forgot_password(self, user: UserDB, token: str, request: Request):
         print(f"User {user.id} has forgot their password. Reset token: {token}")
 
-    def after_verification_request(user: UserDB, token: str, request: Request):
+    async def after_verification_request(self, user: UserDB, token: str, request: Request):
         print(f"Verification requested for user {user.id}. Verification token: {token}")
 
 

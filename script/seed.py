@@ -1,66 +1,103 @@
 import asyncio
+import contextlib
 
-from fastapi_users.user import UserNotExists
+from fastapi_users.manager import UserNotExists
+from sqlalchemy import select
 
-from secret_wiki.api.auth import fastapi_users
-from secret_wiki.db import get_db, get_or_create
-from secret_wiki.models import Page, Section, Wiki
+from secret_wiki.api.auth import get_user_manager
+from secret_wiki.db import get_async_session, get_user_db
+from secret_wiki.models.wiki import Page, Section, Wiki
 from secret_wiki.schemas import UserShellCreate
 
-db = next(get_db())
+get_async_session_context = contextlib.asynccontextmanager(get_async_session)
+get_user_db_context = contextlib.asynccontextmanager(get_user_db)
+get_user_manager_context = contextlib.asynccontextmanager(get_user_manager)
 
 
-async def create_user(name):
+async def create_user(name: str):
     email = f"{name}@example.com"
-    try:
-        user = await fastapi_users.get_user(email)
-    except UserNotExists:
-        user = await fastapi_users.create_user(
-            UserShellCreate(
-                email=email,
-                password=name,
-                is_active=True,
-                is_superuser=name == "admin",
-                is_verified=True,
-            )
+    async with get_async_session_context() as db:
+        async with get_user_db_context(db) as user_db:
+            async with get_user_manager_context(user_db) as user_manager:
+                try:
+                    user = await user_manager.get_by_email(email)
+                except UserNotExists:
+                    user = await user_manager.create(
+                        UserShellCreate(
+                            email=email,
+                            password=name,
+                            is_active=True,
+                            is_superuser=name == "admin",
+                            is_verified=True,
+                        )
+                    )
+                return user
+
+
+async def just_gather(*coroutines):
+    for cor in coroutines:
+        try:
+            await cor
+        except RuntimeError:
+            pass
+
+
+async def get_or_create(db, model, **kwargs):
+    query = select(model).filter_by(**kwargs)
+    result = await db.execute(query)
+    if record := result.scalars().first():
+        return record
+
+    db.add(model(**kwargs))
+    await db.commit()
+    model = (await db.execute(query)).scalars().first()
+    print(f"Created {model}")
+    return model
+
+
+async def create_all():
+    users = [create_user("admin"), create_user("user")]
+
+    async with get_async_session_context() as db:
+        wikis = dict(
+            lion_king=get_or_create(db, Wiki, id="Lion King"),
+            mulan=get_or_create(db, Wiki, id="Mulan"),
         )
-    return user
+
+        mulan = await wikis["mulan"]
+        pages = dict(
+            mulan=get_or_create(db, Page, wiki_id=mulan.id, id="mulan", title="Mulan"),
+            mushu=get_or_create(db, Page, wiki_id=mulan.id, id="mushu", title="Mushu (Dragon)"),
+        )
+
+        mushu = await pages["mushu"]
+        sections = dict(
+            intro=get_or_create(
+                db,
+                Section,
+                wiki_id=mulan.id,
+                page_id=mushu.id,
+                content="## ABOUT\nHe's a cute little dragon",
+            ),
+            factoid=get_or_create(
+                db,
+                Section,
+                wiki_id=mulan.id,
+                page_id=mushu.id,
+                content="\n".join(
+                    [
+                        "## Facts",
+                        "* Voiced by a famous person",
+                        "* Red...I think",
+                        "* Has 4 legs",
+                        "* Very cowardly, but improves over the film",
+                    ]
+                ),
+            ),
+        )
+
+    await just_gather(*users, *wikis.values(), *pages.values(), *sections.values())
 
 
-admin = asyncio.run(create_user("admin"))
-admin = asyncio.run(create_user("user"))
-
-lion_king, _ = get_or_create(db, Wiki, id="Lion King")
-mulan, _ = get_or_create(db, Wiki, id="Mulan")
-
-p_mulan, _ = get_or_create(db, Page, wiki_id=mulan.id, id="mulan", title="Mulan")
-p_mushu, _ = get_or_create(
-    db, Page, wiki_id=mulan.id, id="mushu", title="Mushu (Dragon)"
-)
-
-intro, _ = get_or_create(
-    db,
-    Section,
-    wiki_id=mulan.id,
-    page_id=p_mushu.id,
-    content="""## ABOUT
-He's a cute little dragon""",
-)
-
-factoid, _ = get_or_create(
-    db,
-    Section,
-    wiki_id=mulan.id,
-    page_id=p_mushu.id,
-    content="""## Facts
-
- * Voiced by a famous person
- * Red...I think
- * Has 4 legs
- * Very cowardly, but improves over the film
-""",
-)
-
-for entry in (lion_king, mulan, p_mulan, p_mushu, intro, factoid):
-    db.add(entry)
-db.commit()
+if __name__ == "__main__":
+    asyncio.run(create_all())

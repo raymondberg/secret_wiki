@@ -1,6 +1,6 @@
-"""empty message
+"""Add support for secrets
 
-Revision ID: ea01144ffd84
+Revision ID: 0002
 Revises: 0001
 Create Date: 2021-04-09 21:17:58.343678
 

@@ -97,6 +97,12 @@ async def wiki_section_create(
             section_index=section_create.section_index,
         )
         db.add(section)
+        if section.is_admin_only:
+            if section.permissions is None:
+                raise HTTPException(
+                    status_code=422, detail="Must specify permissions if restricted"
+                )
+            await section.set_permissions(db, section_create.permissions)
     return section
 
 

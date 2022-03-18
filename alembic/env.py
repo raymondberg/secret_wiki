@@ -12,7 +12,8 @@ config = context.config
 # This line sets up loggers basically.
 fileConfig(config.config_file_name)
 
-import secret_wiki.models
+import secret_wiki.models.auth
+import secret_wiki.models.wiki
 
 # add your model's MetaData object here
 # for 'autogenerate' support

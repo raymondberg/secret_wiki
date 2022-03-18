@@ -12,6 +12,9 @@ pylint = "*"
 pytest = "*"
 pytest-asyncio = "*"
 requests = "*"
+faker = "*"
+mypy = "*"
+sqlalchemy-stubs = "*"
 
 [packages]
 aiofiles = "*"

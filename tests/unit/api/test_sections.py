@@ -28,7 +28,33 @@ async def test_list_cannot_list_admin_only_sections(client, admin_only_section):
 async def test_create_sections(client, db):
     response = await client.post(
         "/api/w/my_wiki/p/page_1/s",
-        json={"content": "Some new content", "is_admin_only": True},
+        json={
+            "content": "Some new content",
+        },
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["content"] == "Some new content"
+
+    sections = await db.execute(select(Section).filter_by(content="Some new content"))
+    assert sections.scalars().first()
+
+
+@pytest.mark.asyncio
+async def test_create_sections_with_admin_only(client, db):
+    response = await client.post(
+        "/api/w/my_wiki/p/page_1/s",
+        json={
+            "content": "Some new content",
+            "is_admin_only": True,
+            "permissions": [
+                {
+                    "user": "anyone",
+                    "level": "edit",
+                }
+            ],
+        },
     )
 
     assert response.status_code == 200
@@ -40,6 +66,21 @@ async def test_create_sections(client, db):
         select(Section).filter_by(content="Some new content", is_admin_only=True)
     )
     assert sections.scalars().first()
+
+
+@pytest.mark.asyncio
+async def test_create_sections_with_admin_only_doesnt_work_without_permissions(client, db):
+    response = await client.post(
+        "/api/w/my_wiki/p/page_1/s",
+        json=[
+            {
+                "content": "Some new content",
+                "is_admin_only": True,
+            }
+        ],
+    )
+
+    assert response.status_code == 422
 
 
 @pytest.mark.asyncio
