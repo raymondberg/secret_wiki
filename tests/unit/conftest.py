@@ -1,4 +1,5 @@
 from typing import List
+from unittest.mock import Mock, patch
 
 import pytest
 import pytest_asyncio
@@ -32,17 +33,18 @@ async def engine():
 @pytest_asyncio.fixture
 async def db(engine) -> AsyncSession:
     async_session_maker = sessionmaker(
-        engine, autocommit=False, autoflush=False, class_=AsyncSession
+        engine, autocommit=False, autoflush=False, expire_on_commit=False, class_=AsyncSession
     )
     async with async_session_maker() as session:
         delete_results = [
             session.execute(delete(model))
-            for model in [models.Section, models.Page, models.Wiki, User]
+            for model in [models.Section, models.Page, models.Wiki, User, models.SectionPermission]
         ]
         for result in delete_results:
-            await result
+            out = await result
         await session.commit()
-        yield session
+        with patch("secret_wiki.db.AsyncDatabaseSession.session", session):
+            yield session
 
 
 @pytest.fixture
@@ -126,7 +128,9 @@ async def sections(db, pages: List[Page]) -> List[Section]:
 @pytest_asyncio.fixture
 async def admin_only_section(db, pages: List[Page]) -> Section:
     page = pages[0]
-    query = select(Section).where(Section.wiki_id == page.wiki_id, Section.page_id == page.id)
+    query = (
+        select(Section).where(Section.wiki_id == page.wiki_id).where(Section.page_id == page.id)
+    )
 
     admin_section = Section(
         wiki_id=page.wiki_id,

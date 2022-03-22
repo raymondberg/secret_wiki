@@ -1,5 +1,6 @@
 from typing import List
 
+from fastapi_users_db_sqlalchemy.guid import GUID
 from sqlalchemy import (
     Boolean,
     Column,
@@ -9,21 +10,23 @@ from sqlalchemy import (
     Integer,
     String,
     Text,
+    UniqueConstraint,
     select,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import relationship
 
 import secret_wiki.schemas.wiki as schemas
-from secret_wiki.db import Base, User
+from secret_wiki.db import AsyncDatabaseSession, Base, User
 
 
 class SectionPermission(Base):
     __tablename__ = "section_permission"
+    __table_args__ = (UniqueConstraint("section_id", "user_id", name="permissions"),)
 
     id = Column(Integer, primary_key=True)
-    wiki_id = Column(String, ForeignKey("wiki.id"))
-    section_id = Column(String, ForeignKey("sections.id"))
-    user_id = Column(String, ForeignKey("users.id"))
+    section_id = Column(String, ForeignKey("sections.id", ondelete="CASCADE"))
+    user_id = Column(GUID, ForeignKey("user.id", ondelete="CASCADE"))
     level = Column(Enum(schemas.PermissionLevel), default=schemas.PermissionLevel.EDIT)
 
 
@@ -36,12 +39,17 @@ class Section(Base):
     section_index = Column(Integer, default=5000)
     is_admin_only = Column(Boolean, default=False)
     content = Column(Text)
+    section_permissions = relationship("SectionPermission")
 
     page_id = Column(String, ForeignKey("pages.id"))
 
     @property
-    def permissions(self):
-        return [schemas.SectionPermission(user="butts", level=schemas.PermissionLevel.EDIT)]
+    async def permissions(self):
+        session = AsyncDatabaseSession()
+        sections = await session.execute(
+            select(SectionPermission).where(SectionPermission.section_id == self.id)
+        )
+        return sections.scalars().all()
 
     @classmethod
     def filter(cls, user=None, wiki_id=None, page_id=None, section_id=None):
@@ -51,6 +59,12 @@ class Section(Base):
         if not user.is_superuser:
             query = query.filter_by(is_admin_only=False)
         return query
+
+    async def add_user_permission(self, email) -> None:
+        session = AsyncDatabaseSession()
+        user = await User.find_by_email(email)
+        session.add(SectionPermission(user_id=user.id, section_id=self.id))
+        await session.commit()
 
     def update(self, section_update):
         for attr in ("content", "is_admin_only", "section_index"):

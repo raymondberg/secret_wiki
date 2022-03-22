@@ -56,6 +56,7 @@ class Section(SectionCreate):
     section_index: Optional[int] = None
     is_admin_only: bool = False
     permissions: Optional[List[SectionPermission]] = None
+    is_secret: bool = False
 
 
 class Wiki(BaseModel):

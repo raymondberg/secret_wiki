@@ -13,7 +13,7 @@ from sqlalchemy.orm import relationship
 
 from secret_wiki.db import Base
 
-from .section import Section
+from .section import Section, SectionPermission
 
 # pylint: disable=too-few-public-methods
 
