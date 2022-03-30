@@ -1,6 +1,7 @@
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import relationship
 
 import secret_wiki.models.wiki as models
 from secret_wiki import schemas
@@ -72,12 +73,19 @@ async def wiki_sections(
     db: AsyncSession = Depends(get_async_session),
     user: schemas.User = Depends(current_active_user),
 ):
-    sections = await db.execute(
-        models.Section.filter(wiki_id=wiki_id, page_id=page_id, user=user).order_by(
-            "section_index"
+    sections = (
+        (
+            await db.execute(
+                models.Section.filter(wiki_id=wiki_id, page_id=page_id, user=user).order_by(
+                    "section_index"
+                )
+            )
         )
+        .scalars()
+        .unique()
+        .all()
     )
-    return sections.scalars().all()
+    return sections
 
 
 @router.post("/w/{wiki_id}/p/{page_id}/s", response_model=schemas.Section)
@@ -102,8 +110,11 @@ async def wiki_section_create(
                 raise HTTPException(
                     status_code=422, detail="Must specify permissions if restricted"
                 )
-            await section.set_permissions(db, section_create.permissions)
-    return section
+        await db.commit()
+    async with db.begin_nested():
+        await db.refresh(section)
+        await section.set_permissions(*section_create.permissions or [])
+    return await models.Section.get(section.id)
 
 
 @router.post("/w/{wiki_id}/p/{page_id}/s/{section_id}", response_model=schemas.Section)

@@ -23,14 +23,14 @@ async def get_section_list(client, expected_count=2):
 
 
 @pytest.mark.asyncio
-async def test_user_informed_of_view_restrictions(db, client, sections):
-    user_included_secret = sections[1]
-    user_included_secret.add_user_permission(email="test-user@example.com")
-    db.add(user_included_secret)
-    db.commit()
+async def test_user_informed_of_view_restrictions(client, sections, user):
+    _, user_email = user
+    user_included_secret = next(s for s in sections if s.content == "An earlier section")
+    await user_included_secret.add_user_permission(email=user_email)
 
     data = await get_section_list(client)
-    assert all(not d["is_secret"] for d in data)
+    assert not next(s for s in data if s["content"] == "A later section")["is_secret"]
+    assert next(s for s in data if s["content"] == "An earlier section")["is_secret"]
 
 
 @pytest.mark.skip("not yet supported")

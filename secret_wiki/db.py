@@ -30,7 +30,7 @@ class AsyncDatabaseSession:
 
     async def init(self):
         self._engine = create_async_engine(
-            "postgresql+asyncpg://postgres:postgres@localhost/postgres",
+            SQLALCHEMY_DATABASE_URL,
             echo=True,
         )
 

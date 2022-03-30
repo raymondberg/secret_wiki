@@ -6,7 +6,7 @@ import pytest_asyncio
 from faker import Faker
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import selectinload, sessionmaker
 
 import secret_wiki.models.wiki as models
 from secret_wiki.db import Base, User, get_async_session
@@ -20,6 +20,16 @@ TEST_DB_URL = "sqlite+aiosqlite:///./test.db"
 @pytest.fixture
 def fake():
     return Faker()
+
+
+@pytest.fixture
+def sqlalchemy_logging():
+    import logging
+
+    logging.basicConfig()
+    engine = logging.getLogger("sqlalchemy.engine")
+    engine.setLevel(logging.DEBUG)
+    return engine
 
 
 @pytest_asyncio.fixture
@@ -49,8 +59,6 @@ async def db(engine) -> AsyncSession:
 
 @pytest.fixture
 def test_app(override_get_db):
-    # with patch.dict('secret_wiki.db.os.environ',
-    # {"DATABASE_URL": "sqlite:///./database-test.db"}):
     from secret_wiki.app import app
 
     app.dependency_overrides[get_async_session] = override_get_db
@@ -122,17 +130,14 @@ async def sections(db, pages: List[Page]) -> List[Section]:
     await db.commit()
 
     sections = await db.execute(query)
-    return sections.scalars().all()
+    return sections.scalars().unique().all()
 
 
 @pytest_asyncio.fixture
 async def admin_only_section(db, pages: List[Page]) -> Section:
     page = pages[0]
-    query = (
-        select(Section).where(Section.wiki_id == page.wiki_id).where(Section.page_id == page.id)
-    )
-
     admin_section = Section(
+        id=900,
         wiki_id=page.wiki_id,
         page_id=page.id,
         is_admin_only=True,
@@ -141,9 +146,9 @@ async def admin_only_section(db, pages: List[Page]) -> Section:
     )
     db.add(admin_section)
     await db.commit()
+    await db.refresh(admin_section)
 
-    sections = await db.execute(query)
-    return sections.scalars().first()
+    return admin_section
 
 
 @pytest_asyncio.fixture

@@ -31,6 +31,9 @@ class SectionPermission(BaseModel):
     user: str
     level: PermissionLevel
 
+    class Config:
+        orm_mode = True
+
 
 class SectionCreate(BaseModel):
     content: str
