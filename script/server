@@ -3,6 +3,8 @@ MODE=$1
 
 if [[ "$MODE" == "--frontend" ]]; then
   cd frontend && npm start
+elif [[ "$MODE" == "--backend" ]]; then
+  pipenv run uvicorn secret_wiki.app:app --reload --reload-dir secret_wiki --log-level trace
 else
   script/update
   pipenv run uvicorn secret_wiki.app:app --reload --reload-dir secret_wiki --log-level trace

@@ -47,7 +47,7 @@ class AsyncDatabaseSession:
             await conn.run_sync(Base.metadata.create_all)
 
 
-async_session_maker = AsyncDatabaseSession()
+async_session_maker = AsyncDatabaseSession
 
 Base = declarative_base()
 
@@ -61,8 +61,10 @@ class User(Base, SQLAlchemyBaseUserTable):  # pylint: disable=too-few-public-met
 
 
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
-    async with async_session_maker() as session:
-        yield session
+    session = async_session_maker()
+    await session.init()
+    yield session
+    session.close()
 
 
 async def get_user_db(session: AsyncSession = Depends(get_async_session)):
