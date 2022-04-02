@@ -15,13 +15,15 @@ export function SectionShow(props) {
       }
     }
 
+    var section_class = (
+      "page-section-wrapper row " +
+      (props.section.is_admin_only ? " page-section-restricted" : "page-section-public")
+    );
     return (
-      <div className="page-section-wrapper row"
+      <div className={section_class}
         onDoubleClick={(e) => props.toggleEdit(props.section.id)}>
-        <div className="page-section-wrapper row">
           <div className="page-section col-xs-12"
           dangerouslySetInnerHTML={markdownContent()}/>
-        </div>
       </div>
     )
 }

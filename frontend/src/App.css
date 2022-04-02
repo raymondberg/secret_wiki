@@ -96,8 +96,12 @@ div.page-section-wrapper {
   padding: 1em;
 }
 
-div.page-section-wrapper:hover {
+div.page-section-public:hover {
   background-color: #50D8D7;
+}
+
+div.page-section-restricted:hover {
+  background-color: #F7B7C9;
 }
 
 div.page-section {
