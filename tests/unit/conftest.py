@@ -166,5 +166,10 @@ async def user(fake, db: AsyncSession) -> User:
     db.add(User(id=fake.uuid4(), email="user@example.com", hashed_password="blah"))
     await db.commit()
 
-    result = await db.execute(select(User.id, User.email).where(User.email == "user@example.com"))
-    return result.fetchone()
+    result = await db.execute(select(User).where(User.email == "user@example.com"))
+    return result.scalars().first()
+
+
+@pytest.fixture
+def user_id(user) -> User:
+    return user.id

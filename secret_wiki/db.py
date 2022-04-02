@@ -54,9 +54,9 @@ Base = declarative_base()
 
 class User(Base, SQLAlchemyBaseUserTable):  # pylint: disable=too-few-public-methods
     @classmethod
-    async def find_by_email(cls, email):
+    async def find_by_id(cls, id):
         session = AsyncDatabaseSession()
-        result = await session.execute(select(cls).where(cls.email == email))
+        result = await session.execute(select(cls).where(cls.id == id))
         return result.scalars().first()
 
 

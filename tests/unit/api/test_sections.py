@@ -42,8 +42,7 @@ async def test_create_sections(client, db):
 
 
 @pytest.mark.asyncio
-async def test_create_sections_with_admin_only(admin_client, db, user):
-    _, user_email = user
+async def test_create_sections_with_admin_only(admin_client, db, user_id):
     response = await admin_client.post(
         "/api/w/my_wiki/p/page_1/s",
         json={
@@ -51,7 +50,7 @@ async def test_create_sections_with_admin_only(admin_client, db, user):
             "is_admin_only": True,
             "permissions": [
                 {
-                    "user": user_email,
+                    "user": str(user_id),
                     "level": "edit",
                 }
             ],

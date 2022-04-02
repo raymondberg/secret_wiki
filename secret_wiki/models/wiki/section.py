@@ -11,6 +11,7 @@ from sqlalchemy import (
     String,
     Text,
     UniqueConstraint,
+    and_,
     or_,
     select,
 )
@@ -75,15 +76,18 @@ class Section(Base):
             query = query.outerjoin(Section.section_permissions).where(
                 or_(
                     Section.is_admin_only == False,
-                    SectionPermission.level == schemas.PermissionLevel.EDIT,
+                    and_(
+                        SectionPermission.user_id == user.id,
+                        SectionPermission.level == schemas.PermissionLevel.EDIT,
+                    ),
                 )
             )
         return query
 
-    async def add_user_permission(self, email) -> None:
-        user = await User.find_by_email(email)
+    async def add_user_permission(self, id) -> None:
+        user = await User.find_by_id(id)
         if not user:
-            raise ValueError(f"Could not find user for {email}")
+            raise ValueError(f"Could not find user with id {id}")
         session = AsyncDatabaseSession()
         session.add(SectionPermission(user_id=user.id, section_id=self.id))
         self.is_admin_only = True
@@ -99,30 +103,18 @@ class Section(Base):
     async def set_permissions(self, *user_permissions: List[schemas.SectionPermission]):
         session = AsyncDatabaseSession()
         async with session.begin_nested():
-            user_id_by_email = dict(
-                (
-                    await session.execute(
-                        select([User.email, User.id]).where(
-                            User.email.in_([u.user for u in user_permissions])
-                        )
-                    )
-                ).all()
-            )
             current_permission_set = set(self.permissions)
             new_permission_set = set(
-                SectionPermission(
-                    user_id=user_id_by_email[p.user], level=p.level, section_id=self.id
-                )
+                SectionPermission(user_id=p.user, level=p.level, section_id=self.id)
                 for p in user_permissions
             )
 
             for unwanted_permission in current_permission_set - new_permission_set:
-                session.delete(unwanted_permission)
+                session.sync_session.delete(unwanted_permission)
 
             for new_permission in new_permission_set - current_permission_set:
                 session.add(new_permission)
 
-            # TODO: rename to access controlled
             self.is_admin_only = True
             session.add(self)
-            await session.refresh(self)
+        await session.refresh(self)

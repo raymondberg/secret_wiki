@@ -30,8 +30,8 @@ async def client(test_app, override_current_active_user):
 
 
 @pytest_asyncio.fixture
-def override_current_active_user(user):
+def override_current_active_user(user, fake):
     def override_current_active_user_(is_admin=False):
-        return lambda: User(email=user[1], is_superuser=is_admin)
+        return lambda: User(id=user.id, email=user.email, is_superuser=is_admin)
 
     return override_current_active_user_
