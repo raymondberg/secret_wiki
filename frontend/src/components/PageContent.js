@@ -124,7 +124,7 @@ class PageContent extends React.Component {
   }
 
   render() {
-    const title = (this.props.page === undefined) ? null : <h2 class="page-title">{this.props.page.title}</h2>
+    const title = (this.props.page === undefined) ? null : <h2 className="page-title">{this.props.page.title}</h2>
     var content = (this.props.editMode)? (
       <SectionList
          sections={this.state.sections}
