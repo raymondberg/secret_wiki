@@ -17,7 +17,7 @@ export function SectionShow(props) {
 
     var section_class = (
       "page-section-wrapper row " +
-      (props.section.is_admin_only ? " page-section-restricted" : "page-section-public")
+      (props.section.is_secret ? " page-section-restricted" : "page-section-public")
     );
     return (
       <div className={section_class}
@@ -32,7 +32,7 @@ export class SectionEdit extends React.Component {
   constructor(props) {
     super(props)
 
-    this.state = {content: props.section.content, is_admin_only: props.section.is_admin_only}
+    this.state = {content: props.section.content, is_secret: props.section.is_secret}
 
     this.handleChange = this.handleChange.bind(this);
     this.saveContentToServer = this.saveContentToServer.bind(this);
@@ -42,12 +42,12 @@ export class SectionEdit extends React.Component {
     if (event.target.name === 'content') {
       this.setState({content: event.target.value})
     } else if ( event.target.name === 'isAdminOnly') {
-      this.setState({is_admin_only: event.target.checked})
+      this.setState({is_secret: event.target.checked})
     }
   }
 
   saveContentToServer() {
-    this.props.updateSectionCallback(this.props.section.id, this.state.content, this.props.section.section_index, this.state.is_admin_only)
+    this.props.updateSectionCallback(this.props.section.id, this.state.content, this.props.section.section_index, this.state.is_secret)
   }
 
   render() {
@@ -73,7 +73,7 @@ export class SectionEdit extends React.Component {
           <div>
             Admin Only:
             <input name="isAdminOnly" type="checkbox"
-                   defaultChecked={this.state.is_admin_only} onChange={this.handleChange}/>
+                   defaultChecked={this.state.is_secret} onChange={this.handleChange}/>
           </div>
             <button className="btn btn-primary section-button" onClick={this.saveContentToServer}>Save</button>
             <button className="btn btn-light section-button" onClick={cancelCallback}>Cancel</button>
