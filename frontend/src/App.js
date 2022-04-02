@@ -1,5 +1,6 @@
 import { React, useState} from "react";
 import { BrowserRouter as Router} from "react-router-dom";
+import { useCookies } from 'react-cookie';
 import Main from "./components/Main";
 import LoginModal from "./components/LoginModal";
 import "./App.css";
@@ -10,7 +11,13 @@ function App() {
     const crossDomain = process.env.NODE_ENV !== 'production'
     const apiRoot = (!crossDomain)? "/api": "http://localhost:8000/api"
 
-    const [jwt, setJwt] = useState(null);
+    const [cookies, setCookie] = useCookies(['access_token']);
+    const [jwt, setJwt] = useState(cookies.access_token);
+
+    function updateJwt(newJwt) {
+      setCookie('access_token', newJwt)
+      setJwt(newJwt)
+    }
 
     function apiWrapper() {
       function get(url) {
@@ -48,7 +55,11 @@ function App() {
           body: postBody,
         })
       }
-      return {get: get, post: post, isLoggedIn: () => jwt !== null}
+      return {
+        get: get,
+        post: post,
+        isLoggedIn: function() { return jwt !== null && jwt !== undefined }
+      }
     }
 
 
@@ -59,7 +70,7 @@ function App() {
         <Main api={api}/>
         <LoginModal api={api}
                        shouldShow={!api.isLoggedIn()}
-                       setJwt={setJwt}/>
+                       setJwt={updateJwt}/>
       </Router>
     )
 }
