@@ -32,6 +32,14 @@ function App() {
         return fetch(`${apiRoot}/${url}`, {
           headers: headers,
         })
+        .then(
+          function(response) {
+            if(response.status == 401) {
+              updateJwt(null)
+            }
+            return response
+          },
+        );
       }
 
       function post(url, body, includeBearer=true) {
