@@ -1,7 +1,12 @@
 from typing import Optional
 
 from fastapi_users import models
-from pydantic import EmailStr
+from pydantic import UUID4, EmailStr
+
+
+class PublicUser(models.BaseModel, orm_mode=True):
+    id: UUID4
+    email: EmailStr
 
 
 class User(models.BaseUser, models.BaseOAuthAccountMixin):

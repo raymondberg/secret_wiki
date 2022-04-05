@@ -8,10 +8,9 @@ from secret_wiki import schemas
 from secret_wiki.db import AsyncSession, get_async_session
 
 from .auth import fastapi_users
+from .common import current_active_user
 
 router = APIRouter(prefix="/api")
-
-current_active_user = fastapi_users.current_user(active=True)
 
 
 @router.get("/w", response_model=List[schemas.Wiki])

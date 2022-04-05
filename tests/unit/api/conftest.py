@@ -5,7 +5,7 @@ from httpx import AsyncClient
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from secret_wiki.api.wiki import current_active_user
+from secret_wiki.api.common import current_active_user
 from secret_wiki.schemas import User
 
 # pylint: disable=redefined-outer-name

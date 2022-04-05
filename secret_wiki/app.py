@@ -6,6 +6,7 @@ from starlette.routing import Mount
 from starlette.staticfiles import StaticFiles
 
 from .api.auth import routers as auth_routers
+from .api.user import router as user_router
 from .api.wiki import router as wiki_router
 
 project_root = Path(__file__).parent
@@ -24,6 +25,7 @@ app.add_middleware(
 )
 
 app.include_router(wiki_router)
+app.include_router(user_router)
 for router_config in auth_routers:
     app.include_router(**router_config)
 
