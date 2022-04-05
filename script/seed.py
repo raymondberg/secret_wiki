@@ -6,8 +6,8 @@ from sqlalchemy import select
 
 from secret_wiki.api.auth import get_user_manager
 from secret_wiki.db import get_async_session, get_user_db
-from secret_wiki.models.wiki import Page, Section, Wiki
-from secret_wiki.schemas import UserShellCreate
+from secret_wiki.models.wiki import Page, Section, SectionPermission, Wiki
+from secret_wiki.schemas import PermissionLevel, UserShellCreate
 
 get_async_session_context = contextlib.asynccontextmanager(get_async_session)
 get_user_db_context = contextlib.asynccontextmanager(get_user_db)
@@ -56,7 +56,7 @@ async def get_or_create(db, model, **kwargs):
 
 
 async def create_all():
-    users = [create_user("admin"), create_user("user")]
+    users = [create_user("admin"), create_user("user"), create_user("trusted")]
 
     async with get_async_session_context() as db:
         wikis = dict(
@@ -69,10 +69,25 @@ async def create_all():
             mulan=get_or_create(db, Page, wiki_id=mulan.id, id="mulan", title="Mulan"),
             mushu=get_or_create(db, Page, wiki_id=mulan.id, id="mushu", title="Mushu (Dragon)"),
         )
-
+        mulan_page = await pages["mulan"]
         mushu = await pages["mushu"]
         sections = dict(
-            intro=get_or_create(
+            mulan_intro=get_or_create(
+                db,
+                Section,
+                wiki_id=mulan.id,
+                page_id=mulan_page.id,
+                content="## ABOUT\nPing is an awesome fighter",
+            ),
+            secret=get_or_create(
+                db,
+                Section,
+                wiki_id=mulan.id,
+                page_id=mulan_page.id,
+                content="Ping is secretly Mulan in disguise.",
+                is_admin_only=True,
+            ),
+            mushu_intro=get_or_create(
                 db,
                 Section,
                 wiki_id=mulan.id,
@@ -96,7 +111,21 @@ async def create_all():
             ),
         )
 
-    await just_gather(*users, *wikis.values(), *pages.values(), *sections.values())
+        user = await users[2]
+        secret_section = await sections["secret"]
+        permissions = dict(
+            permissions=get_or_create(
+                db,
+                SectionPermission,
+                section_id=secret_section.id,
+                user_id=user.id,
+                level=PermissionLevel.EDIT,
+            ),
+        )
+
+    await just_gather(
+        *users, *wikis.values(), *pages.values(), *sections.values(), *permissions.values()
+    )
 
 
 if __name__ == "__main__":
