@@ -58,7 +58,7 @@ export default function LoginModal(props) {
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </Form.Group>
-            <Button block size="lg" type="submit" disabled={!validateForm()}>
+            <Button block="true" size="lg" type="submit" disabled={!validateForm()}>
                 Login
               </Button>
           </Form>

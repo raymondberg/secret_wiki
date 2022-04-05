@@ -56,6 +56,7 @@ class User(Base, SQLAlchemyBaseUserTable):  # pylint: disable=too-few-public-met
     @classmethod
     async def all(cls):
         session = AsyncDatabaseSession()
+        await session.init()
         result = await session.execute(select(cls))
         return result.scalars().all()
 

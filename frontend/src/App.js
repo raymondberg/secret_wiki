@@ -34,7 +34,7 @@ function App() {
         })
         .then(
           function(response) {
-            if(response.status == 401) {
+            if(response.status === 401) {
               updateJwt(null)
             }
             return response

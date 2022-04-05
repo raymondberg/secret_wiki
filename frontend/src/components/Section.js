@@ -1,5 +1,6 @@
 import React from "react";
 import marked from "marked";
+import { PermissionForm } from "./PermissionForm";
 
 export function Gutter(props) {
    return (
@@ -32,7 +33,7 @@ export class SectionEdit extends React.Component {
   constructor(props) {
     super(props)
 
-    this.state = {content: props.section.content, is_secret: props.section.is_secret}
+    this.state = {content: props.section.content, is_secret: props.section.is_secret, permissions: props.section.permissions}
 
     this.handleChange = this.handleChange.bind(this);
     this.saveContentToServer = this.saveContentToServer.bind(this);
@@ -61,6 +62,7 @@ export class SectionEdit extends React.Component {
     if (this.state.content) {
       rows = Math.max((this.state.content.match(/\n/g) || []).length, rows)
     }
+    console.log("this should be it: " + this.state.permissions)
 
     return (
       <div className="page-section-wrapper row data-entry">
@@ -78,6 +80,7 @@ export class SectionEdit extends React.Component {
             <button className="btn btn-primary section-button" onClick={this.saveContentToServer}>Save</button>
             <button className="btn btn-light section-button" onClick={cancelCallback}>Cancel</button>
         </div>
+        <PermissionForm permissions={this.state.permissions}/>
       </div>
     )
   }
