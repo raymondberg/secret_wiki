@@ -1,6 +1,4 @@
-import { useDispatch } from 'react-redux'
-import { updateUsers } from '../shared/userSlice'
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import PageCreateModal from "./PageCreateModal";
 import PageContent from "./PageContent";
 import PageTree from "./PageTree";
@@ -16,8 +14,6 @@ function useQuery() {
 
 function Main(props) {
     let query = useQuery();
-
-    const dispatch = useDispatch();
 
     const [editMode, setEditMode] = useState(false);
     const [wikiId, setWikiId] = useState(query.get("w"));
@@ -52,17 +48,6 @@ function Main(props) {
       setPageCreateModalShow(!pageCreateModalShow)
       handlePageChange(newPageId)
     }
-
-    useEffect(() => {
-      props.api.get("u")
-        .then((res) => res.json())
-        .then(
-          (returnedUsers) => {
-            dispatch(updateUsers(returnedUsers))
-          }
-        )
-    })
-
 
     var wikiList = null; var content = null
     if (props.api.isLoggedIn()) {

@@ -1,6 +1,8 @@
 import React from "react";
+import DOMPurify from 'dompurify';
 import marked from "marked";
 import { PermissionForm } from "./PermissionForm";
+
 
 export function Gutter(props) {
    return (
@@ -12,7 +14,7 @@ export function Gutter(props) {
 export function SectionShow(props) {
     function markdownContent(thing) {
       if (props.section.prior_content) {
-        return { __html: marked(props.section.prior_content, {sanitize: true}) };
+        return { __html: marked(DOMPurify.sanitize(props.section.prior_content)) };
       }
     }
 
@@ -62,7 +64,6 @@ export class SectionEdit extends React.Component {
     if (this.state.content) {
       rows = Math.max((this.state.content.match(/\n/g) || []).length, rows)
     }
-    console.log("this should be it: " + this.state.permissions)
 
     return (
       <div className="page-section-wrapper row data-entry">

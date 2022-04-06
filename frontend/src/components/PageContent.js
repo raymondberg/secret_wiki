@@ -26,15 +26,12 @@ class PageContent extends React.Component {
     if (sectionId === null) {
       console.log("Cannot convert without sectionId")
       return
-    } else {
-      console.log(`Toggling ${sectionId}`)
     }
 
     this.setState(
       { sections: this.state.sections.map(
         function(s) {
           if (s.id === sectionId) {
-            console.log(`toggling ${s.id}`, (!s.editMode)?"on":"off")
             s.edit_mode = !s.edit_mode
           }
           return s
