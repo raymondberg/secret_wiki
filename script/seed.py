@@ -78,6 +78,7 @@ async def create_all():
                 wiki_id=mulan.id,
                 page_id=mulan_page.id,
                 content="## ABOUT\nPing is an awesome fighter",
+                section_index=3000,
             ),
             secret=get_or_create(
                 db,
@@ -86,6 +87,7 @@ async def create_all():
                 page_id=mulan_page.id,
                 content="Ping is secretly Mulan in disguise.",
                 is_admin_only=True,
+                section_index=4000,
             ),
             mushu_intro=get_or_create(
                 db,
@@ -93,6 +95,7 @@ async def create_all():
                 wiki_id=mulan.id,
                 page_id=mushu.id,
                 content="## ABOUT\nHe's a cute little dragon",
+                section_index=3000,
             ),
             factoid=get_or_create(
                 db,
@@ -108,6 +111,7 @@ async def create_all():
                         "* Very cowardly, but improves over the film",
                     ]
                 ),
+                section_index=4000,
             ),
         )
 
