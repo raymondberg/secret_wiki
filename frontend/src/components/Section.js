@@ -35,9 +35,14 @@ export class SectionEdit extends React.Component {
   constructor(props) {
     super(props)
 
-    this.state = {content: props.section.content, is_secret: props.section.is_secret, permissions: props.section.permissions}
+    this.state = {
+      content: props.section.content,
+      is_secret: props.section.is_secret,
+      permissions: props.section.permissions,
+    }
 
     this.handleChange = this.handleChange.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
     this.saveContentToServer = this.saveContentToServer.bind(this);
   }
 
@@ -49,9 +54,19 @@ export class SectionEdit extends React.Component {
     }
   }
 
+  handleDelete(event) {
+    if (this.props.section.exists_on_server) {
+      if (!window.confirm("Do you really want to delete this section?")) {
+        return
+      }
+    }
+    this.props.destroySection(this.props.section.section_index, this.props.section)
+  }
+
   saveContentToServer() {
     this.props.updateSectionCallback(this.props.section.id, this.state.content, this.props.section.section_index, this.state.is_secret)
   }
+
 
   render() {
     var cancelCallback = (this.props.section.exists_on_server)?(
@@ -80,6 +95,8 @@ export class SectionEdit extends React.Component {
           </div>
             <button className="btn btn-primary section-button" onClick={this.saveContentToServer}>Save</button>
             <button className="btn btn-light section-button" onClick={cancelCallback}>Cancel</button>
+            <button className="btn btn-light section-button" onClick={this.handleDelete}>&#128465;
+</button>
         </div>
         <PermissionForm permissions={this.state.permissions}/>
       </div>

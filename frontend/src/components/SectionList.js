@@ -3,7 +3,7 @@ import { SectionEdit, SectionShow, Gutter } from "./Section";
 
 const SECTION_SPACER = 10
 
-export default class PageContent extends React.Component {
+export default class SectionList extends React.Component {
   constructor(props) {
       super(props);
 
@@ -47,7 +47,7 @@ export default class PageContent extends React.Component {
     var elements = [this.gutterAt(null, this.minGutterIndex())]
     this.props.sections.forEach((section) => {
         if (section.edit_mode) {
-          elements.push(<SectionEdit key={section.id}
+          elements.push(<SectionEdit key={section.section_index}
                                      section={section}
                                      toggleEdit={this.props.toggleEdit}
                                      destroySection={this.props.destroySection}

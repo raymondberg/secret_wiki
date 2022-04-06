@@ -8,7 +8,6 @@ class WikiList extends React.Component {
   }
 
   handleWikiChange(wikiId) {
-    console.log("Clicked wiki " + wikiId)
     this.props.handleWikiChange(wikiId)
   }
 

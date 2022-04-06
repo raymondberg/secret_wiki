@@ -80,9 +80,35 @@ function App() {
           body: postBody,
         })
       }
+
+      function remove(url) {
+        if (jwt === null ) {
+          console.log('tried delete without jwt')
+        }
+        var headers = {
+          crossDomain: crossDomain,
+          Authorization: `Bearer ${jwt}`
+        }
+
+        return fetch(`${apiRoot}/${url}`, {
+          headers: headers,
+          method: 'DELETE',
+        })
+        .then(
+          function(response) {
+            if(response.status === 401) {
+              updateJwt(null)
+            }
+            return response
+          },
+        );
+      }
+
+
       return {
         get: get,
         post: post,
+        delete: remove,
         isLoggedIn: function() { return jwt !== null && jwt !== undefined }
       }
     }

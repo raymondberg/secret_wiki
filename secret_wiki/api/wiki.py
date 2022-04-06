@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy.orm import relationship
 
 import secret_wiki.models.wiki as models
@@ -142,3 +142,22 @@ async def update_section(
 
     section_result = await db.execute(query)
     return section_result.scalars().first()
+
+
+@router.delete("/w/{wiki_id}/p/{page_id}/s/{section_id}")
+async def update_section(
+    wiki_id: str,
+    page_id: str,
+    section_id: int,
+    db: AsyncSession = Depends(get_async_session),
+    user: schemas.User = Depends(current_active_user),
+):
+    query = models.Section.filter(
+        section_id=section_id, wiki_id=wiki_id, page_id=page_id, user=user
+    ).order_by("section_index")
+    section = (await db.execute(query)).scalars().first()
+    if not section or not user.can_update_section(section):
+        raise HTTPException(status_code=404, detail="Section not found")
+    db.sync_session.delete(section)
+    await db.commit()
+    return Response(status_code=204)

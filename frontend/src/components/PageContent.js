@@ -40,8 +40,16 @@ class PageContent extends React.Component {
     )
   }
 
-  destroySection(sectionIndex) {
+  destroySection(sectionIndex, section) {
     console.log("wiping the sections to exclude", sectionIndex)
+    if (section !== undefined && section.id) {
+      this.props.api.delete(`w/${this.props.wikiId}/p/${this.props.page.id}/s/${section.id}`)
+        .then( (result) => {
+          if (result.status === 204) {
+            this.updatePageFromServer()
+          }
+        })
+    }
     this.setState({sections: this.state.sections.filter((s) => s.id != null || s.section_index !== sectionIndex)})
   }
 

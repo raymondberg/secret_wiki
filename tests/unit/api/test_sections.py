@@ -137,3 +137,20 @@ async def test_post_sections_can_just_do_section_index(client, db, sections):
 
     sections = await db.execute(select(Section).filter_by(id=section.id))
     assert sections.scalars().first().section_index == 94321
+
+
+@pytest.mark.asyncio
+async def test_delete_section(client, db, sections):
+    section = sections[0]
+
+    response = await client.delete(f"/api/w/my_wiki/p/page_1/s/{section.id}")
+    assert response.status_code == 204
+
+    sections = await db.execute(select(Section).filter_by(id=section.id))
+    result = sections.scalars().first()
+    assert result is None
+
+
+@pytest.mark.skip("skipped for time")
+async def test_delete_section_fails_without_permissions(client, db, sections):
+    pass
