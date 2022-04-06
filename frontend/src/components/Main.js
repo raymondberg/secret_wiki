@@ -33,13 +33,11 @@ function Main(props) {
     }
 
     function handleWikiChange(newWikiId) {
-      console.log("Loading new wiki " + newWikiId)
       setWikiId(newWikiId)
       updateUrlBar(newWikiId, pageId)
     }
 
     function handlePageChange(newPageId) {
-      console.log("Loading new page " + newPageId)
       setPageId(newPageId)
       updateUrlBar(wikiId, newPageId)
     }
