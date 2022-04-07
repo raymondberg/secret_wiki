@@ -43,6 +43,7 @@ export class SectionEdit extends React.Component {
     }
 
     this.handleChange = this.handleChange.bind(this);
+    this.handleChangePermission = this.handleChangePermission.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
     this.saveContentToServer = this.saveContentToServer.bind(this);
   }
@@ -55,6 +56,16 @@ export class SectionEdit extends React.Component {
       event.target.blur()
     }
   }
+
+  handleChangePermission(userId, shouldHaveAccess) {
+      const permission = this.state.permissions.find(e => e.id === userId)
+      if(permission === undefined) {
+        this.setState({permissions: this.state.permissions.concat([{ id: userId, level: "edit" }])})
+      } else {
+        this.setState({permissions: this.state.permissions.filter(e => e !== permission)})
+      }
+  }
+
 
   handleDelete(event) {
     if (this.props.section.exists_on_server) {
@@ -91,7 +102,7 @@ export class SectionEdit extends React.Component {
                       onChange={this.handleChange} value={this.state.content}/>
           </div>
           <div>
-            <PermissionForm permissions={this.state.permissions}/>
+            <PermissionForm permissions={this.state.permissions} changePermission={this.handleChangePermission}/>
           </div>
         </div>
         <div className="col-md-2">
@@ -118,7 +129,7 @@ export function SecretButton(props) {
 
   if (props.isSecret) {
     classSpecifier += "btn section-button btn-warning"
-    var icon = <React.Fragment>&#128274;</React.Fragment>
+    icon = <React.Fragment>&#128274;</React.Fragment>
   }
 
   return (

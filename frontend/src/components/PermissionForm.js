@@ -1,26 +1,29 @@
 import { useSelector } from 'react-redux'
+import ButtonGroup from 'react-bootstrap/ButtonGroup'
 
 export function PermissionForm(props) {
   const users = useSelector((state) => state.users.value)
-
+  // TODO Revisit when read-only added
+  const usersWithPermission = (props.permissions || []).map(e => e.id)
   return (
-    <div className="row">
-      {users.map((u) => <PermissionCheckBox key={u.email} username={u.email}/>)}
-    </div>
+    <ButtonGroup size="lg">
+      {users.map((u) => <PermissionCheckBox key={u.email}
+                                            username={u.email}
+                                            userId={u.id}
+                                            hasPermission={usersWithPermission.includes(u.id)}
+                                            changePermission={props.changePermission}
+                                            />)}
+    </ButtonGroup>
   )
 }
 
 function PermissionCheckBox(props) {
+  const classSpecifier = props.hasPermission ? "btn btn-warning": "btn btn-light"
     return (
-      <div className="col-lg-4 col-md-6 col-sm-12">
-        <label>
-          <input className="permission-checkbox"
-                 type="checkbox"/>
-            &nbsp; { props.username }
-        </label>
-      </div>
+        <button className={classSpecifier} onClick={function(e) { e.target.blur(); props.changePermission(props.userId, !props.hasPermission)}}>
+           { props.username }
+         </button>
     )
-               // defaultChecked={false} onChange={(e) => props.permissionUpdate(props.permission.user_id, e.target.checked)}/>
 }
 
 export default PermissionForm;
