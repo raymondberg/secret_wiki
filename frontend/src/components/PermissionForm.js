@@ -5,14 +5,14 @@ export function PermissionForm(props) {
 
   return (
     <div className="row">
-      {users.map((u) => <PermissionCheckBox username={u.email}/>)}
+      {users.map((u) => <PermissionCheckBox key={u.email} username={u.email}/>)}
     </div>
   )
 }
 
 function PermissionCheckBox(props) {
     return (
-      <div class="col-lg-4 col-md-6 col-sm-12">
+      <div className="col-lg-4 col-md-6 col-sm-12">
         <label>
           <input className="permission-checkbox"
                  type="checkbox"/>

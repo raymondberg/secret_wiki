@@ -116,5 +116,3 @@ class Section(Base):
                 session.add(new_permission)
 
             self.is_admin_only = True
-            session.add(self)
-        await session.refresh(self)

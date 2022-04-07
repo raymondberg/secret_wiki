@@ -1,4 +1,6 @@
+import asyncio
 import os
+from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
 from fastapi import Depends
@@ -18,17 +20,6 @@ engine = create_async_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_
 
 class AsyncDatabaseSession:
     def __init__(self):
-        self._session = None
-        self._engine = None
-
-    def __getattr__(self, name):
-        return getattr(self.session, name)
-
-    @property
-    def session(self):
-        return self._session
-
-    async def init(self):
         self._engine = create_async_engine(
             SQLALCHEMY_DATABASE_URL,
             echo=True,
@@ -42,12 +33,21 @@ class AsyncDatabaseSession:
             expire_on_commit=False,
         )()
 
+    def __del__(self):
+        if self._session:
+            self._session.close()
+
+    def __getattr__(self, name):
+        return getattr(self.session, name)
+
+    @property
+    def session(self):
+        return self._session
+
     async def create_all(self):
         async with self._engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
 
-
-async_session_maker = AsyncDatabaseSession
 
 Base = declarative_base()
 
@@ -56,7 +56,6 @@ class User(Base, SQLAlchemyBaseUserTable):  # pylint: disable=too-few-public-met
     @classmethod
     async def all(cls):
         session = AsyncDatabaseSession()
-        await session.init()
         result = await session.execute(select(cls))
         return result.scalars().all()
 
@@ -68,8 +67,7 @@ class User(Base, SQLAlchemyBaseUserTable):  # pylint: disable=too-few-public-met
 
 
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
-    session = async_session_maker()
-    await session.init()
+    session = AsyncDatabaseSession()
     yield session
     session.close()
 

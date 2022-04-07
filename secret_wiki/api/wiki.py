@@ -113,6 +113,7 @@ async def wiki_section_create(
     async with db.begin_nested():
         await db.refresh(section)
         await section.set_permissions(*section_create.permissions or [])
+        db.add(section)
     return await models.Section.get(section.id)
 
 

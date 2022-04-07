@@ -63,9 +63,11 @@ async def test_admin_can_see_permissions_for_all_users(admin_client, permissions
 
 @pytest.mark.asyncio
 async def test_user_can_see_sections_and_permissions_for_them(
-    client, user_id, permissions, sections
+    db, client, user_id, permissions, sections
 ):
     await sections[0].set_permissions(schemas.SectionPermission(user=str(user_id), level="edit"))
+    # This is annoying, but I guess because I mocked the db it's not getting refreshed
+    await db.refresh(sections[0])
     data = await get_section_list(client, 1)
 
     assert data[0]["id"] == sections[0].id
