@@ -2,6 +2,7 @@ import React from "react";
 import DOMPurify from 'dompurify';
 import marked from "marked";
 import { PermissionForm } from "./PermissionForm";
+import ButtonGroup from 'react-bootstrap/ButtonGroup'
 
 
 export function Gutter(props) {
@@ -49,8 +50,9 @@ export class SectionEdit extends React.Component {
   handleChange(event) {
     if (event.target.name === 'content') {
       this.setState({content: event.target.value})
-    } else if ( event.target.name === 'isAdminOnly') {
-      this.setState({is_secret: event.target.checked})
+    } else if ( event.target.name === 'isSecret') {
+      this.setState({is_secret: !this.state.is_secret})
+      event.target.blur()
     }
   }
 
@@ -83,23 +85,43 @@ export class SectionEdit extends React.Component {
     return (
       <div className="page-section-wrapper row data-entry">
         <div className="col-md-10">
-          <textarea name="content" className="page-section"
-                    rows={rows}
-                    onChange={this.handleChange} value={this.state.content}/>
+          <div>
+            <textarea name="content" className="page-section"
+                      rows={rows}
+                      onChange={this.handleChange} value={this.state.content}/>
+          </div>
+          <div>
+            <PermissionForm permissions={this.state.permissions}/>
+          </div>
         </div>
         <div className="col-md-2">
           <div>
-            Admin Only:
-            <input name="isAdminOnly" type="checkbox"
-                   defaultChecked={this.state.is_secret} onChange={this.handleChange}/>
+            <ButtonGroup vertical>
+              <button className="btn btn-primary section-button" onClick={this.saveContentToServer}>Save</button>
+              <button className="btn btn-light section-button" onClick={cancelCallback}>Cancel</button>
+
+              <ButtonGroup size='lg'>
+                <SecretButton isSecret={this.state.is_secret} onChange={this.handleChange}/>
+                <button className="btn btn-light section-button" onClick={this.handleDelete}>&#128465;</button>
+              </ButtonGroup>
+            </ButtonGroup>
           </div>
-            <button className="btn btn-primary section-button" onClick={this.saveContentToServer}>Save</button>
-            <button className="btn btn-light section-button" onClick={cancelCallback}>Cancel</button>
-            <button className="btn btn-light section-button" onClick={this.handleDelete}>&#128465;
-</button>
         </div>
-        <PermissionForm permissions={this.state.permissions}/>
       </div>
     )
   }
+}
+
+export function SecretButton(props) {
+  var classSpecifier = "btn section-button btn-light"
+  var icon = <React.Fragment>&#128275;</React.Fragment>
+
+  if (props.isSecret) {
+    classSpecifier += "btn section-button btn-warning"
+    var icon = <React.Fragment>&#128274;</React.Fragment>
+  }
+
+  return (
+    <button name="isSecret" className={classSpecifier} onClick={props.onChange}>{icon}</button>
+  )
 }
