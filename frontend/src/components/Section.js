@@ -86,7 +86,7 @@ export class SectionEdit extends React.Component {
       <div className="page-section-wrapper row data-entry">
         <div className="col-md-10">
           <div>
-            <textarea name="content" className="page-section"
+            <textarea autoFocus name="content" className="page-section"
                       rows={rows}
                       onChange={this.handleChange} value={this.state.content}/>
           </div>
