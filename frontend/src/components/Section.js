@@ -102,7 +102,7 @@ export class SectionEdit extends React.Component {
                       onChange={this.handleChange} value={this.state.content}/>
           </div>
           <div>
-            <PermissionForm permissions={this.state.permissions} changePermission={this.handleChangePermission}/>
+            {this.state.is_secret?<PermissionForm permissions={this.state.permissions} changePermission={this.handleChangePermission}/>:<span/>}
           </div>
         </div>
         <div className="col-md-2">
