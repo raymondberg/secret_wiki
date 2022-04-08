@@ -36,7 +36,6 @@ async def test_set_permissions_maps_users(db, user_id, sections):
     )
 
     await db.refresh(admin_only_section)
-    assert admin_only_section.is_admin_only
     assert admin_only_section.permissions
     assert len(admin_only_section.permissions) == 1
     assert admin_only_section.permissions[0].level == schemas.PermissionLevel.EDIT

@@ -58,9 +58,9 @@ export class SectionEdit extends React.Component {
   }
 
   handleChangePermission(userId, shouldHaveAccess) {
-      const permission = this.state.permissions.find(e => e.id === userId)
+      const permission = this.state.permissions.find(e => e.user === userId)
       if(permission === undefined) {
-        this.setState({permissions: this.state.permissions.concat([{ id: userId, level: "edit" }])})
+        this.setState({permissions: this.state.permissions.concat([{ user: userId, level: "edit" }])})
       } else {
         this.setState({permissions: this.state.permissions.filter(e => e !== permission)})
       }
@@ -77,7 +77,7 @@ export class SectionEdit extends React.Component {
   }
 
   saveContentToServer() {
-    this.props.updateSectionCallback(this.props.section.id, this.state.content, this.props.section.section_index, this.state.is_secret)
+    this.props.updateSectionCallback(this.props.section.id, this.state.content, this.props.section.section_index, this.state.is_secret, this.state.permissions)
   }
 
 

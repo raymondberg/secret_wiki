@@ -4,7 +4,7 @@ import ButtonGroup from 'react-bootstrap/ButtonGroup'
 export function PermissionForm(props) {
   const users = useSelector((state) => state.users.value)
   // TODO Revisit when read-only added
-  const usersWithPermission = (props.permissions || []).map(e => e.id)
+  const usersWithPermission = (props.permissions || []).map(e => e.user)
   return (
     <ButtonGroup size="lg">
       {users.map((u) => <PermissionCheckBox key={u.email}

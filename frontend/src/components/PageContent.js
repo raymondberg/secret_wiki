@@ -98,12 +98,12 @@ class PageContent extends React.Component {
       );
   }
 
-  updateSection(sectionId, content, section_index, isAdminOnly) {
+  updateSection(sectionId, content, section_index, isAdminOnly, permissions) {
      var body = {
-        id: sectionId,
         content: content,
         section_index: section_index,
         is_admin_only: isAdminOnly,
+        permissions: permissions,
      };
      var url = `w/${this.props.wikiSlug}/p/${this.props.page.slug}/s`
      var isCreate = true

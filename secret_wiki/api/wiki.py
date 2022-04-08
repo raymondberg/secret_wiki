@@ -148,17 +148,17 @@ async def update_section(
     db: AsyncSession = Depends(get_async_session),
     user: schemas.User = Depends(current_active_user),
 ):
-    query = models.Section.filter(section_id=section_id, user=user).order_by("section_index")
-    section_result = await db.execute(query)
+    section_result = await db.execute(
+        models.Section.filter(section_id=section_id, user=user).order_by("section_index")
+    )
     updated_section = section_result.scalars().first()
     if not updated_section or not user.can_update_section(updated_section):
         raise HTTPException(status_code=404, detail="Section not found")
 
-    updated_section.update(section)
-    await updated_section.set_permissions(*updated_section.permissions or [], db=db)
     async with db.begin_nested():
+        updated_section.update(section)
         db.add(updated_section)
-        await db.commit()
+    await updated_section.set_permissions(*section.permissions or [], db=db)
     await db.refresh(updated_section)
     return updated_section
 

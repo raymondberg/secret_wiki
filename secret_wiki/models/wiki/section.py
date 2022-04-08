@@ -1,4 +1,5 @@
 from typing import List
+from uuid import UUID
 
 from fastapi_users_db_sqlalchemy.guid import GUID
 from sqlalchemy import (
@@ -32,6 +33,21 @@ class SectionPermission(Base):
     @property
     def user(self):
         return str(self.user_id)
+
+    def __repr__(self):
+        return "SectionPermission({})".format(
+            dict(zip(("section_id", "user_id", "level"), self._key))
+        )
+
+    @property
+    def _key(self):
+        return (self.section_id, self.user_id, self.level)
+
+    def __eq__(self, other):
+        return self._key == other._key
+
+    def __hash__(self):
+        return hash(self._key)
 
 
 class Section(Base):
@@ -91,11 +107,17 @@ class Section(Base):
                 setattr(self, attr, value)
 
     async def set_permissions(self, *user_permissions: List[schemas.SectionPermission], db=None):
+        """
+        is_admin_only: false -> Public (permissions don't matter)
+        is_admin_only: true -> Private (permissions are exclusions {})
+        is_admin_only: true -> Private (permissions are exclusions {user:, access:})
+
+        """
         session = db or AsyncDatabaseSession()
         async with session.begin_nested():
             current_permission_set = set(self.permissions)
             new_permission_set = set(
-                SectionPermission(user_id=p.user, level=p.level, section_id=str(self.id))
+                SectionPermission(user_id=UUID(p.user), level=p.level, section_id=str(self.id))
                 for p in user_permissions
             )
 
@@ -104,6 +126,3 @@ class Section(Base):
 
             for new_permission in new_permission_set - current_permission_set:
                 session.add(new_permission)
-
-            if new_permission_set:
-                self.is_admin_only = True

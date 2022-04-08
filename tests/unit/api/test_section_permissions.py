@@ -31,8 +31,11 @@ async def get_section_list(client, expected_count=2):
 
 
 @pytest.mark.asyncio
-async def test_user_informed_of_view_restrictions(client, sections, user_id):
+async def test_user_informed_of_view_restrictions(db, client, sections, user_id):
     user_included_secret = next(s for s in sections if s.content == "An earlier section")
+    async with db.begin_nested():
+        user_included_secret.is_admin_only = True
+        db.add(user_included_secret)
     await user_included_secret.set_permissions(
         schemas.SectionPermission(user=str(user_id), level="edit")
     )
@@ -43,7 +46,7 @@ async def test_user_informed_of_view_restrictions(client, sections, user_id):
 
 
 @pytest.mark.skip("not yet supported")
-def test_admin_informed_of_edit_permissions(admin_client):
+def test_admin_informed_of_edit_permissions(admin_client, sections):
     data = get_section_list(admin_client)
     assert all(d["can_edit_permissions"] for d in data)
 
@@ -51,6 +54,7 @@ def test_admin_informed_of_edit_permissions(admin_client):
 @pytest.mark.asyncio
 async def test_admin_can_see_permissions_for_all_users(admin_client, permissions):
     data = await get_section_list(admin_client)
+    response = await admin_client.get("/api/w/my_wiki/p/page_1/s")
 
     assert data
     for section in data:
@@ -64,9 +68,42 @@ async def test_admin_can_see_permissions_for_all_users(admin_client, permissions
 
 
 @pytest.mark.asyncio
+async def test_admin_can_set_permissions_for_all_users(
+    admin_client, permissions, admin_only_section
+):
+    assert len(permissions) == 2
+    new_permission = permissions[0]
+    response = await admin_client.post(
+        f"/api/w/my_wiki/p/page_1/s/{admin_only_section.id}",
+        json={
+            "content": "Some new content",
+            "is_admin_only": True,
+            "permissions": [
+                {
+                    "user": str(new_permission.user),
+                    "level": "edit",
+                }
+            ],
+        },
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+    assert data["is_admin_only"]
+    assert len(data["permissions"]) == 1
+
+
+@pytest.mark.asyncio
 async def test_user_can_see_sections_and_permissions_for_them(
     db, client, user_id, permissions, sections
 ):
+    async with db.begin_nested():
+        sections[0].is_admin_only = True
+        sections[1].is_admin_only = True
+        db.add(sections[0])
+        db.add(sections[1])
+
     await sections[0].set_permissions(schemas.SectionPermission(user=str(user_id), level="edit"))
     # This is annoying, but I guess because I mocked the db it's not getting refreshed
     await db.refresh(sections[0])
