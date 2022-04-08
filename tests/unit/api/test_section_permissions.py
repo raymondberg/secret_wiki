@@ -33,7 +33,9 @@ async def get_section_list(client, expected_count=2):
 @pytest.mark.asyncio
 async def test_user_informed_of_view_restrictions(client, sections, user_id):
     user_included_secret = next(s for s in sections if s.content == "An earlier section")
-    await user_included_secret.add_user_permission(id=user_id)
+    await user_included_secret.set_permissions(
+        schemas.SectionPermission(user=str(user_id), level="edit")
+    )
 
     data = await get_section_list(client)
     assert not next(s for s in data if s["content"] == "A later section")["is_secret"]
@@ -70,5 +72,5 @@ async def test_user_can_see_sections_and_permissions_for_them(
     await db.refresh(sections[0])
     data = await get_section_list(client, 1)
 
-    assert data[0]["id"] == sections[0].id
+    assert data[0]["id"] == str(sections[0].id)
     assert data[0]["permissions"] == [{"user": str(user_id), "level": "edit"}]

@@ -16,43 +16,43 @@ function Main(props) {
     let query = useQuery();
 
     const [editMode, setEditMode] = useState(false);
-    const [wikiId, setWikiId] = useState(query.get("w"));
-    const [pageId, setPageId] = useState(query.get("p"));
+    const [wikiSlug, setWikiSlug] = useState(query.get("w"));
+    const [pageSlug, setPageSlug] = useState(query.get("p"));
     const [pages, setPages] = useState([]);
     const [pageCreateModalShow, setPageCreateModalShow] = useState(false);
 
-    function pageForId(pageId) {
-      return pages.filter((p) => p.id === pageId)[0]
+    function pageForSlug(pageSlug) {
+      return pages.filter((p) => p.slug === pageSlug)[0]
     }
 
-    function updateUrlBar(newWikiId, newPageId) {
+    function updateUrlBar(newWikiSlug, newPageSlug) {
       var baseUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}`
-      const queryString = `w=${newWikiId}&p=${newPageId}`;
+      const queryString = `w=${newWikiSlug}&p=${newPageSlug}`;
       const newUrl = `${baseUrl}?${queryString}`
       window.history.pushState({path: newUrl},'',newUrl);
     }
 
-    function handleWikiChange(newWikiId) {
-      setWikiId(newWikiId)
-      updateUrlBar(newWikiId, pageId)
+    function handleWikiChange(newWikiSlug) {
+      setWikiSlug(newWikiSlug)
+      updateUrlBar(newWikiSlug, pageSlug)
     }
 
-    function handlePageChange(newPageId) {
-      setPageId(newPageId)
-      updateUrlBar(wikiId, newPageId)
+    function handlePageChange(newPageSlug) {
+      setPageSlug(newPageSlug)
+      updateUrlBar(wikiSlug, newPageSlug)
     }
 
-    function handlePageCreate(newPageId) {
+    function handlePageCreate(newPageSlug) {
       setPageCreateModalShow(!pageCreateModalShow)
-      handlePageChange(newPageId)
+      handlePageChange(newPageSlug)
     }
 
     var wikiList = null; var content = null
     if (props.api.isLoggedIn()) {
-      wikiList = <WikiList handleWikiChange={handleWikiChange} wikiId={wikiId} api={props.api} />
-        if (wikiId !== null) {
-          var pageTree = <PageTree wikiId={wikiId} pageId={pageId} pages={pages} setPages={setPages} handlePageChange={handlePageChange} api={props.api}/>
-          var pageContent = <PageContent wikiId={wikiId} page={pageForId(pageId)} api={props.api} editMode={editMode} />
+      wikiList = <WikiList handleWikiChange={handleWikiChange} wikiSlug={wikiSlug} api={props.api} />
+        if (wikiSlug !== null) {
+          var pageTree = <PageTree wikiSlug={wikiSlug} pageSlug={pageSlug} pages={pages} setPages={setPages} handlePageChange={handlePageChange} api={props.api}/>
+          var pageContent = <PageContent wikiSlug={wikiSlug} page={pageForSlug(pageSlug)} api={props.api} editMode={editMode} />
           content = (
             <div className="row">
               <div id="left-bar" className="col-md-3">
@@ -81,7 +81,7 @@ function Main(props) {
           </div>
         </div>
       { content }
-      <PageCreateModal wikiId={wikiId}
+      <PageCreateModal wikiSlug={wikiSlug}
                        api={props.api}
                        shouldShow={pageCreateModalShow}
                        handlePageCreate={handlePageCreate}/>

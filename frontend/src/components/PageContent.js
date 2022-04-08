@@ -43,7 +43,7 @@ class PageContent extends React.Component {
   destroySection(sectionIndex, section) {
     console.log("wiping the sections to exclude", sectionIndex)
     if (section !== undefined && section.id) {
-      this.props.api.delete(`w/${this.props.wikiId}/p/${this.props.page.id}/s/${section.id}`)
+      this.props.api.delete(`w/${this.props.wikiSlug}/p/${this.props.page.slug}/s/${section.id}`)
         .then( (result) => {
           if (result.status === 204) {
             this.updatePageFromServer()
@@ -72,17 +72,17 @@ class PageContent extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.page === undefined || this.props.page.id === undefined) return
+    if (this.props.page === undefined || this.props.page.slug === undefined) return
 
-    if (this.props.wikiId !== prevProps.wikiId || prevProps.page === undefined || this.props.page.id !== prevProps.page.id) {
+    if (this.props.wikiSlug !== prevProps.wikiSlug || prevProps.page === undefined || this.props.page.slug !== prevProps.page.slug) {
       this.updatePageFromServer()
     }
   }
 
   updatePageFromServer() {
-    if (this.props.wikiId === null || this.props.page === undefined || this.props.page === null) return
+    if (this.props.wikiSlug === null || this.props.page === undefined || this.props.page === null) return
 
-    this.props.api.get(`w/${this.props.wikiId}/p/${this.props.page.id}/s`)
+    this.props.api.get(`w/${this.props.wikiSlug}/p/${this.props.page.slug}/s`)
       .then((res) => res.json())
       .then(
         (returnedSections) => {
@@ -99,15 +99,13 @@ class PageContent extends React.Component {
   }
 
   updateSection(sectionId, content, section_index, isAdminOnly) {
-      var body = {
+     var body = {
         id: sectionId,
         content: content,
         section_index: section_index,
         is_admin_only: isAdminOnly,
-        wiki_id: this.props.wikiId,
-        page_id: this.props.page.id,
      };
-     var url = `w/${this.props.wikiId}/p/${this.props.page.id}/s`
+     var url = `w/${this.props.wikiSlug}/p/${this.props.page.slug}/s`
      var isCreate = true
      if (sectionId) {
         url += `/${sectionId}`

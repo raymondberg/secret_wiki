@@ -1,3 +1,4 @@
+import uuid
 from typing import List
 from unittest.mock import Mock, patch
 
@@ -76,69 +77,64 @@ def override_get_db(db):
 @pytest_asyncio.fixture
 async def pages(db: AsyncSession, wikis: List[Wiki]) -> List[Page]:
     wiki = wikis[0]
-
-    db.add_all(
-        [
-            Page(wiki_id=wiki.id, id="page_1", title="Page One"),
-            Page(wiki_id=wiki.id, id="page_2", title="Page Two"),
-        ]
-    )
+    pages = [
+        Page(wiki_id=wiki.id, id=uuid.uuid4(), slug="page_1", title="Page One"),
+        Page(wiki_id=wiki.id, id=uuid.uuid4(), slug="page_2", title="Page Two"),
+    ]
+    db.add_all(pages)
     await db.commit()
-
-    pages = await db.execute(select(Page).where(Page.id.in_({"page_1", "page_2"})))
-    return pages.scalars().all()
+    await db.refresh(pages[0])
+    await db.refresh(pages[1])
+    return pages
 
 
 @pytest_asyncio.fixture
 async def admin_only_page(db, wikis):
     wiki = wikis[0]
-    page_1 = Page(
+    admin_only = Page(
         wiki_id=wiki.id,
-        id="admin_only_page",
+        id=uuid.uuid4(),
+        slug="admin_only_page",
         title="Admin Only Page",
         is_admin_only=True,
     )
-    db.add(page_1)
+    db.add(admin_only)
     await db.commit()
-    pages = await db.execute(select(Page).where(Page.id == "admin_only_page"))
-    return pages.scalars().first()
+    await db.refresh(admin_only)
+    return admin_only
 
 
 @pytest_asyncio.fixture
 async def sections(db, pages: List[Page]) -> List[Section]:
     page = pages[0]
-    query = (
-        select(Section).where(Section.wiki_id == page.wiki_id).where(Section.page_id == page.id)
-    )
 
-    db.add_all(
-        [
-            Section(
-                wiki_id=page.wiki_id,
-                page_id=page.id,
-                section_index=5,
-                content="A later section",
-            ),
-            Section(
-                wiki_id=page.wiki_id,
-                page_id=page.id,
-                section_index=2,
-                content="An earlier section",
-            ),
-        ]
-    )
+    sections = [
+        Section(
+            id=uuid.uuid4(),
+            page_id=page.id,
+            section_index=5,
+            content="A later section",
+        ),
+        Section(
+            id=uuid.uuid4(),
+            page_id=page.id,
+            section_index=2,
+            content="An earlier section",
+        ),
+    ]
+    db.add_all(sections)
     await db.commit()
+    await db.refresh(sections[0])
+    await db.refresh(sections[1])
 
-    sections = await db.execute(query)
-    return sections.scalars().unique().all()
+    return sections
 
 
 @pytest_asyncio.fixture
 async def admin_only_section(db, pages: List[Page]) -> Section:
     page = pages[0]
     admin_section = Section(
-        id=900,
-        wiki_id=page.wiki_id,
+        id=uuid.uuid4(),
         page_id=page.id,
         is_admin_only=True,
         section_index=5,
@@ -153,10 +149,17 @@ async def admin_only_section(db, pages: List[Page]) -> Section:
 
 @pytest_asyncio.fixture
 async def wikis(db: AsyncSession) -> List[Wiki]:
-    db.add_all([Wiki(id="my_wiki"), Wiki(id="your_wiki")])
+    db.add_all(
+        [
+            Wiki(id=uuid.uuid4(), slug="my_wiki"),
+            Wiki(id=uuid.uuid4(), slug="your_wiki"),
+        ]
+    )
     await db.commit()
 
-    wikis = await db.execute(select(Wiki).where(Wiki.id.in_({"my_wiki", "your_wiki"})))
+    wikis = await db.execute(
+        select(Wiki).where(Wiki.slug.in_({"my_wiki", "your_wiki"})).order_by("slug")
+    )
 
     return wikis.scalars().all()
 

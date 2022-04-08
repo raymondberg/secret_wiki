@@ -25,7 +25,7 @@ async def test_list_cannot_list_admin_only_sections(client, admin_only_section):
 
 
 @pytest.mark.asyncio
-async def test_create_sections(client, db):
+async def test_create_sections(client, db, pages):
     response = await client.post(
         "/api/w/my_wiki/p/page_1/s",
         json={
@@ -42,7 +42,33 @@ async def test_create_sections(client, db):
 
 
 @pytest.mark.asyncio
-async def test_create_sections_with_admin_only(admin_client, db, user_id):
+async def test_create_multiple_sections_without_collision(client, db, pages):
+    for _ in range(3):
+        response = await client.post(
+            "/api/w/my_wiki/p/page_1/s",
+            json={
+                "content": "Some new content",
+            },
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["content"] == "Some new content"
+
+
+@pytest.mark.asyncio
+async def test_create_sections_without_pages_raises_404(client, db):
+    response = await client.post(
+        "/api/w/my_wiki/p/unreal-page/s",
+        json={
+            "content": "Some new content",
+        },
+    )
+    assert response.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_create_sections_with_admin_only(admin_client, db, user_id, pages):
     response = await admin_client.post(
         "/api/w/my_wiki/p/page_1/s",
         json={
@@ -70,7 +96,7 @@ async def test_create_sections_with_admin_only(admin_client, db, user_id):
 
 
 @pytest.mark.asyncio
-async def test_create_sections_with_admin_only_doesnt_work_without_permissions(client, db):
+async def test_create_sections_with_admin_only_doesnt_work_without_permissions(client, db, pages):
     response = await client.post(
         "/api/w/my_wiki/p/page_1/s",
         json=[
@@ -117,9 +143,9 @@ async def test_admin_can_post_admin_sections(admin_client, db, admin_only_sectio
         json={"is_admin_only": False},
     )
     assert response.status_code == 200
+    await db.refresh(admin_only_section)
 
-    sections = await db.execute(select(Section).filter_by(id=admin_only_section.id))
-    assert not sections.scalars().first().is_admin_only
+    assert not admin_only_section.is_admin_only
 
 
 @pytest.mark.asyncio
@@ -144,7 +170,7 @@ async def test_delete_section(client, db, sections):
     section = sections[0]
 
     response = await client.delete(f"/api/w/my_wiki/p/page_1/s/{section.id}")
-    assert response.status_code == 204
+    assert response.status_code == 204, f"received {response.status_code}: {response.content}"
 
     sections = await db.execute(select(Section).filter_by(id=section.id))
     result = sections.scalars().first()

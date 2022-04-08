@@ -4,7 +4,7 @@ class PageTree extends React.Component {
   constructor(props) {
       super(props);
 
-      this.state = {wikiId: props.wikiId};
+      this.state = {wikiSlug: props.wikiSlug};
   }
 
   componentDidMount() {
@@ -12,15 +12,15 @@ class PageTree extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.wikiId !== prevProps.wikiId || this.props.pageId !== prevProps.pageId) {
+    if (this.props.wikiSlug !== prevProps.wikiSlug || this.props.pageSlug !== prevProps.pageSlug) {
       this.updateTree()
     }
   }
 
   updateTree() {
-    if (this.props.wikiId === null ) return
+    if (this.props.wikiSlug === null ) return
 
-    this.props.api.get(`w/${this.props.wikiId}/p`)
+    this.props.api.get(`w/${this.props.wikiSlug}/p`)
       .then((res) => res.json())
       .then(
         (returnedPages) => {
@@ -43,7 +43,7 @@ class PageTree extends React.Component {
     return (
       <div id="wiki-list" className="p-2">
       { this.props.pages.map(
-        (page) => <PageLink key={page.id} title={page.title} pageId={page.id} handlePageChange={this.props.handlePageChange}/>
+        (page) => <PageLink key={page.id} title={page.title} pageSlug={page.slug} handlePageChange={this.props.handlePageChange}/>
          ) }
       </div>
     )
@@ -52,7 +52,7 @@ class PageTree extends React.Component {
 
 class PageLink extends React.Component {
   render() {
-    return <div className="tree-page" onClick={(e) => this.props.handlePageChange(this.props.pageId)}>{this.props.title}</div>
+    return <div className="tree-page" onClick={(e) => this.props.handlePageChange(this.props.pageSlug)}>{this.props.title}</div>
   }
 }
 

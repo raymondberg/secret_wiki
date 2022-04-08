@@ -1,9 +1,15 @@
 import enum
+import re
 from typing import List, Optional
+from uuid import UUID, uuid4
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, validator
 
 # pylint: disable=too-few-public-methods
+
+
+def to_identifier(varStr):
+    return re.sub(r"\W|^(?=\d)", "-", varStr).lower()
 
 
 class PermissionLevel(enum.Enum):
@@ -12,14 +18,20 @@ class PermissionLevel(enum.Enum):
 
 
 class PageCreate(BaseModel):
-    id: str
+    id: UUID = Field(default_factory=uuid4)
     title: str
+    slug: str = None  # type: ignore
     is_admin_only: Optional[bool] = False
+
+    @validator("slug", pre=True, always=True)
+    def set_slug(cls, value, *, values):  # pylint: disable=no-self-argument,no-self-use
+        return value or to_identifier(values["title"])
 
 
 class Page(BaseModel):
-    wiki_id: str
-    id: str
+    wiki_id: UUID
+    id: UUID
+    slug: str
     title: str
     is_admin_only: bool
 
@@ -36,6 +48,7 @@ class SectionPermission(BaseModel):
 
 
 class SectionCreate(BaseModel):
+    id: UUID = Field(default_factory=uuid4)
     content: str
     section_index: Optional[int] = None
     is_admin_only: Optional[bool] = False
@@ -53,9 +66,8 @@ class SectionUpdate(BaseModel):
 
 
 class Section(SectionCreate):
-    id: int
-    wiki_id: str
-    page_id: str
+    id: UUID
+    page_id: UUID
     section_index: Optional[int] = None
     is_admin_only: bool = False
     permissions: Optional[List[SectionPermission]] = None
@@ -63,7 +75,8 @@ class Section(SectionCreate):
 
 
 class Wiki(BaseModel):
-    id: str
+    id: UUID
+    slug: str
 
     class Config:
         orm_mode = True

@@ -1,5 +1,6 @@
 import asyncio
 import contextlib
+from uuid import uuid4
 
 from fastapi_users.manager import UserNotExists
 from sqlalchemy import select
@@ -48,6 +49,8 @@ async def get_or_create(db, model, **kwargs):
     if record := result.scalars().first():
         return record
 
+    if model in (Wiki, Page, Section) and "id" not in kwargs:
+        kwargs["id"] = str(uuid4())
     db.add(model(**kwargs))
     await db.commit()
     model = (await db.execute(query)).scalars().first()
@@ -60,14 +63,14 @@ async def create_all():
 
     async with get_async_session_context() as db:
         wikis = dict(
-            lion_king=get_or_create(db, Wiki, id="Lion King"),
-            mulan=get_or_create(db, Wiki, id="Mulan"),
+            lion_king=get_or_create(db, Wiki, slug="Lion King"),
+            mulan=get_or_create(db, Wiki, slug="Mulan"),
         )
 
         mulan = await wikis["mulan"]
         pages = dict(
-            mulan=get_or_create(db, Page, wiki_id=mulan.id, id="mulan", title="Mulan"),
-            mushu=get_or_create(db, Page, wiki_id=mulan.id, id="mushu", title="Mushu (Dragon)"),
+            mulan=get_or_create(db, Page, wiki_id=mulan.id, slug="mulan", title="Mulan"),
+            mushu=get_or_create(db, Page, wiki_id=mulan.id, slug="mushu", title="Mushu (Dragon)"),
         )
         mulan_page = await pages["mulan"]
         mushu = await pages["mushu"]
@@ -75,7 +78,6 @@ async def create_all():
             mulan_intro=get_or_create(
                 db,
                 Section,
-                wiki_id=mulan.id,
                 page_id=mulan_page.id,
                 content="## ABOUT\nPing is an awesome fighter",
                 section_index=3000,
@@ -83,7 +85,6 @@ async def create_all():
             secret=get_or_create(
                 db,
                 Section,
-                wiki_id=mulan.id,
                 page_id=mulan_page.id,
                 content="Ping is secretly Mulan in disguise.",
                 is_admin_only=True,
@@ -92,7 +93,6 @@ async def create_all():
             mushu_intro=get_or_create(
                 db,
                 Section,
-                wiki_id=mulan.id,
                 page_id=mushu.id,
                 content="## ABOUT\nHe's a cute little dragon",
                 section_index=3000,
@@ -100,7 +100,6 @@ async def create_all():
             factoid=get_or_create(
                 db,
                 Section,
-                wiki_id=mulan.id,
                 page_id=mushu.id,
                 content="\n".join(
                     [
@@ -121,7 +120,7 @@ async def create_all():
             permissions=get_or_create(
                 db,
                 SectionPermission,
-                section_id=secret_section.id,
+                section_id=str(secret_section.id),
                 user_id=user.id,
                 level=PermissionLevel.EDIT,
             ),

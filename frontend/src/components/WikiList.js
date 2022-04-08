@@ -7,8 +7,8 @@ class WikiList extends React.Component {
     this.state = {error: false, wikis: []}
   }
 
-  handleWikiChange(wikiId) {
-    this.props.handleWikiChange(wikiId)
+  handleWikiChange(wikiSlug) {
+    this.props.handleWikiChange(wikiSlug)
   }
 
   componentDidMount() {
@@ -35,7 +35,7 @@ class WikiList extends React.Component {
       return (
         <div id="wiki-list" className="p-2">
         { this.state.wikis.map((wiki) =>
-          <WikiLink key={wiki.id} wikiId={wiki.id} selected={this.props.wikiId === wiki.id} handleWikiChange={this.handleWikiChange}/>
+          <WikiLink key={wiki.id} wikiSlug={wiki.slug} selected={this.props.wikiSlug === wiki.slug} handleWikiChange={this.handleWikiChange}/>
         ) }
         </div>
       );
@@ -47,8 +47,8 @@ class WikiList extends React.Component {
 function WikiLink(props) {
   return (
     <span className={"header-wiki " + (props.selected ? "header-wiki-selected":"")}
-          key={props.wikiId} onClick={(e) => { props.handleWikiChange(props.wikiId) }}>
-      {props.wikiId}
+          onClick={(e) => { props.handleWikiChange(props.wikiSlug) }}>
+      {props.wikiSlug}
     </span>
   )
 }

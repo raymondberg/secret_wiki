@@ -1,3 +1,4 @@
+# isort: skip_file
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config, pool
@@ -12,8 +13,8 @@ config = context.config
 # This line sets up loggers basically.
 fileConfig(config.config_file_name)
 
-import secret_wiki.models.auth
-import secret_wiki.models.wiki
+import secret_wiki.models.auth  # pylint: disable=unused-import,wrong-import-position
+import secret_wiki.models.wiki  # pylint: disable=unused-import,wrong-import-position
 
 # add your model's MetaData object here
 # for 'autogenerate' support

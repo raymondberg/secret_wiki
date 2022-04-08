@@ -1,7 +1,6 @@
-from unittest.mock import Mock
+import uuid
 
 import pytest
-from sqlalchemy import select
 
 import secret_wiki.schemas.wiki as schemas
 from secret_wiki.models.wiki.section import Section, SectionPermission
@@ -9,15 +8,16 @@ from secret_wiki.models.wiki.section import Section, SectionPermission
 
 @pytest.mark.asyncio
 async def test_permissions_loads_section_permissions(db, user_id):
+    section_id = str(uuid.uuid4())
     db.add_all(
         [
-            Section(id=1, is_admin_only=True),
-            SectionPermission(section_id=1, user_id=user_id),
+            Section(id=section_id, is_admin_only=True),
+            SectionPermission(section_id=section_id, user_id=user_id),
         ],
     )
     await db.commit()
 
-    section = await Section.get(1)
+    section = await Section.get(str(section_id))
     assert section.permissions
 
 
@@ -26,22 +26,6 @@ async def test_admin_only_section_is_secret(sections, admin_only_section):
     assert not sections[0].is_secret
     assert not sections[1].is_secret
     assert admin_only_section.is_secret
-
-
-@pytest.mark.asyncio
-async def test_add_user_permission_accepts_id(
-    user_id,
-    sections,
-):
-    admin_only_section = sections[0]
-    await admin_only_section.add_user_permission(user_id)
-
-    updated_section = await Section.get(admin_only_section.id)
-    assert updated_section.is_admin_only
-    permissions = updated_section.permissions
-    assert len(permissions) == 1
-    assert permissions[0].user_id == user_id
-    assert permissions[0].level == schemas.PermissionLevel.EDIT
 
 
 @pytest.mark.asyncio
