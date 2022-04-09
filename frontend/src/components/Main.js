@@ -83,6 +83,7 @@ function Main(props) {
       { content }
       <PageCreateModal wikiSlug={wikiSlug}
                        api={props.api}
+                       handleClose={() => setPageCreateModalShow(false)}
                        shouldShow={pageCreateModalShow}
                        handlePageCreate={handlePageCreate}/>
       </div>

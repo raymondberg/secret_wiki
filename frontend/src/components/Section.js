@@ -90,7 +90,7 @@ export class SectionEdit extends React.Component {
 
     var rows = 2
     if (this.state.content) {
-      rows = Math.max((this.state.content.match(/\n/g) || []).length, rows)
+      rows = Math.max((this.state.content.match(/\n/g) || []).length, rows) + 1
     }
 
     return (
