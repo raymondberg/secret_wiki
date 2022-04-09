@@ -102,10 +102,16 @@ function App() {
       });
     }
 
+    function logout(url) {
+      console.log("loggou");
+      updateJwt(null);
+    }
+
     return {
       get: get,
       post: post,
       delete: remove,
+      logout: logout,
       isLoggedIn: function () {
         return jwt !== null && jwt !== undefined;
       },

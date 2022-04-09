@@ -1,8 +1,8 @@
 import { useState } from "react";
 import PageCreateModal from "./pages/CreateModal";
 import PageContent from "./pages/Content";
-import EditModeToggle from "./buttons/EditModeToggle";
 import WikiList from "./pages/WikiList";
+import UserActions from "./UserActions";
 import { useQuery } from "./url";
 
 function Main(props) {
@@ -59,12 +59,16 @@ function Main(props) {
   return (
     <div className="main-container">
       <div className="row">
-        <div className="d-flex justify-content-between header-section p-0">
+        <div className="d-md-flex justify-content-md-between header-section p-0">
           <div className="p-2">
             <h3 id="app-name">Secret Wiki</h3>
           </div>
           {wikiList}
-          <EditModeToggle editMode={editMode} setEditMode={setEditMode} />
+          <UserActions
+            api={props.api}
+            editMode={editMode}
+            setEditMode={setEditMode}
+          />
         </div>
       </div>
       {content}
