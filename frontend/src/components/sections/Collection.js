@@ -13,7 +13,6 @@ function sectionFromAPI(apiSection) {
 }
 
 function gutterDefinition(sectionIndex) {
-  console.log(sectionIndex);
   return {
     exists_on_server: false,
     edit_mode: false,
@@ -48,7 +47,6 @@ function* interleaveGutters(sections) {
     yield sectionFromAPI(s);
     yield gutterDefinition(s.section_index + 1);
   }
-  console.log("done updated");
 }
 
 export class SectionCollection extends React.Component {
