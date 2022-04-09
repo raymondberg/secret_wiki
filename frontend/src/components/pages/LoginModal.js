@@ -38,13 +38,8 @@ export function LoginModal(props) {
   }
 
   return (
-    <Modal
-      show={props.shouldShow}
-      onHide={props.handleClose}
-      backdrop="static"
-      keyboard={false}
-    >
-      <Modal.Header closeButton>
+    <Modal show={props.shouldShow} backdrop="static" keyboard={false}>
+      <Modal.Header>
         <Modal.Title>Login</Modal.Title>
       </Modal.Header>
       <Modal.Body>
