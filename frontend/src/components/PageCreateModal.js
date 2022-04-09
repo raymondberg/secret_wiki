@@ -13,16 +13,19 @@ class PageCreateModal extends React.Component {
 
   handlePageCreate() {
     var body= {
-      wiki_id: this.props.wikiId,
-      id: this.state.slug,
       title: this.state.title,
       is_admin_only: this.state.isAdminOnly,
     }
-    this.props.api.post(`w/${this.props.wikiId}/p`, body)
+
+    if (this.state.slug !== null) {
+      body.slug = this.state.slug
+    }
+
+    this.props.api.post(`w/${this.props.wikiSlug}/p`, body)
       .then(response => response.json())
       .then(page => {
         this.setState({title: null, slug: null})
-        this.props.handlePageCreate(page.id)
+        this.props.handlePageCreate(page.slug)
       });
   }
 
@@ -44,8 +47,12 @@ class PageCreateModal extends React.Component {
           <Modal.Title>Create Page</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div>Page Title: <input type="text" name="page_title" onChange={this.handleChange} value={this.state.title ? this.state.title : ""}/></div>
-          <div>Page Slug: <input type="text" name="page_slug" onChange={this.handleChange} value={this.state.slug ? this.state.slug: ""} /></div>
+          <div className="row">
+            <div className="col-md-3 py-3"><b>Page Title:</b></div>
+            <div className="col-md-9 py-3"><input type="text" name="page_title" onChange={this.handleChange} value={this.state.title ? this.state.title : ""}/></div>
+            <div className="col-md-3"><em>Slug: (optional)</em></div>
+            <div className="col-md-9"><input type="text" name="page_slug" onChange={this.handleChange} value={this.state.slug ? this.state.slug: ""} /></div>
+          </div>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={this.props.handleClose}>Close</Button>

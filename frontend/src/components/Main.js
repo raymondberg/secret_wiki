@@ -58,7 +58,7 @@ function Main(props) {
               <div id="left-bar" className="col-md-3">
                 <div id="add-new">
                   { pageTree }
-                  <button onClick={handlePageCreate} className="page-gutter btn btn-primary"/>
+                  <button onClick={() => setPageCreateModalShow(true)} className="page-gutter btn btn-primary"/>
                 </div>
               </div>
               <div className="col-md-9">
