@@ -1,5 +1,7 @@
 import React from "react";
-import { SectionEdit, SectionShow, Gutter } from "./Section";
+import { SectionEdit } from "./Edit";
+import { Gutter } from "./Gutter";
+import { SectionShow } from "./Show";
 
 const SECTION_SPACER = 10
 

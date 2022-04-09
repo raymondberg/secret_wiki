@@ -1,7 +1,7 @@
 import React from "react";
 
-import SectionList from "./SectionList";
-import SectionSquash from "./SectionSquash";
+import SectionList from "./sections/List";
+import SectionSquash from "./sections/Squash";
 
 function sectionFromAPI(apiSection) {
   return Object.assign(

@@ -1,36 +1,7 @@
 import React from "react";
-import DOMPurify from 'dompurify';
-import marked from "marked";
-import { PermissionForm } from "./PermissionForm";
+import { PermissionForm } from "./Permissions";
 import ButtonGroup from 'react-bootstrap/ButtonGroup'
-
-
-export function Gutter(props) {
-   return (
-      <div className="page-section-gutter" sectionindex={props.sectionIndex}
-           onDoubleClick={(e) => props.editCallback(props.sectionIndex)}/>
-    )
-}
-
-export function SectionShow(props) {
-    function markdownContent(thing) {
-      if (props.section.prior_content) {
-        return { __html: marked(DOMPurify.sanitize(props.section.prior_content)) };
-      }
-    }
-
-    var section_class = (
-      "page-section-wrapper row " +
-      (props.section.is_secret ? " page-section-restricted" : "page-section-public")
-    );
-    return (
-      <div className={section_class}
-        onDoubleClick={(e) => props.toggleEdit(props.section.id)}>
-          <div className="page-section col-xs-12"
-          dangerouslySetInnerHTML={markdownContent()}/>
-      </div>
-    )
-}
+import { SecretButton } from '../buttons/SecretButton'
 
 export class SectionEdit extends React.Component {
   constructor(props) {
@@ -123,16 +94,4 @@ export class SectionEdit extends React.Component {
   }
 }
 
-export function SecretButton(props) {
-  var classSpecifier = "btn section-button btn-light"
-  var icon = <React.Fragment>&#128275;</React.Fragment>
-
-  if (props.isSecret) {
-    classSpecifier += "btn section-button btn-warning"
-    icon = <React.Fragment>&#128274;</React.Fragment>
-  }
-
-  return (
-    <button name="isSecret" className={classSpecifier} onClick={props.onChange}>{icon}</button>
-  )
-}
+export default SectionEdit;
