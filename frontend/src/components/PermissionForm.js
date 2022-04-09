@@ -6,7 +6,7 @@ export function PermissionForm(props) {
   // TODO Revisit when read-only added
   const usersWithPermission = (props.permissions || []).map(e => e.user)
   return (
-    <ButtonGroup size="lg">
+    <ButtonGroup size="sm">
       {users.map((u) => <PermissionCheckBox key={u.email}
                                             username={u.email}
                                             userId={u.id}
