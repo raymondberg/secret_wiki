@@ -1,7 +1,7 @@
 import React from "react";
 import Toggle from "react-toggle";
 
-export default function Status(props) {
+export default function EditModeToggle(props) {
    return (
       <div id="status" className="p-2">
        <label>

@@ -1,7 +1,7 @@
 import React from "react";
 
-import SectionList from "./sections/List";
-import SectionSquash from "./sections/Squash";
+import SectionList from "./List";
+import SectionSquash from "./Squash";
 
 function sectionFromAPI(apiSection) {
   return Object.assign(
@@ -10,7 +10,7 @@ function sectionFromAPI(apiSection) {
   )
 }
 
-class PageContent extends React.Component {
+export class SectionCollection extends React.Component {
   constructor(props) {
       super(props);
 
@@ -147,4 +147,4 @@ class PageContent extends React.Component {
   }
 }
 
-export default PageContent;
+export default SectionCollection;
