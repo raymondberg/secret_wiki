@@ -50,8 +50,7 @@ class PageTree extends React.Component {
         {this.props.pages.map((page) => (
           <PageLink
             key={page.id}
-            title={page.title}
-            pageSlug={page.slug}
+            page={page}
             gotoPage={(p) => this.props.gotoPage(this.props.wikiSlug, p)}
           />
         ))}

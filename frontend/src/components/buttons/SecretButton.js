@@ -1,17 +1,16 @@
-import React from "react";
+import { getLock } from "../Icons";
 
 export function SecretButton(props) {
-  var classSpecifier = "btn section-button btn-light"
-  var icon = <React.Fragment>&#128275;</React.Fragment>
-
+  var classSpecifier = "btn section-button btn-light";
   if (props.isSecret) {
-    classSpecifier += "btn section-button btn-warning"
-    icon = <React.Fragment>&#128274;</React.Fragment>
+    classSpecifier += "btn section-button btn-warning";
   }
 
   return (
-    <button name="isSecret" className={classSpecifier} onClick={props.onChange}>{icon}</button>
-  )
+    <button name="isSecret" className={classSpecifier} onClick={props.onChange}>
+      {getLock(props.isSecret)}
+    </button>
+  );
 }
 
-export default SecretButton
+export default SecretButton;

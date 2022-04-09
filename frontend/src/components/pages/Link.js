@@ -1,16 +1,12 @@
-import React from "react";
+import { getLock } from "../Icons";
 
-class PageLink extends React.Component {
-  render() {
-    return (
-      <div
-        className="tree-page"
-        onClick={(e) => this.props.gotoPage(this.props.pageSlug)}
-      >
-        {this.props.title}
-      </div>
-    );
-  }
+function PageLink(props) {
+  const lock = props.page.is_admin_only ? getLock() : "";
+  return (
+    <div className="tree-page" onClick={(e) => props.gotoPage(props.page.slug)}>
+      {props.page.title} {lock}
+    </div>
+  );
 }
 
 export default PageLink;

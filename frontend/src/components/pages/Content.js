@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { SectionCollection } from "../sections/Collection";
 import PageTree from "./Tree";
+import { getLock } from "../Icons";
 
 export function PageContent(props) {
   const [pages, setPages] = useState([]);
@@ -8,6 +9,17 @@ export function PageContent(props) {
   function pageForSlug(pageSlug) {
     return pages.filter((p) => p.slug === pageSlug)[0];
   }
+  const currentPage = pageForSlug(props.pageSlug);
+  const lock =
+    currentPage !== undefined && currentPage.is_admin_only ? getLock() : "";
+  const pageTitle =
+    currentPage !== undefined ? (
+      <h2 className="page-title">
+        {currentPage.title} <span style={{ fontSize: ".75em" }}>{lock}</span>
+      </h2>
+    ) : (
+      ""
+    );
 
   return (
     <div className="row">
@@ -28,12 +40,15 @@ export function PageContent(props) {
         </div>
       </div>
       <div className="col-md-9">
-        <SectionCollection
-          wikiSlug={props.wikiSlug}
-          page={pageForSlug(props.pageSlug)}
-          api={props.api}
-          editMode={props.editMode}
-        />
+        <div id="content">
+          {pageTitle}
+          <SectionCollection
+            wikiSlug={props.wikiSlug}
+            page={pageForSlug(props.pageSlug)}
+            api={props.api}
+            editMode={props.editMode}
+          />
+        </div>
       </div>
     </div>
   );

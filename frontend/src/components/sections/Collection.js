@@ -194,10 +194,6 @@ export class SectionCollection extends React.Component {
   }
 
   render() {
-    const title =
-      this.props.page === undefined ? null : (
-        <h2 className="page-title">{this.props.page.title}</h2>
-      );
     var content = this.props.editMode ? (
       <SectionList
         sections={this.state.sections}
@@ -210,12 +206,7 @@ export class SectionCollection extends React.Component {
         sections={this.state.sections.filter((s) => !s.is_gutter)}
       />
     );
-    return (
-      <div id="content">
-        {title}
-        {content}
-      </div>
-    );
+    return <div id="content">{content}</div>;
   }
 }
 
