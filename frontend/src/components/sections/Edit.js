@@ -15,8 +15,10 @@ export default function SectionEdit(props) {
   const pages = useSelector((state) => state.wiki.pages);
 
   function autoCompletionsMatching(fragment) {
-    return pages.filter((p) =>
-      p.slug.toLowerCase().startsWith(fragment.toLowerCase())
+    return pages.filter(
+      (p) =>
+        p.slug.toLowerCase().startsWith(fragment.toLowerCase()) ||
+        p.title.toLowerCase().startsWith(fragment.toLowerCase())
     );
   }
 
