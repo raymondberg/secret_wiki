@@ -8,8 +8,8 @@ from pydantic import BaseModel, Field, validator
 # pylint: disable=too-few-public-methods
 
 
-def to_identifier(varStr):
-    return re.sub(r"\W|^(?=\d)", "-", varStr).lower()
+def to_identifier(var_string):
+    return re.sub(r"\W|^(?=\d)", "-", var_string).lower()
 
 
 class PermissionLevel(enum.Enum):
@@ -17,8 +17,7 @@ class PermissionLevel(enum.Enum):
     NONE = "none"
 
 
-class PageCreate(BaseModel):
-    id: UUID = Field(default_factory=uuid4)
+class PageUpdate(BaseModel):
     title: str
     slug: str = None  # type: ignore
     is_admin_only: Optional[bool] = False
@@ -26,6 +25,10 @@ class PageCreate(BaseModel):
     @validator("slug", pre=True, always=True)
     def set_slug(cls, value, *, values):  # pylint: disable=no-self-argument,no-self-use
         return value or to_identifier(values["title"])
+
+
+class PageCreate(PageUpdate):
+    id: UUID = Field(default_factory=uuid4)
 
 
 class Page(BaseModel):

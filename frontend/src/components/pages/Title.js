@@ -1,8 +1,10 @@
 import { useState } from "react";
 import Form from "react-bootstrap/Form";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
+import { useDispatch, useSelector } from "react-redux";
 import { getLock, EditIcon } from "../Icons";
 import { SecretButton } from "../buttons/SecretButton";
+import { invalidatePagesCache, updatePageBySlug } from "../../shared/wikiSlice";
 
 export function PageTitle(props) {
   const [editMode, setEditMode] = useState(false);
@@ -16,7 +18,6 @@ export function PageTitle(props) {
   if (editMode) {
     return (
       <div>
-        {props.page.title}
         <TitleEditForm
           key={`${props.page.title}-title`}
           page={props.page}
@@ -39,8 +40,11 @@ export function PageTitle(props) {
 }
 
 function TitleEditForm(props) {
-  const [isSecret, setIsSecret] = useState(props.page.is_secret);
+  const [isSecret, setIsSecret] = useState(props.page.is_admin_only);
   const [title, setTitle] = useState(props.page.title);
+  const [slug, setSlug] = useState(props.page.slug);
+  const activeWiki = useSelector((state) => state.wiki.wiki);
+  const dispatch = useDispatch();
 
   function save() {
     if (
@@ -48,12 +52,18 @@ function TitleEditForm(props) {
         "Are you sure you want to change? You'll lose all unsaved section edits"
       )
     ) {
+      const body = {
+        title,
+        slug,
+        is_admin_only: isSecret,
+      };
       props.toggleEditMode();
       props.api
-        .post(`w/${props.wikiSlug}/p/${props.page.slug}`)
+        .post(`w/${activeWiki.slug}/p/${props.page.slug}`, body)
         .then((res) => res.json())
         .then(function (data) {
-          props.gotoPage(props.wikiSlug, data.slug);
+          dispatch(invalidatePagesCache());
+          dispatch(updatePageBySlug(null));
         });
     }
   }
@@ -62,19 +72,25 @@ function TitleEditForm(props) {
     <div className="page-edit-form">
       <div className="row">
         <div className="col-md-5">
+          Title:
           <Form.Control
             autoFocus
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
+          Slug:
+          <Form.Control
+            value={slug}
+            onChange={(e) => setSlug(e.target.value)}
+          />
         </div>
         <div className="col-md-5">
           <ButtonGroup>
             <SecretButton
-              isSecret={props.isSecret}
+              isSecret={isSecret}
               onChange={(e) => {
                 e.target.blur();
-                props.setIsSecret(!props.isSecret);
+                setIsSecret(!isSecret);
               }}
             />
             <button className="btn btn-primary section-button" onClick={save}>

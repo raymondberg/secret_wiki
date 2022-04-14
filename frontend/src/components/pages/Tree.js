@@ -14,7 +14,7 @@ export default function PageTree(props) {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (wiki === null || pages.length !== 0) return;
+    if (wiki?.slug === undefined || pages.length !== 0) return;
 
     props.api
       .get(`w/${wiki.slug}/p`)
@@ -45,7 +45,7 @@ export default function PageTree(props) {
       <PageLink
         key={page.id}
         page={page}
-        isActive={activePage !== null && page.id === activePage.id}
+        isActive={activePage?.id !== undefined && page.id === activePage.id}
         gotoPage={(p) => dispatch(updatePageBySlug(p))}
       />
     );

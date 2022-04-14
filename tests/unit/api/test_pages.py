@@ -98,3 +98,41 @@ async def test_create_page(client, db, wikis):
 
     page = await db.execute(select(Page).where(Page.id == data["id"]))
     assert page.scalars().first().title == "my page"
+
+
+@pytest.mark.asyncio
+async def test_update_page(client, db, wikis, pages):
+    page = pages[0]
+    response = await client.post(
+        f"/api/w/{wikis[0].slug}/p/{page.slug}",
+        json={"title": "an updated page", "is_admin_only": True},
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+
+    assert data["id"]
+    assert data["title"] == "an updated page"
+    assert data["slug"] == page.slug
+    assert data["is_admin_only"]
+    assert data["wiki_id"] == str(wikis[0].id)
+
+    await db.refresh(page)
+    assert page.title == "an updated page"
+    assert page.is_admin_only
+
+
+@pytest.mark.asyncio
+async def test_user_cannot_update_admin_only_page(client, wikis, admin_only_page):
+    response = await client.post(
+        f"/api/w/{wikis[0].slug}/p/{admin_only_page.slug}", json={"title": "an updated page"}
+    )
+    assert response.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_admin_can_update_admin_only_page(admin_client, wikis, admin_only_page):
+    response = await admin_client.post(
+        f"/api/w/{wikis[0].slug}/p/{admin_only_page.slug}", json={"title": "an updated page"}
+    )
+    assert response.status_code == 200

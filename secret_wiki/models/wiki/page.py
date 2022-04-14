@@ -15,6 +15,11 @@ class Page(Base):
     title = Column(String)
     is_admin_only = Column(Boolean, default=False)
 
+    def update(self, section_update):
+        for attr in ("title", "slug", "is_admin_only"):
+            if (value := getattr(section_update, attr)) is not None:
+                setattr(self, attr, value)
+
     @classmethod
     def filter(cls, user=None, page_id=None, wiki_id=None, wiki_slug=None, page_slug=None):
         if not (wiki_id or wiki_slug) and not page_id:

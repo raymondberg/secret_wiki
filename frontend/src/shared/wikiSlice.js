@@ -18,9 +18,13 @@ export const wikiSlice = createSlice({
         state.page = state.pages.filter((p) => p.slug === pageSlug)[0];
       }
     },
+    invalidatePagesCache: (state, message) => {
+      state.page = null;
+      state.pages = [];
+    },
     updatePages: (state, message) => {
       state.pages = message.payload;
-      if (state.page !== null) {
+      if (state.page !== null && state.page !== undefined) {
         state.page = state.pages.filter((p) => p.id === state.page.id);
       }
     },
@@ -45,6 +49,7 @@ export const wikiSlice = createSlice({
 });
 
 export const {
+  invalidatePagesCache,
   updatePage,
   updatePageBySlug,
   updatePages,

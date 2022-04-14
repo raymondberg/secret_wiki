@@ -33,9 +33,9 @@ class AsyncDatabaseSession:
             expire_on_commit=False,
         )()
 
-    def __del__(self):
+    async def __del__(self):
         if self._session:
-            self._session.close()
+            await self._session.close()
 
     def __getattr__(self, name):
         return getattr(self.session, name)
@@ -69,7 +69,7 @@ class User(Base, SQLAlchemyBaseUserTable):  # pylint: disable=too-few-public-met
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     session = AsyncDatabaseSession()
     yield session
-    session.close()
+    await session.close()
 
 
 async def get_user_db(session: AsyncSession = Depends(get_async_session)):

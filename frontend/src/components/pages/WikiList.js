@@ -43,7 +43,7 @@ export function WikiList(props) {
           <WikiLink
             key={wiki.id}
             wiki={wiki}
-            selected={activeWiki !== null && activeWiki.id === wiki.id}
+            selected={activeWiki !== null && activeWiki?.id === wiki.id}
             handleWikiChange={(w) => dispatch(updateWiki(w))}
           />
         ))}

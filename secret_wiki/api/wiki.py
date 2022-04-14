@@ -90,6 +90,28 @@ async def read_page(
     return page
 
 
+@router.post("/w/{wiki_slug}/p/{page_slug}", response_model=schemas.Page)
+async def update_page(
+    wiki_slug: str,
+    page_slug: str,
+    page: schemas.PageUpdate,
+    db: AsyncSession = Depends(get_async_session),
+    user: schemas.User = Depends(current_active_user),
+):
+    page_result = await db.execute(
+        models.Page.filter(wiki_slug=wiki_slug, page_slug=page_slug, user=user)
+    )
+    page_to_update = page_result.scalars().first()
+    if not page_to_update:
+        raise HTTPException(status_code=404, detail="Page not found")
+
+    async with db.begin_nested():
+        page_to_update.update(page)
+        db.add(page_to_update)
+    await db.refresh(page_to_update)
+    return page_to_update
+
+
 @router.get("/w/{wiki_slug}/p/{page_slug}/s", response_model=List[schemas.Section])
 async def wiki_sections(
     wiki_slug: str,
