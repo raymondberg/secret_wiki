@@ -1,4 +1,4 @@
-import { React, useRef, useState, useEffect } from "react";
+import { React, useState, useEffect } from "react";
 
 import SectionList from "./List";
 import SectionSquash from "./Squash";
@@ -56,6 +56,7 @@ export function SectionCollection(props) {
   const [sections, setSections] = useState([]);
   const activePage = useSelector((state) => state.wiki.page);
   const activeWiki = useSelector((state) => state.wiki.wiki);
+  console.log(error);
 
   function toggleEdit(sectionId) {
     setSections(

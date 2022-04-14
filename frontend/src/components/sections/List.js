@@ -1,7 +1,7 @@
 import React from "react";
 import { SectionEdit } from "./Edit";
 import { Gutter } from "./Gutter";
-import { SectionShow } from "./Show";
+import SectionShow from "./Show";
 
 function SectionRender(props) {
   if (props.section.edit_mode) {

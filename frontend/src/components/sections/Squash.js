@@ -1,11 +1,18 @@
 import marked from "marked";
 import DOMPurify from "dompurify";
+import { linkReplace } from "../../common.js";
 
-export default function SectionSquash (props) {
-  var convertedSections = props.sections.map((s)=>s.prior_content).join("\n\n")
+export default function SectionSquash(props) {
+  var convertedSections = props.sections
+    .map((s) => s.prior_content)
+    .join("\n\n");
   return (
     <div className="section-squash">
-      <div dangerouslySetInnerHTML={{ __html: marked(DOMPurify.sanitize(convertedSections)) }} />
+      <div
+        dangerouslySetInnerHTML={{
+          __html: marked(DOMPurify.sanitize(linkReplace(convertedSections))),
+        }}
+      />
     </div>
-  )
+  );
 }

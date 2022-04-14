@@ -1,18 +1,22 @@
 import DOMPurify from "dompurify";
 import marked from "marked";
+import { linkReplace } from "../../common.js";
 
-function markdownContent(text) {
+export function markdownContent(text) {
   return {
     __html: marked(DOMPurify.sanitize(text)),
   };
 }
 
-export function SectionShow(props) {
+export default function SectionShow(props) {
   var section_class =
     "page-section-wrapper row " +
     (props.section.is_secret
       ? " page-section-restricted"
       : "page-section-public");
+
+  const content = markdownContent(linkReplace(props.section.prior_content));
+
   return (
     <div
       data-sectionindex={props.section.section_index}
@@ -21,10 +25,8 @@ export function SectionShow(props) {
     >
       <div
         className="page-section col-xs-12"
-        dangerouslySetInnerHTML={markdownContent(props.section.prior_content)}
+        dangerouslySetInnerHTML={content}
       />
     </div>
   );
 }
-
-export default SectionShow;
