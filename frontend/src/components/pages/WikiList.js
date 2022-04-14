@@ -1,56 +1,70 @@
-import React from "react";
+import { React, useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { updateWikis, updateWiki } from "../../shared/wikiSlice";
 
-class WikiList extends React.Component {
-  constructor(props) {
-    super(props);
-    this.handleWikiChange = this.handleWikiChange.bind(this)
-    this.state = {error: false, wikis: []}
-  }
+export function WikiList(props) {
+  const [error, setError] = useState(null);
+  const wikis = useSelector((state) => state.wiki.wikis);
+  const activeWiki = useSelector((state) => state.wiki.wiki);
 
-  handleWikiChange(wikiSlug) {
-    this.props.handleWikiChange(wikiSlug)
-  }
+  const dispatch = useDispatch();
 
-  componentDidMount() {
-    this.props.api.get("w")
-      .then((res) => res.json())
-      .then(
-        (returnedWikis) => {
+  useEffect(() => {
+    if (wikis.length === 0 && error === null) {
+      props.api
+        .get("w")
+        .then((res) => res.json())
+        .then(
+          (returnedWikis) => {
             if (Array.isArray(returnedWikis)) {
-              this.setState({wikis: returnedWikis, error: null});
+              dispatch(updateWikis(returnedWikis));
+              setError(null);
             } else {
-              this.setState({wikis: [], error: "Invalid response"})
+              setError("Invalid response");
             }
-        },
-        (e) => {
-          this.setState({wikis: [], error: e});
-        }
-      );
-  }
-
-  render() {
-    if (this.state.error) {
-      return <div>Error: {this.state.error.message}</div>;
-    } else {
-      return (
-        <div id="wiki-list" className="p-2">
-        { this.state.wikis.map((wiki) =>
-          <WikiLink key={wiki.id} wikiSlug={wiki.slug} selected={this.props.wikiSlug === wiki.slug} handleWikiChange={this.handleWikiChange}/>
-        ) }
-        </div>
-      );
+          },
+          (e) => {
+            if (e) {
+              setError("error in extract " + e);
+            }
+          }
+        );
     }
+  });
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  } else if (wikis === undefined) {
+    return <div>Loading wikis..</div>;
+  } else {
+    return (
+      <div id="wiki-list" className="p-2">
+        {wikis.map((wiki) => (
+          <WikiLink
+            key={wiki.id}
+            wiki={wiki}
+            selected={activeWiki !== null && activeWiki.id === wiki.id}
+            handleWikiChange={(w) => dispatch(updateWiki(w))}
+          />
+        ))}
+      </div>
+    );
   }
 }
 
-
 function WikiLink(props) {
   return (
-    <span className={"header-wiki " + (props.selected ? "header-wiki-selected":"")}
-          onClick={(e) => { props.handleWikiChange(props.wikiSlug) }}>
-      {props.wikiSlug}
+    <span
+      className={
+        "header-wiki " + (props.selected ? "header-wiki-selected" : "")
+      }
+      onClick={(e) => {
+        props.handleWikiChange(props.wiki);
+      }}
+    >
+      {props.wiki.slug}
     </span>
-  )
+  );
 }
 
 export default WikiList;

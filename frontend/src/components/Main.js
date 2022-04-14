@@ -3,57 +3,69 @@ import PageCreateModal from "./pages/CreateModal";
 import PageContent from "./pages/Content";
 import WikiList from "./pages/WikiList";
 import UserActions from "./UserActions";
+
 import { useQuery } from "./url";
+import { useSelector, useDispatch } from "react-redux";
+import { updatePageBySlug, updateWikiBySlug } from "../shared/wikiSlice";
+import allDefined from "../common.js";
 
 function Main(props) {
-  let query = useQuery();
-
   const [editMode, setEditMode] = useState(false);
-  const [wikiSlug, setWikiSlug] = useState(query.get("w"));
-  const [pageSlug, setPageSlug] = useState(query.get("p"));
   const [pageCreateModalShow, setPageCreateModalShow] = useState(false);
+  const wikis = useSelector((state) => state.wiki.wikis);
+  const pages = useSelector((state) => state.wiki.pages);
+  const activeWiki = useSelector((state) => state.wiki.wiki);
+  const activePage = useSelector((state) => state.wiki.page);
+  const dispatch = useDispatch();
+  const query = useQuery();
 
-  function gotoPage(newWikiSlug, newPageSlug) {
-    setWikiSlug(newWikiSlug);
-    setPageSlug(newPageSlug);
+  function updateUrlBar() {
     var baseUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
-    const queryString = `w=${newWikiSlug}&p=${newPageSlug}`;
+    const wikiSlug = activeWiki?.slug || "";
+    const pageSlug = activePage?.slug || "";
+    const queryString = `w=${wikiSlug}&p=${pageSlug}`;
     const newUrl = `${baseUrl}?${queryString}`;
     window.history.pushState({ path: newUrl }, "", newUrl);
   }
 
-  function handleWikiChange(newWikiSlug) {
-    setWikiSlug(newWikiSlug);
-    gotoPage(newWikiSlug);
+  if (
+    allDefined(wikis, query.get("w")) &&
+    activeWiki === null &&
+    wikis.length !== 0
+  ) {
+    // We have no wiki, but one is specified in url and we have wikis
+    var wikiSlug = query.get("w");
+    dispatch(updateWikiBySlug(wikiSlug));
+  }
+  if (
+    allDefined(activeWiki, pages, query.get("p")) &&
+    activePage === null &&
+    pages.length !== 0
+  ) {
+    // We have no page, but one is specified in url and we have pages
+    var pageSlug = query.get("p");
+    setTimeout(() => {
+      dispatch(updatePageBySlug(pageSlug));
+    }, 500);
   }
 
-  function handlePageCreate(newPageSlug) {
-    setPageCreateModalShow(false);
-    gotoPage(wikiSlug, newPageSlug);
+  if (
+    activeWiki?.slug !== query.get("w") ||
+    activePage?.slug !== query.get("p")
+  ) {
+    updateUrlBar(activeWiki?.slug, activePage?.slug);
   }
 
-  var wikiList = null;
   var content = null;
-  if (props.api.isLoggedIn()) {
-    wikiList = (
-      <WikiList
-        handleWikiChange={handleWikiChange}
-        wikiSlug={wikiSlug}
+  if (props.api.isLoggedIn() && activeWiki !== null) {
+    content = (
+      <PageContent
+        page={activePage}
         api={props.api}
+        editMode={editMode}
+        setPageCreateModalShow={setPageCreateModalShow}
       />
     );
-    if (wikiSlug !== null) {
-      content = (
-        <PageContent
-          wikiSlug={wikiSlug}
-          pageSlug={pageSlug}
-          api={props.api}
-          gotoPage={gotoPage}
-          editMode={editMode}
-          setPageCreateModalShow={setPageCreateModalShow}
-        />
-      );
-    }
   }
 
   return (
@@ -63,7 +75,7 @@ function Main(props) {
           <div className="p-2">
             <h3 id="app-name">Secret Wiki</h3>
           </div>
-          {wikiList}
+          {props.api.isLoggedIn && <WikiList api={props.api} />}
           <UserActions
             api={props.api}
             editMode={editMode}
@@ -73,11 +85,9 @@ function Main(props) {
       </div>
       {content}
       <PageCreateModal
-        wikiSlug={wikiSlug}
         api={props.api}
         handleClose={() => setPageCreateModalShow(false)}
         shouldShow={pageCreateModalShow}
-        handlePageCreate={handlePageCreate}
       />
     </div>
   );

@@ -11,3 +11,7 @@ export function UnlockedIcon() {
 export function getLock(isLocked = true) {
   return isLocked ? <LockedIcon /> : <UnlockedIcon />;
 }
+
+export function EditIcon() {
+  return <React.Fragment>&#128221;</React.Fragment>;
+}

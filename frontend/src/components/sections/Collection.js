@@ -1,7 +1,9 @@
-import React from "react";
+import { React, useRef, useState, useEffect } from "react";
 
 import SectionList from "./List";
 import SectionSquash from "./Squash";
+import { useSelector } from "react-redux";
+import { anyUndefined } from "../../common.js";
 
 function sectionFromAPI(apiSection) {
   return Object.assign(apiSection, {
@@ -49,108 +51,69 @@ function* interleaveGutters(sections) {
   }
 }
 
-export class SectionCollection extends React.Component {
-  constructor(props) {
-    super(props);
+export function SectionCollection(props) {
+  const [error, setError] = useState(null);
+  const [sections, setSections] = useState([]);
+  const activePage = useSelector((state) => state.wiki.page);
+  const activeWiki = useSelector((state) => state.wiki.wiki);
 
-    this.state = { error: null, sections: [] };
-    this.destroySection = this.destroySection.bind(this);
-    this.insertSectionAt = this.insertSectionAt.bind(this);
-    this.reloadPageHandler = this.reloadPageHandler.bind(this);
-    this.toggleEdit = this.toggleEdit.bind(this);
-    this.updateSection = this.updateSection.bind(this);
-  }
-
-  toggleEdit(sectionId) {
-    this.setState({
-      sections: this.state.sections.map(function (s) {
+  function toggleEdit(sectionId) {
+    setSections(
+      sections.map(function (s) {
         if (s.id === sectionId) {
           s.edit_mode = !s.edit_mode;
         }
         return s;
-      }),
-    });
+      })
+    );
   }
 
-  destroySection(section) {
+  function destroySection(section) {
     if (section !== undefined && section.exists_on_server) {
-      this.props.api
-        .delete(
-          `w/${this.props.wikiSlug}/p/${this.props.page.slug}/s/${section.id}`
-        )
+      props.api
+        .delete(`w/${activeWiki.slug}/p/${activePage.slug}/s/${section.id}`)
         .then((result) => {
-          this.setState({
-            sections: Array.from(
-              stripDuplicateGutters(
-                this.state.sections.filter((s) => s.id !== section.id)
-              )
-            ),
-          });
+          setSections(
+            Array.from(
+              stripDuplicateGutters(sections.filter((s) => s.id !== section.id))
+            )
+          );
         });
     }
   }
 
-  insertSectionAt(sectionIndex, newSection) {
-    //Warning, permuting state in a dumb way then storing it. Could improve.
-    if (sectionIndex === -1) {
-      this.state.sections.push(newSection);
-    } else {
-      this.state.sections.splice(sectionIndex, 0, newSection);
-    }
-    this.setState({ sections: this.state.sections });
-  }
+  useEffect(
+    function () {
+      if (anyUndefined(activeWiki?.slug, activePage.slug)) return;
 
-  componentDidMount() {
-    this.updateCollectionFromServer();
-  }
-
-  reloadPageHandler() {
-    this.updateCollectionFromServer();
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.page === undefined || this.props.page.slug === undefined)
-      return;
-
-    if (
-      this.props.wikiSlug !== prevProps.wikiSlug ||
-      prevProps.page === undefined ||
-      this.props.page.slug !== prevProps.page.slug
-    ) {
-      this.updateCollectionFromServer();
-    }
-  }
-
-  updateCollectionFromServer() {
-    // Wipes out all local changes and refreshes state from the server
-    if (
-      this.props.wikiSlug === null ||
-      this.props.page === undefined ||
-      this.props.page === null
-    )
-      return;
-
-    this.props.api
-      .get(`w/${this.props.wikiSlug}/p/${this.props.page.slug}/s`)
-      .then((res) => res.json())
-      .then(
-        (returnedSections) => {
-          if (Array.isArray(returnedSections)) {
-            this.setState({
-              sections: Array.from(interleaveGutters(returnedSections)),
-              error: null,
-            });
-          } else {
-            this.setState({ sections: [], error: "Invalid response" });
+      const controller = new AbortController();
+      props.api
+        .get(`w/${activeWiki.slug}/p/${activePage.slug}/s`, controller.signal)
+        .then((res) => res.json())
+        .then(
+          (returnedSections) => {
+            if (Array.isArray(returnedSections)) {
+              setSections(Array.from(interleaveGutters(returnedSections)));
+              setError(null);
+            } else {
+              setError("Invalid response");
+            }
+          },
+          (e) => {
+            setError(e);
           }
-        },
-        (e) => {
-          this.setState({ sections: [], error: e });
-        }
-      );
-  }
+        );
+      return () => {
+        // Cleanup that would be called if (1) effect reruns or (2) collection
+        // component unmounts.
+        controller.abort();
+      };
+    },
 
-  updateSection(
+    [activeWiki?.slug, activePage?.slug, props.api]
+  );
+
+  function updateSection(
     sectionId,
     content,
     sectionIndex,
@@ -164,16 +127,16 @@ export class SectionCollection extends React.Component {
       is_admin_only: isSecret,
       permissions: permissions,
     };
-    var url = `w/${this.props.wikiSlug}/p/${this.props.page.slug}/s`;
+    var url = `w/${activeWiki.slug}/p/${activePage.slug}/s`;
     if (existsOnServer) {
       url += `/${sectionId}`;
     }
 
-    this.props.api
+    props.api
       .post(url, body)
       .then((response) => response.json())
       .then((section) => {
-        var newSections = this.state.sections
+        var newSections = sections
           .map((s) =>
             s.id === sectionId
               ? [
@@ -184,27 +147,28 @@ export class SectionCollection extends React.Component {
               : s
           )
           .flat();
-        this.setState({
-          sections: newSections,
-          editMode: false,
-        });
+        setSections(newSections);
+        // editMode: false,
       });
   }
 
-  render() {
-    var content = this.props.editMode ? (
-      <SectionList
-        sections={this.state.sections}
-        updateSection={this.updateSection}
-        destroySection={this.destroySection}
-        toggleEdit={this.toggleEdit}
-      />
-    ) : (
-      <SectionSquash
-        sections={this.state.sections.filter((s) => !s.is_gutter)}
-      />
+  if (props.editMode) {
+    return (
+      <div id="content">
+        <SectionList
+          sections={sections}
+          updateSection={updateSection}
+          destroySection={destroySection}
+          toggleEdit={toggleEdit}
+        />
+      </div>
     );
-    return <div id="content">{content}</div>;
+  } else {
+    return (
+      <div id="content">
+        <SectionSquash sections={sections.filter((s) => !s.is_gutter)} />
+      </div>
+    );
   }
 }
 

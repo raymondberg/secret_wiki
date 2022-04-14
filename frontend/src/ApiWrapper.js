@@ -1,15 +1,16 @@
 export default function ApiWrapper(apiRoot, jwt, updateJwt, crossDomain) {
-  function get(url) {
+  function get(url, signal) {
     if (jwt === null) {
       console.log("tried request without jwt");
     }
-    var headers = {
-      crossDomain: crossDomain,
+    const headers = {
+      crossDomain,
       Authorization: `Bearer ${jwt}`,
     };
 
     return fetch(`${apiRoot}/${url}`, {
-      headers: headers,
+      headers,
+      signal,
     }).then(function (response) {
       if (response.status === 401) {
         updateJwt(null);

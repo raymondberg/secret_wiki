@@ -64,6 +64,10 @@ h2.page-title {
   padding: 1em;
 }
 
+.page-edit-form {
+  padding: 1em;
+}
+
 button.page-gutter {
   height: 3em;
   width: 100%;

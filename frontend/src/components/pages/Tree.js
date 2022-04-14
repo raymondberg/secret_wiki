@@ -1,62 +1,63 @@
 import React from "react";
 import PageLink from "./Link";
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { updatePages, updatePageBySlug } from "../../shared/wikiSlice";
 
-class PageTree extends React.Component {
-  constructor(props) {
-    super(props);
+export default function PageTree(props) {
+  const wiki = useSelector((state) => state.wiki.wiki);
+  const pages = useSelector((state) => state.wiki.pages);
+  const activePage = useSelector((state) => state.wiki.page);
+  const [error, setError] = useState(null);
 
-    this.state = { wikiSlug: props.wikiSlug };
-  }
+  console.log(activePage);
+  const dispatch = useDispatch();
 
-  componentDidMount() {
-    this.updateTree();
-  }
+  useEffect(() => {
+    if (wiki === null || pages.length !== 0) return;
 
-  componentDidUpdate(prevProps) {
-    if (
-      this.props.wikiSlug !== prevProps.wikiSlug ||
-      this.props.pageSlug !== prevProps.pageSlug
-    ) {
-      this.updateTree();
-    }
-  }
-
-  updateTree() {
-    if (this.props.wikiSlug === null) return;
-
-    this.props.api
-      .get(`w/${this.props.wikiSlug}/p`)
+    props.api
+      .get(`w/${wiki.slug}/p`)
       .then((res) => res.json())
       .then(
         (returnedPages) => {
           if (Array.isArray(returnedPages)) {
-            this.props.setPages(returnedPages);
-            this.setState({ error: null });
+            dispatch(updatePages(returnedPages));
+            setError(null);
           } else {
-            this.props.setPages([]);
-            this.setState({ error: "Invalid response" });
+            setError("Invalid response");
           }
         },
         (e) => {
-          this.props.setPages([]);
-          this.setState({ error: e });
+          setError("Error in response " + e);
         }
       );
+  });
+  function pagesOrError() {
+    if (error !== null) {
+      return error;
+    } else {
+      return pages.map(linkRender);
+    }
   }
-
-  render() {
+  function linkRender(page) {
     return (
-      <div id="wiki-list" className="p-2">
-        {this.props.pages.map((page) => (
-          <PageLink
-            key={page.id}
-            page={page}
-            gotoPage={(p) => this.props.gotoPage(this.props.wikiSlug, p)}
-          />
-        ))}
-      </div>
+      <PageLink
+        key={page.id}
+        page={page}
+        isActive={activePage !== null && page.id === activePage.id}
+        gotoPage={(p) => dispatch(updatePageBySlug(p))}
+      />
     );
   }
-}
 
-export default PageTree;
+  if (pages !== undefined && pages.length !== 0) {
+    return (
+      <div id="wiki-list" className="p-2">
+        {pagesOrError()}
+      </div>
+    );
+  } else {
+    return <div />;
+  }
+}
