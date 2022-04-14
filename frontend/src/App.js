@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import "./App.css";
 import "./react-toggle.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "@webscopeio/react-textarea-autocomplete/style.css";
 import { LoginModal } from "./components/pages/LoginModal";
 import Main from "./components/Main";
 import ApiWrapper from "./ApiWrapper";

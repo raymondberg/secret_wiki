@@ -2,7 +2,16 @@ import React from "react";
 import { PermissionForm } from "./Permissions";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import { SecretButton } from "../buttons/SecretButton";
+import ReactTextareaAutocomplete from "@webscopeio/react-textarea-autocomplete";
 
+function autoCompletionsMatching(fragment) {
+  // TODO: Load from pagelist!
+  return [
+    { slug: "ping", title: "Ping" },
+    { slug: "mulan", title: "Mulan" },
+    { slug: "mushu", title: "Mushu" },
+  ].filter((x) => x.slug.toLowerCase().startsWith(fragment.toLowerCase()));
+}
 export class SectionEdit extends React.Component {
   constructor(props) {
     super(props);
@@ -77,20 +86,43 @@ export class SectionEdit extends React.Component {
       rows = Math.max((this.state.content.match(/\n/g) || []).length, rows) + 1;
     }
 
+    const Item = ({ entity: { slug, title } }) => (
+      <div>{`${slug}: ${title}`}</div>
+    );
+
     return (
       <div
-        data-sectionIndex={this.props.section.section_index}
+        data-sectionindex={this.props.section.section_index}
         className="page-section-wrapper row data-entry"
       >
         <div className="col-md-10">
           <div>
-            <textarea
+            <ReactTextareaAutocomplete
               autoFocus
               name="content"
               className="page-section"
               rows={rows}
               onChange={this.handleChange}
+              loadingComponent={() => <span>Loading</span>}
               value={this.state.content}
+              trigger={{
+                "(p:": {
+                  dataProvider: (token) => {
+                    const tokenSubset = token.replace(/p.*:/, "");
+                    return autoCompletionsMatching(tokenSubset);
+                  },
+                  component: Item,
+                  output: (item, trigger) => `(page:${item.slug})`,
+                },
+                "[": {
+                  dataProvider: (token) => {
+                    return autoCompletionsMatching(token);
+                  },
+                  component: Item,
+                  output: (item, trigger) =>
+                    `[${item.title}](page:${item.slug})`,
+                },
+              }}
             />
           </div>
           <div>
