@@ -3,15 +3,7 @@ import { PermissionForm } from "./Permissions";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import { SecretButton } from "../buttons/SecretButton";
 import ReactTextareaAutocomplete from "@webscopeio/react-textarea-autocomplete";
-
-function autoCompletionsMatching(fragment) {
-  // TODO: Load from pagelist!
-  return [
-    { slug: "ping", title: "Ping" },
-    { slug: "mulan", title: "Mulan" },
-    { slug: "mushu", title: "Mushu" },
-  ].filter((x) => x.slug.toLowerCase().startsWith(fragment.toLowerCase()));
-}
+import { useSelector } from "react-redux";
 
 export default function SectionEdit(props) {
   const [content, setContent] = useState(props.section.content);
@@ -19,6 +11,15 @@ export default function SectionEdit(props) {
   const [permissions, setPermissions] = useState(
     props.section.permissions || []
   );
+
+  const pages = useSelector((state) => state.wiki.pages);
+
+  function autoCompletionsMatching(fragment) {
+    return pages.filter((p) =>
+      p.slug.toLowerCase().startsWith(fragment.toLowerCase())
+    );
+  }
+
   function cancelCallback(e) {
     props.toggleEdit(props.section.id);
   }
