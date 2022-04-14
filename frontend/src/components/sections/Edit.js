@@ -1,4 +1,4 @@
-import React from "react";
+import { React, useState } from "react";
 import { PermissionForm } from "./Permissions";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import { SecretButton } from "../buttons/SecretButton";
@@ -12,168 +12,145 @@ function autoCompletionsMatching(fragment) {
     { slug: "mushu", title: "Mushu" },
   ].filter((x) => x.slug.toLowerCase().startsWith(fragment.toLowerCase()));
 }
-export class SectionEdit extends React.Component {
-  constructor(props) {
-    super(props);
 
-    this.state = {
-      content: props.section.content,
-      is_secret: props.section.is_secret,
-      permissions: props.section.permissions || [],
-    };
-
-    this.handleChange = this.handleChange.bind(this);
-    this.handleChangePermission = this.handleChangePermission.bind(this);
-    this.handleDelete = this.handleDelete.bind(this);
-    this.clearAndClose = this.clearAndClose.bind(this);
-    this.saveContentToServer = this.saveContentToServer.bind(this);
-    this.cancelCallback = (e) => this.props.toggleEdit(this.props.section.id);
+export default function SectionEdit(props) {
+  const [content, setContent] = useState(props.section.content);
+  const [isSecret, setIsSecret] = useState(props.section.is_admin_only);
+  const [permissions, setPermissions] = useState(
+    props.section.permissions || []
+  );
+  function cancelCallback(e) {
+    props.toggleEdit(props.section.id);
   }
 
-  handleChange(event) {
+  function handleChange(event) {
     if (event.target.name === "content") {
-      this.setState({ content: event.target.value });
+      setContent(event.target.value);
     } else if (event.target.name === "isSecret") {
-      this.setState({ is_secret: !this.state.is_secret });
+      setIsSecret(!isSecret);
       event.target.blur();
     }
   }
 
-  handleChangePermission(userId, shouldHaveAccess) {
-    const permission = this.state.permissions.find((e) => e.user === userId);
+  function handleChangePermission(userId, shouldHaveAccess) {
+    const permission = permissions.find((e) => e.user === userId);
     if (permission === undefined) {
-      this.setState({
-        permissions: this.state.permissions.concat([
-          { user: userId, level: "edit" },
-        ]),
-      });
+      setPermissions(permissions.concat([{ user: userId, level: "edit" }]));
     } else {
-      this.setState({
-        permissions: this.state.permissions.filter((e) => e !== permission),
-      });
+      setPermissions(permissions.filter((e) => e !== permission));
     }
   }
 
-  clearAndClose(event) {
-    this.setState({ content: "" });
+  function clearAndClose(event) {
+    setContent("");
     event.target.blur();
-    this.cancelCallback();
+    cancelCallback();
   }
 
-  handleDelete(event) {
-    if (this.props.section.exists_on_server) {
+  function handleDelete(event) {
+    if (props.section.exists_on_server) {
       if (!window.confirm("Do you really want to delete this section?")) {
         return;
       }
     }
-    this.props.destroySection(this.props.section);
+    props.destroySection(props.section);
   }
 
-  saveContentToServer() {
-    this.props.updateSection(
-      this.props.section.id,
-      this.state.content,
-      this.props.section.section_index,
-      this.state.is_secret,
-      this.state.permissions,
-      this.props.section.exists_on_server
+  function saveContentToServer() {
+    props.updateSection(
+      props.section.id,
+      content,
+      props.section.section_index,
+      isSecret,
+      permissions,
+      props.section.exists_on_server
     );
   }
 
-  render() {
-    var rows = 2;
-    if (this.state.content) {
-      rows = Math.max((this.state.content.match(/\n/g) || []).length, rows) + 1;
-    }
+  var rows = 2;
+  if (content) {
+    rows = Math.max((content.match(/\n/g) || []).length, rows) + 1;
+  }
 
-    const Item = ({ entity: { slug, title } }) => (
-      <div>{`${slug}: ${title}`}</div>
-    );
+  const Item = ({ entity: { slug, title } }) => (
+    <div>{`${slug}: ${title}`}</div>
+  );
 
-    return (
-      <div
-        data-sectionindex={this.props.section.section_index}
-        className="page-section-wrapper row data-entry"
-      >
-        <div className="col-md-10">
-          <div>
-            <ReactTextareaAutocomplete
-              autoFocus
-              name="content"
-              className="page-section"
-              rows={rows}
-              onChange={this.handleChange}
-              loadingComponent={() => <span>Loading</span>}
-              value={this.state.content}
-              trigger={{
-                "(p:": {
-                  dataProvider: (token) => {
-                    const tokenSubset = token.replace(/p.*:/, "");
-                    return autoCompletionsMatching(tokenSubset);
-                  },
-                  component: Item,
-                  output: (item, trigger) => `(page:${item.slug})`,
+  return (
+    <div
+      data-sectionindex={props.section.section_index}
+      className="page-section-wrapper row data-entry"
+    >
+      <div className="col-md-10">
+        <div>
+          <ReactTextareaAutocomplete
+            autoFocus
+            name="content"
+            className="page-section"
+            rows={rows}
+            onChange={handleChange}
+            loadingComponent={() => <span>Loading</span>}
+            value={content}
+            trigger={{
+              "(p:": {
+                dataProvider: (token) => {
+                  const tokenSubset = token.replace(/p.*:/, "");
+                  return autoCompletionsMatching(tokenSubset);
                 },
-                "[": {
-                  dataProvider: (token) => {
-                    return autoCompletionsMatching(token);
-                  },
-                  component: Item,
-                  output: (item, trigger) =>
-                    `[${item.title}](page:${item.slug})`,
+                component: Item,
+                output: (item, trigger) => `(page:${item.slug})`,
+              },
+              "[": {
+                dataProvider: (token) => {
+                  return autoCompletionsMatching(token);
                 },
-              }}
-            />
-          </div>
-          <div>
-            {this.state.is_secret ? (
-              <PermissionForm
-                permissions={this.state.permissions}
-                changePermission={this.handleChangePermission}
-              />
-            ) : (
-              <span />
-            )}
-          </div>
+                component: Item,
+                output: (item, trigger) => `[${item.title}](page:${item.slug})`,
+              },
+            }}
+          />
         </div>
-        <div className="col-md-2">
-          <div>
-            <ButtonGroup vertical>
-              <button
-                className="btn btn-primary section-button"
-                onClick={this.saveContentToServer}
-              >
-                Save
-              </button>
-              <button
-                className="btn btn-light section-button"
-                onClick={this.cancelCallback}
-              >
-                Cancel
-              </button>
-
-              <ButtonGroup size="lg">
-                <SecretButton
-                  isSecret={this.state.is_secret}
-                  onChange={this.handleChange}
-                />
-                <button
-                  className="btn btn-light section-button"
-                  onClick={
-                    this.props.section.exists_on_server
-                      ? this.handleDelete
-                      : this.clearAndClose
-                  }
-                >
-                  &#128465;
-                </button>
-              </ButtonGroup>
-            </ButtonGroup>
-          </div>
+        <div>
+          {isSecret ? (
+            <PermissionForm
+              permissions={permissions}
+              changePermission={handleChangePermission}
+            />
+          ) : (
+            <span />
+          )}
         </div>
       </div>
-    );
-  }
-}
+      <div className="col-md-2">
+        <div>
+          <ButtonGroup vertical>
+            <button
+              className="btn btn-primary section-button"
+              onClick={saveContentToServer}
+            >
+              Save
+            </button>
+            <button
+              className="btn btn-light section-button"
+              onClick={cancelCallback}
+            >
+              Cancel
+            </button>
 
-export default SectionEdit;
+            <ButtonGroup size="lg">
+              <SecretButton isSecret={isSecret} onChange={handleChange} />
+              <button
+                className="btn btn-light section-button"
+                onClick={
+                  props.section.exists_on_server ? handleDelete : clearAndClose
+                }
+              >
+                &#128465;
+              </button>
+            </ButtonGroup>
+          </ButtonGroup>
+        </div>
+      </div>
+    </div>
+  );
+}

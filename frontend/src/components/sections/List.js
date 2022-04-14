@@ -1,6 +1,6 @@
 import React from "react";
-import { SectionEdit } from "./Edit";
 import { Gutter } from "./Gutter";
+import SectionEdit from "./Edit";
 import SectionShow from "./Show";
 
 function SectionRender(props) {
