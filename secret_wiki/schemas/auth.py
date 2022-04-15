@@ -11,7 +11,7 @@ class PublicUser(models.BaseModel, orm_mode=True):
 
 class User(models.BaseUser, models.BaseOAuthAccountMixin, orm_mode=True):
     def can_update_section(self, section):
-        return self.is_superuser or not section.is_admin_only
+        return self.is_superuser or not section.is_secret
 
 
 class UserCreate(models.CreateUpdateDictModel):

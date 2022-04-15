@@ -34,7 +34,7 @@ async def get_section_list(client, expected_count=2):
 async def test_user_informed_of_view_restrictions(db, client, sections, user_id):
     user_included_secret = next(s for s in sections if s.content == "An earlier section")
     async with db.begin_nested():
-        user_included_secret.is_admin_only = True
+        user_included_secret.is_secret = True
         db.add(user_included_secret)
     await user_included_secret.set_permissions(
         schemas.SectionPermission(user=str(user_id), level="edit")
@@ -77,7 +77,7 @@ async def test_admin_can_set_permissions_for_all_users(
         f"/api/w/my_wiki/p/page_1/s/{admin_only_section.id}",
         json={
             "content": "Some new content",
-            "is_admin_only": True,
+            "is_secret": True,
             "permissions": [
                 {
                     "user": str(new_permission.user),
@@ -90,7 +90,7 @@ async def test_admin_can_set_permissions_for_all_users(
     assert response.status_code == 200
 
     data = response.json()
-    assert data["is_admin_only"]
+    assert data["is_secret"]
     assert len(data["permissions"]) == 1
 
 
@@ -99,8 +99,8 @@ async def test_user_can_see_sections_and_permissions_for_them(
     db, client, user_id, permissions, sections
 ):
     async with db.begin_nested():
-        sections[0].is_admin_only = True
-        sections[1].is_admin_only = True
+        sections[0].is_secret = True
+        sections[1].is_secret = True
         db.add(sections[0])
         db.add(sections[1])
 

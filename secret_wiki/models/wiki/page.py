@@ -13,14 +13,14 @@ class Page(Base):
     wiki_id = Column(GUID, ForeignKey("wikis.id"))
     slug = Column(String, unique=True)
     title = Column(String)
-    is_admin_only = Column(Boolean, default=False)
+    is_secret = Column(Boolean, default=False)
 
     @classmethod
     def all(cls):
         return select(cls)
 
     def update(self, section_update):
-        for attr in ("title", "slug", "is_admin_only"):
+        for attr in ("title", "slug", "is_secret"):
             if (value := getattr(section_update, attr)) is not None:
                 setattr(self, attr, value)
 
@@ -36,7 +36,7 @@ class Page(Base):
             query = query.join(Wiki).where(Wiki.slug == wiki_slug)
         if not user.is_superuser:
             query = query.where(
-                Page.is_admin_only == False  # pylint: disable=singleton-comparison
+                Page.is_secret == False  # pylint: disable=singleton-comparison
             )
         if page_id:
             query = query.where(Page.id == page_id)

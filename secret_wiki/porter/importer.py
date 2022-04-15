@@ -7,7 +7,7 @@ from .common import Porter
 
 
 def map_sections(section_dict):
-    base = {k: v for k, v in section_dict.items() if k not in ("permissions", "is_secret")}
+    base = {k: v for k, v in section_dict.items() if k != "permissions"}
     base["section_permissions"] = [
         SectionPermission(section_id=section_dict["id"], user_id=s["user"], level="EDIT")
         for s in section_dict.get("permissions", [])

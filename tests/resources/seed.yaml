@@ -1,16 +1,16 @@
 pages:
 - id: aecad56c-fb23-4a45-b612-2defd7910c9b
-  is_admin_only: false
+  is_secret: false
   slug: mulan
   title: Mulan
   wiki_id: 6f15b91f-cd5d-4e6b-94c5-c666c63e20c6
 - id: 2f066e0b-67ea-44b4-8c9f-4614ae147e47
-  is_admin_only: false
+  is_secret: false
   slug: mushu
   title: Mushu (Dragon)
   wiki_id: 6f15b91f-cd5d-4e6b-94c5-c666c63e20c6
 - id: e3445ecf-d463-42e9-a199-59b6860583b9
-  is_admin_only: false
+  is_secret: false
   slug: fa
   title: Grandmother Fa
   wiki_id: 6f15b91f-cd5d-4e6b-94c5-c666c63e20c6
@@ -18,7 +18,6 @@ sections:
 - content: Mulan dons the outfit of a warrior and heads off to live a life of deception
     as the warrior [Ping](page:ping)
   id: 9fa06806-899e-4727-af23-ee64bf9ac070
-  is_admin_only: true
   is_secret: true
   page_id: aecad56c-fb23-4a45-b612-2defd7910c9b
   permissions:
@@ -30,7 +29,6 @@ sections:
     Mulan is a humble noble with an old dad and a [Grandmother Fa](page:fa). She also
     has a friend named [Mushu](page:mushu).'
   id: 00693491-dda1-48d9-8313-b742c6e62c3a
-  is_admin_only: false
   is_secret: false
   page_id: aecad56c-fb23-4a45-b612-2defd7910c9b
   permissions: []
@@ -39,8 +37,7 @@ sections:
 
     He''s a cute little dragon that hangs around with [Mulan](page:mulan).'
   id: a2791e99-2803-429b-b274-c203a2ce330e
-  is_admin_only: false
-  is_secret: false
+  is_secret: True
   page_id: 2f066e0b-67ea-44b4-8c9f-4614ae147e47
   permissions: []
   section_index: 3000
@@ -54,7 +51,6 @@ sections:
 
     * Very cowardly, but improves over the film'
   id: c26b7086-c87b-4884-8eed-86b14a8a0cf1
-  is_admin_only: false
   is_secret: false
   page_id: 2f066e0b-67ea-44b4-8c9f-4614ae147e47
   permissions: []

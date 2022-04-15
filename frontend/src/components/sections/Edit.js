@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 
 export default function SectionEdit(props) {
   const [content, setContent] = useState(props.section.content);
-  const [isSecret, setIsSecret] = useState(props.section.is_admin_only);
+  const [isSecret, setIsSecret] = useState(props.section.is_secret);
   const [permissions, setPermissions] = useState(
     props.section.permissions || []
   );

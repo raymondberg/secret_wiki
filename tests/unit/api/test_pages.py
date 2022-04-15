@@ -16,14 +16,14 @@ async def test_list_all_non_admin_pages(client, pages):
             "slug": "page_1",
             "title": "Page One",
             "wiki_id": str(pages[0].wiki_id),
-            "is_admin_only": False,
+            "is_secret": False,
         },
         {
             "id": str(pages[1].id),
             "slug": "page_2",
             "title": "Page Two",
             "wiki_id": str(pages[1].wiki_id),
-            "is_admin_only": False,
+            "is_secret": False,
         },
     ]
 
@@ -40,7 +40,7 @@ async def test_list_admin_pages_as_admin(admin_client, admin_only_page):
             "slug": "admin_only_page",
             "title": "Admin Only Page",
             "wiki_id": str(admin_only_page.wiki_id),
-            "is_admin_only": True,
+            "is_secret": True,
         },
     ]
 
@@ -56,7 +56,7 @@ async def test_read_page(client, pages):
         "slug": "page_1",
         "title": page_one.title,
         "wiki_id": str(page_one.wiki_id),
-        "is_admin_only": False,
+        "is_secret": False,
     }
 
 
@@ -76,7 +76,7 @@ async def test_admin_can_read_admin_page(admin_client, admin_only_page):
         "slug": admin_only_page.slug,
         "title": admin_only_page.title,
         "wiki_id": str(admin_only_page.wiki_id),
-        "is_admin_only": True,
+        "is_secret": True,
     }
 
 
@@ -84,7 +84,7 @@ async def test_admin_can_read_admin_page(admin_client, admin_only_page):
 async def test_create_page(client, db, wikis):
     response = await client.post(
         f"/api/w/{wikis[0].slug}/p",
-        json={"title": "my page", "is_admin_only": True},
+        json={"title": "my page", "is_secret": True},
     )
 
     assert response.status_code == 200
@@ -93,7 +93,7 @@ async def test_create_page(client, db, wikis):
     assert data["id"]
     assert data["title"] == "my page"
     assert data["slug"] == "my-page"
-    assert data["is_admin_only"]
+    assert data["is_secret"]
     assert data["wiki_id"] == str(wikis[0].id)
 
     page = await db.execute(select(Page).where(Page.id == data["id"]))
@@ -105,7 +105,7 @@ async def test_update_page(client, db, wikis, pages):
     page = pages[0]
     response = await client.post(
         f"/api/w/{wikis[0].slug}/p/{page.slug}",
-        json={"title": "an updated page", "is_admin_only": True},
+        json={"title": "an updated page", "is_secret": True},
     )
 
     assert response.status_code == 200
@@ -114,12 +114,12 @@ async def test_update_page(client, db, wikis, pages):
     assert data["id"]
     assert data["title"] == "an updated page"
     assert data["slug"] == page.slug
-    assert data["is_admin_only"]
+    assert data["is_secret"]
     assert data["wiki_id"] == str(wikis[0].id)
 
     await db.refresh(page)
     assert page.title == "an updated page"
-    assert page.is_admin_only
+    assert page.is_secret
 
 
 @pytest.mark.asyncio

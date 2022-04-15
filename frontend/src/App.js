@@ -11,7 +11,7 @@ import { LoginModal } from "./components/pages/LoginModal";
 import Main from "./components/Main";
 import ApiWrapper from "./ApiWrapper";
 import { updateUsers } from "./shared/userSlice";
-import { updateWikis, updateWiki } from "./shared/wikiSlice";
+import { updateWikis } from "./shared/wikiSlice";
 
 function App() {
   const crossDomain = process.env.NODE_ENV !== "production";

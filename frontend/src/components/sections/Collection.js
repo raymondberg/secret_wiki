@@ -125,7 +125,7 @@ export function SectionCollection(props) {
     const body = {
       content: content,
       section_index: sectionIndex,
-      is_admin_only: isSecret,
+      is_secret: isSecret,
       permissions: permissions,
     };
     let url = `w/${activeWiki.slug}/p/${activePage.slug}/s`;

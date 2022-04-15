@@ -67,7 +67,7 @@ async def create_wiki_page(
             id=page_create.id,
             slug=page_create.slug,
             title=page_create.title,
-            is_admin_only=page_create.is_admin_only,
+            is_secret=page_create.is_secret,
         )
         db.add(page)
     return page
@@ -145,12 +145,12 @@ async def wiki_section_create(
         section = models.Section(
             id=section_create.id,
             page_id=page_object.id,
-            is_admin_only=section_create.is_admin_only,
+            is_secret=section_create.is_secret,
             content=section_create.content,
             section_index=section_create.section_index,
         )
         db.add(section)
-        if section.is_admin_only:
+        if section.is_secret:
             if section.permissions is None:
                 raise HTTPException(
                     status_code=422, detail="Must specify permissions if restricted"

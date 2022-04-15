@@ -16,7 +16,7 @@ export default function PageCreateModal(props) {
   function handlePageCreate() {
     const body = {
       title: title,
-      is_admin_only: isSecret,
+      is_secret: isSecret,
     };
 
     if (slug !== null) {

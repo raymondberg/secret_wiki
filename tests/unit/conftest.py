@@ -96,7 +96,7 @@ async def admin_only_page(db, wikis):
         id=uuid.uuid4(),
         slug="admin_only_page",
         title="Admin Only Page",
-        is_admin_only=True,
+        is_secret=True,
     )
     db.add(admin_only)
     await db.commit()
@@ -136,7 +136,7 @@ async def admin_only_section(db, pages: List[Page]) -> Section:
     admin_section = Section(
         id=uuid.uuid4(),
         page_id=page.id,
-        is_admin_only=True,
+        is_secret=True,
         section_index=5,
         content="Admin only section",
     )

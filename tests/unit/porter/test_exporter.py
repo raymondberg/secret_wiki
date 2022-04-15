@@ -27,19 +27,19 @@ async def test_export_wikis(db, wikis, pages, sections, user):
         == f"""\
 pages:
 - id: {pages[0].id}
-  is_admin_only: {bformat(pages[0].is_admin_only)}
+  is_secret: {bformat(pages[0].is_secret)}
   slug: {pages[0].slug}
   title: {pages[0].title}
   wiki_id: {pages[0].wiki_id}
 - id: {pages[1].id}
-  is_admin_only: {bformat(pages[1].is_admin_only)}
+  is_secret: {bformat(pages[1].is_secret)}
   slug: {pages[1].slug}
   title: {pages[1].title}
   wiki_id: {pages[1].wiki_id}
 sections:
 - content: {sections[0].content}
   id: {sections[0].id}
-  is_admin_only: {bformat(sections[0].is_admin_only)}
+  is_secret: {bformat(sections[0].is_secret)}
   is_secret: {bformat(sections[0].is_secret)}
   page_id: {sections[0].page_id}
   permissions:
@@ -48,7 +48,7 @@ sections:
   section_index: {sections[0].section_index}
 - content: {sections[1].content}
   id: {sections[1].id}
-  is_admin_only: {bformat(sections[1].is_admin_only)}
+  is_secret: {bformat(sections[1].is_secret)}
   is_secret: {bformat(sections[1].is_secret)}
   page_id: {sections[1].page_id}
   permissions: []

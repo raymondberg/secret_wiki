@@ -1,5 +1,6 @@
 import asyncio
 import getpass
+import os
 import sys
 
 from fastapi_users.password import PasswordHelper
@@ -20,6 +21,6 @@ async def set_user_password(email: str, password: str):
 
 if __name__ == "__main__":
     username = sys.argv[-1]
-    password = getpass.getpass(f"Password for {username}: ")
+    password = os.environ.get("WIKI_PASSWORD") or getpass.getpass(f"Password for {username}: ")
 
     asyncio.run(set_user_password(username, password))

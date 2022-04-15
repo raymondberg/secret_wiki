@@ -11,7 +11,7 @@ async def test_permissions_loads_section_permissions(db, user_id):
     section_id = str(uuid.uuid4())
     db.add_all(
         [
-            Section(id=section_id, is_admin_only=True),
+            Section(id=section_id, is_secret=True),
             SectionPermission(section_id=section_id, user_id=user_id),
         ],
     )

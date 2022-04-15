@@ -33,10 +33,6 @@ class AsyncDatabaseSession:
             expire_on_commit=False,
         )()
 
-    async def __del__(self):
-        if self._session:
-            await self._session.close()
-
     def __getattr__(self, name):
         return getattr(self.session, name)
 

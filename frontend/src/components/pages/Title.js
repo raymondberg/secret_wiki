@@ -13,7 +13,7 @@ export function PageTitle(props) {
     setEditMode(!editMode);
   }
 
-  const editIcon = props.page.is_admin_only ? getLock() : <EditIcon />;
+  const editIcon = props.page.is_secret ? getLock() : <EditIcon />;
 
   if (editMode) {
     return (
@@ -40,7 +40,7 @@ export function PageTitle(props) {
 }
 
 function TitleEditForm(props) {
-  const [isSecret, setIsSecret] = useState(props.page.is_admin_only);
+  const [isSecret, setIsSecret] = useState(props.page.is_secret);
   const [title, setTitle] = useState(props.page.title);
   const [slug, setSlug] = useState(props.page.slug);
   const activeWiki = useSelector((state) => state.wiki.wiki);
@@ -55,7 +55,7 @@ function TitleEditForm(props) {
       const body = {
         title,
         slug,
-        is_admin_only: isSecret,
+        is_secret: isSecret,
       };
       props.toggleEditMode();
       props.api

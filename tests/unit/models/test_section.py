@@ -15,14 +15,14 @@ async def other_user(db, fake):
 
 
 @pytest.mark.asyncio
-async def test_filters_is_admin_only(db, wikis, pages, user, other_user, sections):
+async def test_filters_is_secret(db, wikis, pages, user, other_user, sections):
     # Can see by default
     query = Section.filter(wiki_slug=wikis[0].slug, page_slug=pages[0].slug, user=user)
     visible_sections = (await db.execute(query)).scalars().unique().all()
     assert len(visible_sections) == 2
 
     # Can't see is admin only
-    sections[0].is_admin_only = True
+    sections[0].is_secret = True
     db.add(sections[0])
     await db.commit()
     visible_sections = (await db.execute(query)).scalars().unique().all()

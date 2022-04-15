@@ -20,7 +20,7 @@ class PermissionLevel(enum.Enum):
 class PageUpdate(BaseModel):
     title: str
     slug: str = None  # type: ignore
-    is_admin_only: Optional[bool] = False
+    is_secret: Optional[bool] = False
 
     @validator("slug", pre=True, always=True)
     def set_slug(cls, value, *, values):  # pylint: disable=no-self-argument,no-self-use
@@ -36,7 +36,7 @@ class Page(BaseModel):
     id: UUID
     slug: str
     title: str
-    is_admin_only: bool
+    is_secret: bool
 
     class Config:
         orm_mode = True
@@ -54,7 +54,7 @@ class SectionCreate(BaseModel):
     id: UUID = Field(default_factory=uuid4)
     content: str
     section_index: Optional[int] = None
-    is_admin_only: Optional[bool] = False
+    is_secret: Optional[bool] = False
     permissions: Optional[List[SectionPermission]] = None
 
     class Config:
@@ -64,7 +64,7 @@ class SectionCreate(BaseModel):
 class SectionUpdate(BaseModel):
     content: Optional[str] = None
     section_index: Optional[int] = None
-    is_admin_only: Optional[bool] = None
+    is_secret: Optional[bool] = None
     permissions: Optional[List[SectionPermission]] = None
 
 
@@ -72,9 +72,8 @@ class Section(SectionCreate):
     id: UUID
     page_id: UUID
     section_index: Optional[int] = None
-    is_admin_only: bool = False
-    permissions: Optional[List[SectionPermission]] = None
     is_secret: bool = False
+    permissions: Optional[List[SectionPermission]] = None
 
 
 class Wiki(BaseModel):

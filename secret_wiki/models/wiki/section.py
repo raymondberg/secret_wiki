@@ -56,7 +56,7 @@ class Section(Base):
     id = Column(GUID, primary_key=True)
     page_id = Column(GUID, ForeignKey("wikis.id"))
     section_index = Column(Integer, default=5000)
-    is_admin_only = Column(Boolean, default=False)
+    is_secret = Column(Boolean, default=False)
     content = Column(Text)
     section_permissions = relationship("SectionPermission", lazy="joined")
 
@@ -76,10 +76,6 @@ class Section(Base):
         user = await session.execute(select(cls).where(cls.id == id))
         return user.scalars().first()
 
-    @property
-    def is_secret(self):
-        return self.is_admin_only
-
     @classmethod
     def filter(cls, user=None, wiki_slug=None, page_slug=None, section_id=None):
         query = select(cls)
@@ -96,7 +92,7 @@ class Section(Base):
         if not user or not user.is_superuser:
             query = query.outerjoin(Section.section_permissions).where(
                 or_(
-                    Section.is_admin_only == False,
+                    Section.is_secret == False,
                     and_(
                         SectionPermission.user_id == user.id,
                         SectionPermission.level == schemas.PermissionLevel.EDIT,
@@ -106,15 +102,15 @@ class Section(Base):
         return query
 
     def update(self, section_update):
-        for attr in ("content", "is_admin_only", "section_index"):
+        for attr in ("content", "is_secret", "section_index"):
             if (value := getattr(section_update, attr)) is not None:
                 setattr(self, attr, value)
 
     async def set_permissions(self, *user_permissions: List[schemas.SectionPermission], db=None):
         """
-        is_admin_only: false -> Public (permissions don't matter)
-        is_admin_only: true -> Private (permissions are exclusions {})
-        is_admin_only: true -> Private (permissions are exclusions {user:, access:})
+        is_secret: false -> Public (permissions don't matter)
+        is_secret: true -> Private (permissions are exclusions {})
+        is_secret: true -> Private (permissions are exclusions {user:, access:})
 
         """
         session = db or AsyncDatabaseSession()
