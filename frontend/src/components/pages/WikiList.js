@@ -1,41 +1,15 @@
-import { React, useState, useEffect } from "react";
+import { React } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { updateWikis, updateWiki } from "../../shared/wikiSlice";
+import { updateWiki } from "../../shared/wikiSlice";
 
 export function WikiList(props) {
-  const [error, setError] = useState(null);
   const wikis = useSelector((state) => state.wiki.wikis);
   const activeWiki = useSelector((state) => state.wiki.wiki);
 
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (wikis.length === 0 && error === null) {
-      props.api
-        .get("w")
-        .then((res) => res.json())
-        .then(
-          (returnedWikis) => {
-            if (Array.isArray(returnedWikis)) {
-              dispatch(updateWikis(returnedWikis));
-              setError(null);
-            } else {
-              setError("Invalid response");
-            }
-          },
-          (e) => {
-            if (e) {
-              setError("error in extract " + e);
-            }
-          }
-        );
-    }
-  }, [props.api]);
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  } else if (wikis === undefined) {
-    return <div>Loading wikis..</div>;
+  if (wikis.length === 0) {
+    return <div id="wiki-list" />;
   } else {
     return (
       <div id="wiki-list" className="p-2">

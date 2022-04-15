@@ -11,6 +11,7 @@ import { LoginModal } from "./components/pages/LoginModal";
 import Main from "./components/Main";
 import ApiWrapper from "./ApiWrapper";
 import { updateUsers } from "./shared/userSlice";
+import { updateWikis, updateWiki } from "./shared/wikiSlice";
 
 function App() {
   const crossDomain = process.env.NODE_ENV !== "production";
@@ -28,6 +29,15 @@ function App() {
         .then((res) => res.json())
         .then((returnedUsers) => {
           dispatch(updateUsers(returnedUsers));
+        });
+
+      api
+        .get("w")
+        .then((res) => res.json())
+        .then((returnedWikis) => {
+          if (Array.isArray(returnedWikis)) {
+            dispatch(updateWikis(returnedWikis));
+          }
         });
     }
   }, [api, jwt, dispatch]);

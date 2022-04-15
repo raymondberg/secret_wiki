@@ -75,7 +75,7 @@ function Main(props) {
           <div className="p-2">
             <h3 id="app-name">Secret Wiki</h3>
           </div>
-          {props.api.isLoggedIn && <WikiList api={props.api} />}
+          {props.api.isLoggedIn && <WikiList />}
           <UserActions
             api={props.api}
             editMode={editMode}
