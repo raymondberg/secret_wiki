@@ -1,1 +1,1 @@
-PYTHONPATH=.:$PYTHONPATH pipenv run python script/seed.py
+PYTHONPATH=.:$PYTHONPATH script/import tests/resources/seed.yaml

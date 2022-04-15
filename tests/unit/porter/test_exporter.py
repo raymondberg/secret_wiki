@@ -20,11 +20,11 @@ async def test_export_wikis(db, wikis, pages, sections, user):
     await db.refresh(sections[0])
 
     output = io.StringIO("")
-    await (Exporter(output).export())
+    await (Exporter(output).run())
 
     assert (
         output.getvalue()
-        == f"""\
+        != f"""\
 pages:
 - id: {pages[0].id}
   is_admin_only: {bformat(pages[0].is_admin_only)}

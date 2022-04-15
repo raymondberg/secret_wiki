@@ -1,0 +1,85 @@
+pages:
+- id: aecad56c-fb23-4a45-b612-2defd7910c9b
+  is_admin_only: false
+  slug: mulan
+  title: Mulan
+  wiki_id: 6f15b91f-cd5d-4e6b-94c5-c666c63e20c6
+- id: 2f066e0b-67ea-44b4-8c9f-4614ae147e47
+  is_admin_only: false
+  slug: mushu
+  title: Mushu (Dragon)
+  wiki_id: 6f15b91f-cd5d-4e6b-94c5-c666c63e20c6
+- id: e3445ecf-d463-42e9-a199-59b6860583b9
+  is_admin_only: false
+  slug: fa
+  title: Grandmother Fa
+  wiki_id: 6f15b91f-cd5d-4e6b-94c5-c666c63e20c6
+sections:
+- content: Mulan dons the outfit of a warrior and heads off to live a life of deception
+    as the warrior [Ping](page:ping)
+  id: 9fa06806-899e-4727-af23-ee64bf9ac070
+  is_admin_only: true
+  is_secret: true
+  page_id: aecad56c-fb23-4a45-b612-2defd7910c9b
+  permissions:
+  - level: edit
+    user: 99758ad2-9c0c-4059-a767-3dbe6f4f5c07
+  section_index: 4000
+- content: '## ABOUT
+
+    Mulan is a humble noble with an old dad and a [Grandmother Fa](page:fa). She also
+    has a friend named [Mushu](page:mushu).'
+  id: 00693491-dda1-48d9-8313-b742c6e62c3a
+  is_admin_only: false
+  is_secret: false
+  page_id: aecad56c-fb23-4a45-b612-2defd7910c9b
+  permissions: []
+  section_index: 3000
+- content: '## ABOUT
+
+    He''s a cute little dragon that hangs around with [Mulan](page:mulan).'
+  id: a2791e99-2803-429b-b274-c203a2ce330e
+  is_admin_only: false
+  is_secret: false
+  page_id: 2f066e0b-67ea-44b4-8c9f-4614ae147e47
+  permissions: []
+  section_index: 3000
+- content: '## Facts
+
+    * Voiced by a famous person
+
+    * Red...I think
+
+    * Has 4 legs
+
+    * Very cowardly, but improves over the film'
+  id: c26b7086-c87b-4884-8eed-86b14a8a0cf1
+  is_admin_only: false
+  is_secret: false
+  page_id: 2f066e0b-67ea-44b4-8c9f-4614ae147e47
+  permissions: []
+  section_index: 4000
+users:
+- email: trusted@example.com
+  id: 99758ad2-9c0c-4059-a767-3dbe6f4f5c07
+  is_active: true
+  is_superuser: false
+  is_verified: true
+  oauth_accounts: []
+- email: admin@example.com
+  id: 35876d8a-422c-468b-ab0d-558443923b0f
+  is_active: true
+  is_superuser: true
+  is_verified: true
+  oauth_accounts: []
+- email: user@example.com
+  id: 2070061b-874b-42b2-abba-ed1aee1c1c7d
+  is_active: true
+  is_superuser: false
+  is_verified: true
+  oauth_accounts: []
+wikis:
+- id: 6f15b91f-cd5d-4e6b-94c5-c666c63e20c6
+  slug: Mulan
+- id: 08fc7e0d-af76-4f7d-98f8-79d163f228ec
+  slug: Lion King

@@ -1,1 +1,1 @@
-pipenv run python script/export.py
+pipenv run python script/porter.py export export.yaml

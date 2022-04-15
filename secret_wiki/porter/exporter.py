@@ -1,26 +1,10 @@
 from uuid import UUID
 
-from ruamel.yaml import YAML
-from ruamel.yaml.representer import SafeRepresenter
-
 from secret_wiki import schemas
 from secret_wiki.db import AsyncDatabaseSession, User
 from secret_wiki.models.wiki import Page, Section, Wiki
 
-yaml = YAML(typ="safe")
-yaml.default_flow_style = False
-
-
-def just_stringify(representer, value):
-    return representer.represent_scalar("tag:yaml.org,2002:str", str(value))
-
-
-def just_enum(representer, value):
-    return representer.represent_scalar("tag:yaml.org,2002:str", value.value)
-
-
-SafeRepresenter.add_representer(UUID, just_stringify)
-SafeRepresenter.add_representer(schemas.PermissionLevel, just_enum)
+from .common import Porter
 
 
 def convert_objects(collection, schema_class):
@@ -35,10 +19,7 @@ async def get_objects(orm_class, schema_class, should_unique=False):
     return convert_objects(result.all(), schema_class)
 
 
-class Exporter:
-    def __init__(self, buffer):
-        self.buffer = buffer
-
+class Exporter(Porter):
     @property
     async def data(self):
         return {
@@ -48,5 +29,5 @@ class Exporter:
             "sections": await get_objects(Section, schemas.Section, should_unique=True),
         }
 
-    async def export(self):
-        return yaml.dump(await self.data, self.buffer)
+    async def run(self):
+        return self.yaml.dump(await self.data, self.buffer)
