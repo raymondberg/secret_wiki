@@ -24,7 +24,7 @@ async def test_export_wikis(db, wikis, pages, sections, user):
 
     assert (
         output.getvalue()
-        != f"""\
+        == f"""\
 pages:
 - id: {pages[0].id}
   is_admin_only: {bformat(pages[0].is_admin_only)}
