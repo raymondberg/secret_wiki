@@ -20,11 +20,11 @@ export default function ApiWrapper(apiRoot, jwt, updateJwt, crossDomain) {
   }
 
   function post(url, body, includeBearer = true) {
-    var headers = {
+    let headers = {
       crossDomain: crossDomain,
     };
 
-    var postBody = null;
+    let postBody = null;
     if (includeBearer) {
       headers.Authorization = `Bearer ${jwt}`;
       headers["Content-Type"] = "application/json";
@@ -49,7 +49,7 @@ export default function ApiWrapper(apiRoot, jwt, updateJwt, crossDomain) {
     if (jwt === null) {
       console.log("tried delete without jwt");
     }
-    var headers = {
+    const headers = {
       crossDomain: crossDomain,
       Authorization: `Bearer ${jwt}`,
     };

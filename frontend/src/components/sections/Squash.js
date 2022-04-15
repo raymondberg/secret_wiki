@@ -3,7 +3,7 @@ import DOMPurify from "dompurify";
 import { linkReplace } from "../../common.js";
 
 export default function SectionSquash(props) {
-  var convertedSections = props.sections
+  const convertedSections = props.sections
     .map((s) => s.prior_content)
     .join("\n\n");
   return (

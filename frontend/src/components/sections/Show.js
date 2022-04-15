@@ -9,7 +9,7 @@ export function markdownContent(text) {
 }
 
 export default function SectionShow(props) {
-  var section_class =
+  const section_class =
     "page-section-wrapper row " +
     (props.section.is_secret
       ? " page-section-restricted"

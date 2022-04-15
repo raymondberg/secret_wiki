@@ -1,7 +1,7 @@
 import { getLock } from "../Icons";
 
 export function SecretButton(props) {
-  var classSpecifier = "btn section-button btn-light";
+  let classSpecifier = "btn section-button btn-light";
   if (props.isSecret) {
     classSpecifier += "btn section-button btn-warning";
   }

@@ -14,7 +14,7 @@ export default function PageCreateModal(props) {
   const dispatch = useDispatch();
 
   function handlePageCreate() {
-    var body = {
+    const body = {
       title: title,
       is_admin_only: isSecret,
     };

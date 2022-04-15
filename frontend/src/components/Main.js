@@ -20,7 +20,7 @@ function Main(props) {
   const query = useQuery();
 
   function updateUrlBar() {
-    var baseUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
+    const baseUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
     const wikiSlug = activeWiki?.slug || "";
     const pageSlug = activePage?.slug || "";
     const queryString = `w=${wikiSlug}&p=${pageSlug}`;
@@ -34,7 +34,7 @@ function Main(props) {
     wikis.length !== 0
   ) {
     // We have no wiki, but one is specified in url and we have wikis
-    var wikiSlug = query.get("w");
+    const wikiSlug = query.get("w");
     dispatch(updateWikiBySlug(wikiSlug));
   }
   if (
@@ -43,7 +43,7 @@ function Main(props) {
     pages.length !== 0
   ) {
     // We have no page, but one is specified in url and we have pages
-    var pageSlug = query.get("p");
+    const pageSlug = query.get("p");
     setTimeout(() => {
       dispatch(updatePageBySlug(pageSlug));
     }, 500);
@@ -56,7 +56,7 @@ function Main(props) {
     updateUrlBar(activeWiki?.slug, activePage?.slug);
   }
 
-  var content = null;
+  let content = null;
   if (props.api.isLoggedIn() && activeWiki !== null) {
     content = (
       <PageContent

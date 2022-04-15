@@ -70,7 +70,7 @@ export default function SectionEdit(props) {
     );
   }
 
-  var rows = 2;
+  let rows = 2;
   if (content) {
     rows = Math.max((content.match(/\n/g) || []).length, rows) + 1;
   }

@@ -28,12 +28,12 @@ function gutterDefinition(sectionIndex) {
 const SECTION_SPACER = 10;
 
 function minGutterIndex(sections) {
-  var all_indexes = sections.map((s) => s.section_index);
+  const all_indexes = sections.map((s) => s.section_index);
   return Math.min(Math.min.apply(Math, all_indexes), 5000) - SECTION_SPACER;
 }
 
 function* stripDuplicateGutters(sections) {
-  var lastSection = null;
+  let lastSection = null;
   for (const section of sections) {
     if (lastSection === null || !lastSection.is_gutter || !section.is_gutter) {
       yield section;
@@ -122,13 +122,13 @@ export function SectionCollection(props) {
     permissions,
     existsOnServer
   ) {
-    var body = {
+    const body = {
       content: content,
       section_index: sectionIndex,
       is_admin_only: isSecret,
       permissions: permissions,
     };
-    var url = `w/${activeWiki.slug}/p/${activePage.slug}/s`;
+    let url = `w/${activeWiki.slug}/p/${activePage.slug}/s`;
     if (existsOnServer) {
       url += `/${sectionId}`;
     }
@@ -137,7 +137,7 @@ export function SectionCollection(props) {
       .post(url, body)
       .then((response) => response.json())
       .then((section) => {
-        var newSections = sections
+        const newSections = sections
           .map((s) =>
             s.id === sectionId
               ? [
