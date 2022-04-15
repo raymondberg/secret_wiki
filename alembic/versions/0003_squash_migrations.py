@@ -1,8 +1,8 @@
-"""Baseline (from when we switched to uuids)
+""" Squashed base migrations (sqlite doesn't support column drops until 3.35.0)
 
-Revision ID: 0001
-Revises:
-Create Date: 2022-04-07 21:57:49.569760
+Revision ID: 0003
+Revises: <deleted migrations>
+Create Date: 2022-04-15 13:02:59.168283
 
 """
 import fastapi_users_db_sqlalchemy
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = "0001"
+revision = "0003"
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -23,7 +23,7 @@ def upgrade():
         "user",
         sa.Column("id", fastapi_users_db_sqlalchemy.guid.GUID(), nullable=False),
         sa.Column("email", sa.String(length=320), nullable=False),
-        sa.Column("hashed_password", sa.String(length=72), nullable=False),
+        sa.Column("hashed_password", sa.String(length=1024), nullable=False),
         sa.Column("is_active", sa.Boolean(), nullable=False),
         sa.Column("is_superuser", sa.Boolean(), nullable=False),
         sa.Column("is_verified", sa.Boolean(), nullable=False),
@@ -44,7 +44,7 @@ def upgrade():
         sa.Column("wiki_id", fastapi_users_db_sqlalchemy.guid.GUID(), nullable=True),
         sa.Column("slug", sa.String(), nullable=True),
         sa.Column("title", sa.String(), nullable=True),
-        sa.Column("is_admin_only", sa.Boolean(), nullable=True),
+        sa.Column("is_secret", sa.Boolean(), nullable=True),
         sa.ForeignKeyConstraint(
             ["wiki_id"],
             ["wikis.id"],
@@ -56,7 +56,7 @@ def upgrade():
         "sections",
         sa.Column("id", fastapi_users_db_sqlalchemy.guid.GUID(), nullable=False),
         sa.Column("section_index", sa.Integer(), nullable=True),
-        sa.Column("is_admin_only", sa.Boolean(), nullable=True),
+        sa.Column("is_secret", sa.Boolean(), nullable=True),
         sa.Column("content", sa.Text(), nullable=True),
         sa.Column("page_id", fastapi_users_db_sqlalchemy.guid.GUID(), nullable=True),
         sa.ForeignKeyConstraint(
