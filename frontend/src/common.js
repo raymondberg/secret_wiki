@@ -7,5 +7,8 @@ export function anyUndefined(...args) {
 }
 
 export function linkReplace(text) {
-  return text.replaceAll("(page:", "(http://localhost:3000/?w=Mulan&p=");
+  return text.replaceAll(
+    "(page:",
+    `(${window.location.protocol}//${window.location.host}/?w=Mulan&p=`
+  );
 }
