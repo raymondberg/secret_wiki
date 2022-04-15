@@ -1,6 +1,6 @@
 import uuid
 from typing import List
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 import pytest_asyncio
@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import selectinload, sessionmaker
 
 import secret_wiki.models.wiki as models
-from secret_wiki.db import Base, User, get_async_session
+from secret_wiki.db import Base, User, async_session, get_async_session
 from secret_wiki.models.wiki import Page, Section, Wiki
 
 TEST_DB_URL = "sqlite+aiosqlite:///./test.db"
@@ -54,7 +54,8 @@ async def db(engine) -> AsyncSession:
         for result in delete_results:
             out = await result
         await session.commit()
-        with patch("secret_wiki.db.AsyncDatabaseSession.session", session):
+        with patch("secret_wiki.db.async_session", MagicMock(async_session())) as mock:
+            mock.return_value.__aenter__.return_value = session
             yield session
 
 

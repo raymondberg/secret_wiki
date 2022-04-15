@@ -80,7 +80,6 @@ sections:
 - content: A later section
   id: 139bdaef-4321-4754-86d5-13045bc9d8aa
   is_secret: false
-  is_secret: false
   page_id: ad02e827-89fc-419f-ba2f-8b6aae364bd4
   permissions:
   - level: edit
@@ -89,7 +88,6 @@ sections:
 - content: An earlier section
   id: 9e0b439a-ce7d-438f-9ef4-389760a7c8f6
   is_secret: false
-  is_secret: false
   page_id: ad02e827-89fc-419f-ba2f-8b6aae364bd4
   permissions: []
   section_index: 2
@@ -97,7 +95,6 @@ users:
 - email: user@example.com
   id: 7151c460-085f-45a5-b329-8bbb4d6ee340
   is_active: true
-  is_superuser: false
   is_verified: false
   oauth_accounts: []
 wikis:

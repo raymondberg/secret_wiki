@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from secret_wiki import schemas
-from secret_wiki.db import AsyncDatabaseSession, User
+from secret_wiki.db import DB, User
 from secret_wiki.models.wiki import Page, Section, Wiki
 
 from .common import Porter
@@ -12,11 +12,11 @@ def convert_objects(collection, schema_class):
 
 
 async def get_objects(orm_class, schema_class, should_unique=False):
-    session = AsyncDatabaseSession()
-    result = (await session.execute(orm_class.all())).scalars()
-    if should_unique:
-        result = result.unique()
-    return convert_objects(result.all(), schema_class)
+    async with DB() as db:
+        result = (await db.execute(orm_class.all())).scalars()
+        if should_unique:
+            result = result.unique()
+        return convert_objects(result.all(), schema_class)
 
 
 class Exporter(Porter):

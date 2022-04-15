@@ -40,7 +40,6 @@ sections:
 - content: {sections[0].content}
   id: {sections[0].id}
   is_secret: {bformat(sections[0].is_secret)}
-  is_secret: {bformat(sections[0].is_secret)}
   page_id: {sections[0].page_id}
   permissions:
   - level: edit
@@ -48,7 +47,6 @@ sections:
   section_index: {sections[0].section_index}
 - content: {sections[1].content}
   id: {sections[1].id}
-  is_secret: {bformat(sections[1].is_secret)}
   is_secret: {bformat(sections[1].is_secret)}
   page_id: {sections[1].page_id}
   permissions: []

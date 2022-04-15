@@ -180,7 +180,7 @@ async def update_section(
     async with db.begin_nested():
         updated_section.update(section)
         db.add(updated_section)
-    await updated_section.set_permissions(*section.permissions or [], db=db)
+    await updated_section.set_permissions(*section.permissions or [])
     await db.refresh(updated_section)
     return updated_section
 

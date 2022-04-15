@@ -17,32 +17,13 @@ SQLALCHEMY_DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite+aiosqlite:///./
 
 engine = create_async_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
 
-
-class AsyncDatabaseSession:
-    def __init__(self):
-        self._engine = create_async_engine(
-            SQLALCHEMY_DATABASE_URL,
-            echo=True,
-        )
-
-        self._session = sessionmaker(
-            self._engine,
-            autocommit=False,
-            autoflush=False,
-            class_=AsyncSession,
-            expire_on_commit=False,
-        )()
-
-    def __getattr__(self, name):
-        return getattr(self.session, name)
-
-    @property
-    def session(self):
-        return self._session
-
-    async def create_all(self):
-        async with self._engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
+async_session = sessionmaker(
+    engine,
+    autocommit=False,
+    autoflush=False,
+    class_=AsyncSession,
+    expire_on_commit=False,
+)
 
 
 Base = declarative_base()
@@ -51,21 +32,26 @@ Base = declarative_base()
 class User(Base, SQLAlchemyBaseUserTable):  # pylint: disable=too-few-public-methods
     @classmethod
     async def all(cls):
-        session = AsyncDatabaseSession()
-        result = await session.execute(select(cls))
-        return result.scalars().all()
+        async with DB() as db:
+            result = await db.execute(select(cls))
+            return result.scalars().all()
 
     @classmethod
     async def find_by_id(cls, id):
-        session = AsyncDatabaseSession()
-        result = await session.execute(select(cls).where(cls.id == id))
-        return result.scalars().first()
+        async with DB() as db:
+            result = await db.execute(select(cls).where(cls.id == id))
+            return result.scalars().first()
+
+
+@asynccontextmanager
+async def DB():
+    async with async_session() as session:
+        yield session
 
 
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
-    session = AsyncDatabaseSession()
-    yield session
-    await session.close()
+    async with DB() as db:
+        yield db
 
 
 async def get_user_db(session: AsyncSession = Depends(get_async_session)):

@@ -17,7 +17,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import relationship
 
 import secret_wiki.schemas.wiki as schemas
-from secret_wiki.db import AsyncDatabaseSession, Base, User
+from secret_wiki.db import DB, Base, User
 
 from .page import Page
 from .wiki import Wiki
@@ -72,9 +72,9 @@ class Section(Base):
 
     @classmethod
     async def get(cls, id):
-        session = AsyncDatabaseSession()
-        user = await session.execute(select(cls).where(cls.id == id))
-        return user.scalars().first()
+        async with DB() as db:
+            user = await db.execute(select(cls).where(cls.id == id))
+            return user.scalars().first()
 
     @classmethod
     def filter(cls, user=None, wiki_slug=None, page_slug=None, section_id=None):
@@ -106,23 +106,23 @@ class Section(Base):
             if (value := getattr(section_update, attr)) is not None:
                 setattr(self, attr, value)
 
-    async def set_permissions(self, *user_permissions: List[schemas.SectionPermission], db=None):
+    async def set_permissions(self, *user_permissions: List[schemas.SectionPermission]):
         """
         is_secret: false -> Public (permissions don't matter)
         is_secret: true -> Private (permissions are exclusions {})
         is_secret: true -> Private (permissions are exclusions {user:, access:})
 
         """
-        session = db or AsyncDatabaseSession()
-        async with session.begin_nested():
-            current_permission_set = set(self.permissions)
-            new_permission_set = set(
-                SectionPermission(user_id=UUID(p.user), level=p.level, section_id=str(self.id))
-                for p in user_permissions
-            )
+        async with DB() as session:
+            async with session.begin_nested():
+                current_permission_set = set(self.permissions)
+                new_permission_set = set(
+                    SectionPermission(user_id=UUID(p.user), level=p.level, section_id=str(self.id))
+                    for p in user_permissions
+                )
 
-            for unwanted_permission in current_permission_set - new_permission_set:
-                session.sync_session.delete(unwanted_permission)
+                for unwanted_permission in current_permission_set - new_permission_set:
+                    session.sync_session.delete(unwanted_permission)
 
-            for new_permission in new_permission_set - current_permission_set:
-                session.add(new_permission)
+                for new_permission in new_permission_set - current_permission_set:
+                    session.add(new_permission)

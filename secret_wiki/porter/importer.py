@@ -1,6 +1,6 @@
 import asyncio
 
-from secret_wiki.db import AsyncDatabaseSession, User
+from secret_wiki.db import DB, User
 from secret_wiki.models.wiki import Page, Section, SectionPermission, Wiki
 
 from .common import Porter
@@ -23,30 +23,30 @@ def map_users(user_dict):
 
 
 async def find_or_create(collection, orm_model, should_unique=False, mapper=None):
-    session = AsyncDatabaseSession()
-    async with session.begin_nested():
-        accessor = orm_model.all()
-        if asyncio.iscoroutine(accessor):
-            existing_objects = await accessor
-        else:
-            existing_objects = (await session.execute(accessor)).scalars()
-            if should_unique:
-                existing_objects = existing_objects.unique()
-            existing_objects = existing_objects.all()
-        for item in collection:
-            existing_object = next((x for x in existing_objects if x.id == item["id"]), None)
-            if mapper:
-                item = mapper(item)
-            if existing_object:
-                pass
-                # update route
+    async with DB() as session:
+        async with session.begin_nested():
+            accessor = orm_model.all()
+            if asyncio.iscoroutine(accessor):
+                existing_objects = await accessor
             else:
-                session.add(orm_model(**item))
+                existing_objects = (await session.execute(accessor)).scalars()
+                if should_unique:
+                    existing_objects = existing_objects.unique()
+                existing_objects = existing_objects.all()
+            for item in collection:
+                existing_object = next((x for x in existing_objects if x.id == item["id"]), None)
+                if mapper:
+                    item = mapper(item)
+                if existing_object:
+                    pass
+                    # update route
+                else:
+                    session.add(orm_model(**item))
 
-                # Special case for section_permissions on section
-                section_permissions = item.get("section_permissions", [])
-                if section_permissions:
-                    session.add_all(section_permissions)
+                    # Special case for section_permissions on section
+                    section_permissions = item.get("section_permissions", [])
+                    if section_permissions:
+                        session.add_all(section_permissions)
 
 
 class Importer(Porter):
