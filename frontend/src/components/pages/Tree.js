@@ -32,7 +32,7 @@ export default function PageTree(props) {
           setError("Error in response " + e);
         }
       );
-  }, [wiki?.slug]);
+  }, [wiki?.slug, props.api, dispatch]);
 
   function pagesOrError() {
     if (error !== null) {

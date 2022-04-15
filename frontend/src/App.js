@@ -30,7 +30,7 @@ function App() {
           dispatch(updateUsers(returnedUsers));
         });
     }
-  });
+  }, [api, jwt, dispatch]);
 
   function updateJwt(newJwt) {
     setCookie("access_token", newJwt);

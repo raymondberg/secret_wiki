@@ -30,7 +30,7 @@ export function WikiList(props) {
           }
         );
     }
-  });
+  }, [props.api]);
 
   if (error) {
     return <div>Error: {error}</div>;
