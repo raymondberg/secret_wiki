@@ -14,7 +14,7 @@ export default function PageTree(props) {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (wiki?.slug === undefined || pages.length !== 0) return;
+    if (wiki?.slug === undefined) return;
 
     props.api
       .get(`w/${wiki.slug}/p`)
@@ -32,7 +32,8 @@ export default function PageTree(props) {
           setError("Error in response " + e);
         }
       );
-  });
+  }, [wiki?.slug]);
+
   function pagesOrError() {
     if (error !== null) {
       return error;
