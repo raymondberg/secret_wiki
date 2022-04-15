@@ -1,4 +1,5 @@
-PYTHONPATH=.:$PYTHONPATH script/import tests/resources/seed.yaml
-WIKI_PASSWORD=admin PYTHONPATH=.:$PYTHONPATH script/set-user-password admin@example.com
-WIKI_PASSWORD=trusted PYTHONPATH=.:$PYTHONPATH script/set-user-password trusted@example.com
-WIKI_PASSWORD=user PYTHONPATH=.:$PYTHONPATH script/set-user-password user@example.com
+export PYTHONPATH=.:$PYTHONPATH
+script/import tests/resources/seed.yaml
+WIKI_PASSWORD=admin script/set-user-password admin@example.com
+WIKI_PASSWORD=trusted script/set-user-password trusted@example.com
+WIKI_PASSWORD=user script/set-user-password user@example.com
