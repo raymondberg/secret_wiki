@@ -15,6 +15,10 @@ class Page(Base):
     title = Column(String)
     is_admin_only = Column(Boolean, default=False)
 
+    @classmethod
+    def all(cls):
+        return select(cls)
+
     def update(self, section_update):
         for attr in ("title", "slug", "is_admin_only"):
             if (value := getattr(section_update, attr)) is not None:

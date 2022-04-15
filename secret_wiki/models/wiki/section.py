@@ -62,6 +62,10 @@ class Section(Base):
 
     page_id = Column(GUID, ForeignKey("pages.id"))
 
+    @classmethod
+    def all(cls):
+        return select(cls)
+
     @property
     def permissions(self):
         return self.section_permissions
