@@ -1,2 +1,2 @@
 export PYTHONPATH=.:$PYTHONPATH
-pipenv run python script/porter.py export export.yaml
+pipenv run python script/porter.py export "$@"
