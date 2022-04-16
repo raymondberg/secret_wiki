@@ -7,8 +7,11 @@ export function anyUndefined(...args) {
 }
 
 export function linkReplace(text) {
+  let params = new URLSearchParams(window.location.search);
   return text.replaceAll(
     "(page:",
-    `(${window.location.protocol}//${window.location.host}/?w=Mulan&p=`
+    `(${window.location.protocol}//${window.location.host}/?w=${params.get(
+      "w"
+    )}&p=`
   );
 }
