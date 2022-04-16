@@ -10,7 +10,6 @@ export default function PageTree(props) {
   const activePage = useSelector((state) => state.wiki.page);
   const [error, setError] = useState(null);
 
-  console.log(activePage);
   const dispatch = useDispatch();
 
   useEffect(() => {

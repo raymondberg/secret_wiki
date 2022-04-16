@@ -56,7 +56,9 @@ export function SectionCollection(props) {
   const [sections, setSections] = useState([]);
   const activePage = useSelector((state) => state.wiki.page);
   const activeWiki = useSelector((state) => state.wiki.wiki);
-  console.log(error);
+  if (error) {
+    console.log(error);
+  }
 
   function toggleEdit(sectionId) {
     setSections(
