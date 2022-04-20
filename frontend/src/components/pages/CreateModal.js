@@ -4,7 +4,7 @@ import Modal from "react-bootstrap/Modal";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import { SecretButton } from "../buttons/SecretButton";
 import { useSelector, useDispatch } from "react-redux";
-import { invalidatePagesCache, updatePageBySlug } from "../../shared/wikiSlice";
+import { addPage, updatePageBySlug } from "../../shared/wikiSlice";
 
 export default function PageCreateModal(props) {
   const [title, setTitle] = useState(null);
@@ -26,11 +26,11 @@ export default function PageCreateModal(props) {
     props.api
       .post(`w/${activeWiki.slug}/p`, body)
       .then((response) => response.json())
-      .then((page) => {
+      .then(function (page) {
         setTitle(null);
         setSlug(null);
-        dispatch(updatePageBySlug(page.slug));
-        dispatch(invalidatePagesCache());
+        dispatch(addPage(page));
+        dispatch(updatePageBySlug(slug));
         props.handleClose();
       });
   }

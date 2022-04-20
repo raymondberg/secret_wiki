@@ -18,6 +18,13 @@ export const wikiSlice = createSlice({
         state.page = state.pages.filter((p) => p.slug === pageSlug)[0];
       }
     },
+    addPage: (state, message) => {
+      const page = message.payload;
+      const pagesBefore = state.pages.filter((p) => p.title < page.title);
+      const pagesAfter = state.pages.filter((p) => p.title > page.title);
+      state.page = page;
+      state.pages = pagesBefore.concat([page]).concat(pagesAfter);
+    },
     invalidatePagesCache: (state, message) => {
       state.page = null;
       state.pages = [];
@@ -49,6 +56,7 @@ export const wikiSlice = createSlice({
 });
 
 export const {
+  addPage,
   invalidatePagesCache,
   updatePage,
   updatePageBySlug,
