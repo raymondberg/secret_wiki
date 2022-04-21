@@ -7,7 +7,8 @@ import "./App.css";
 import "./react-toggle.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "@webscopeio/react-textarea-autocomplete/style.css";
-import { LoginModal } from "./components/pages/LoginModal";
+import LoginModal from "./components/pages/LoginModal";
+import JwtWarningModal from "./components/pages/JwtWarningModal";
 import Main from "./components/Main";
 import ApiWrapper from "./ApiWrapper";
 import { updateUsers } from "./shared/userSlice";
@@ -50,10 +51,21 @@ function App() {
     setJwt(newJwt);
   }
 
+  let jwtObject = null;
+  if (jwt !== null && jwt !== undefined) {
+    try {
+      jwtObject = JSON.parse(atob(jwt.split(".")[1]));
+    } catch (err) {}
+  }
+
   return (
     <Router>
       <Main api={api} />
       <LoginModal api={api} shouldShow={!api.isLoggedIn()} setJwt={updateJwt} />
+      <JwtWarningModal
+        isLoggedIn={api.isLoggedIn()}
+        expiration={jwtObject?.exp}
+      />
     </Router>
   );
 }
