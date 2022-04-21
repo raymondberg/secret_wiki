@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import PageCreateModal from "./pages/CreateModal";
 import PageContent from "./pages/Content";
 import WikiList from "./pages/WikiList";
+import Search from "./pages/Search";
 import UserActions from "./UserActions";
 
 import { useQuery } from "./url";
@@ -84,6 +85,7 @@ function Main(props) {
             <h3 id="app-name">Secret Wiki</h3>
           </div>
           {props.api.isLoggedIn && <WikiList />}
+          {props.api.isLoggedIn && <Search api={props.api} />}
           <UserActions
             api={props.api}
             editMode={editMode}

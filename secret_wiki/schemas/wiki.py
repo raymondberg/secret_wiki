@@ -42,6 +42,11 @@ class Page(BaseModel):
         orm_mode = True
 
 
+class SearchResult(BaseModel):
+    page_slug: str
+    excerpt: str
+
+
 class SectionPermission(BaseModel):
     user: str
     level: PermissionLevel

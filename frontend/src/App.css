@@ -127,5 +127,19 @@ div.section-squash {
 }
 
 .pencil {
-padding-top: .3em;
+  padding-top: .3em;
+}
+
+.react-search-box-dropdown {
+  position: absolute;
+  top: 5em;
+  font-size: .75em;
+  width: 40em;
+  z-index: 7;
+}
+
+@media only screen and (max-width: 760px) {
+  .react-search-box-dropdown {
+    top: 14em;
+  }
 }

@@ -45,6 +45,17 @@ async def list_wikis(
     return wikis.scalars().all()
 
 
+@router.get("/w/{wiki_slug}/search", response_model=List[schemas.SearchResult])
+async def search_wiki(
+    q: str,
+    wiki_object: models.Wiki = Depends(get_wiki),
+    db: AsyncSession = Depends(get_async_session),
+    user: schemas.User = Depends(current_active_user),
+):
+    search_results = await models.get_search_results(wiki_object.id, q)
+    return search_results
+
+
 @router.get("/w/{wiki_slug}/p", response_model=List[schemas.Page])
 async def list_wiki_pages(
     wiki_slug: str,
