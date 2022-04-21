@@ -1,5 +1,5 @@
 from fastapi_users_db_sqlalchemy.guid import GUID
-from sqlalchemy import Boolean, Column, ForeignKey, String, or_, select
+from sqlalchemy import Boolean, Column, ForeignKey, String, and_, or_, select
 
 import secret_wiki.schemas.wiki as schemas
 from secret_wiki.db import DB, Base
@@ -19,6 +19,10 @@ class Page(Base):
     @classmethod
     def all(cls):
         return select(cls)
+
+    @classmethod
+    def user_has_permission_to_page(cls, user):
+        return or_(cls.is_secret == False, user.is_superuser)
 
     @classmethod
     async def get(cls, id):
@@ -75,19 +79,24 @@ def dedupe(list_of_search_results):
         yield result
 
 
-async def get_search_results(wiki_id: str, search_string: str):
+async def get_search_results(wiki_id: str, search_string: str, user):
     from .section import Section
 
     query = (
         select(Page.slug, Page.title, Section.content)
-        .where(Page.wiki_id == wiki_id)
         .join(Section)
+        .outerjoin(Section.section_permissions)
         .where(
-            or_(
-                Section.content.ilike(f"%{search_string}%"),
-                Page.slug.ilike(f"%{search_string}%"),
-                Page.title.ilike(f"%{search_string}%"),
-            ),
+            and_(
+                Page.wiki_id == wiki_id,
+                Page.user_has_permission_to_page(user),
+                Section.user_has_permission_to_section(user),
+                or_(
+                    Section.content.ilike(f"%{search_string}%"),
+                    Page.slug.ilike(f"%{search_string}%"),
+                    Page.title.ilike(f"%{search_string}%"),
+                ),
+            )
         )
         .limit(10)
     )

@@ -89,17 +89,21 @@ class Section(Base):
             if wiki_slug:
                 query = query.join(Wiki).where(Wiki.slug == wiki_slug)
 
-        if not user or not user.is_superuser:
-            query = query.outerjoin(Section.section_permissions).where(
-                or_(
-                    Section.is_secret == False,
-                    and_(
-                        SectionPermission.user_id == user.id,
-                        SectionPermission.level == schemas.PermissionLevel.EDIT,
-                    ),
-                )
-            )
+        query = query.outerjoin(Section.section_permissions).where(
+            cls.user_has_permission_to_section(user)
+        )
         return query
+
+    @classmethod
+    def user_has_permission_to_section(cls, user):
+        return or_(
+            user.is_superuser,
+            cls.is_secret == False,
+            and_(
+                SectionPermission.user_id == user.id,
+                SectionPermission.level == schemas.PermissionLevel.EDIT,
+            ),
+        )
 
     def update(self, section_update):
         for attr in ("content", "is_secret", "section_index"):

@@ -52,7 +52,7 @@ async def search_wiki(
     db: AsyncSession = Depends(get_async_session),
     user: schemas.User = Depends(current_active_user),
 ):
-    search_results = await models.get_search_results(wiki_object.id, q)
+    search_results = await models.get_search_results(wiki_object.id, q, user)
     return search_results
 
 
