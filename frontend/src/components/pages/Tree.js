@@ -31,7 +31,7 @@ export default function PageTree(props) {
           setError("Error in response " + e);
         }
       );
-  }, [wiki?.slug, props.api, dispatch]);
+  }, [wiki?.last_probe_time, wiki?.slug, props.api, dispatch]);
 
   function pagesOrError() {
     if (error !== null) {

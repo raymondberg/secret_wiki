@@ -1,9 +1,11 @@
 export default function allDefined(...args) {
-  return args.every((arg) => arg !== null && arg !== undefined);
+  return !anyUndefined(...args);
 }
 
 export function anyUndefined(...args) {
-  return args.some((arg) => arg === null || arg === undefined);
+  return args.some(
+    (arg) => arg === null || arg === undefined || arg === "null"
+  );
 }
 
 export function linkReplace(text) {

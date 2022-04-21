@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PageCreateModal from "./pages/CreateModal";
 import PageContent from "./pages/Content";
 import WikiList from "./pages/WikiList";
@@ -19,42 +19,50 @@ function Main(props) {
   const dispatch = useDispatch();
   const query = useQuery();
 
-  function updateUrlBar() {
-    const baseUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
-    const wikiSlug = activeWiki?.slug || "";
-    const pageSlug = activePage?.slug || "";
-    const queryString = `w=${wikiSlug}&p=${pageSlug}`;
-    const newUrl = `${baseUrl}?${queryString}`;
-    window.history.pushState({ path: newUrl }, "", newUrl);
-  }
+  const urlWikiSlug = query.get("w");
+  const urlPageSlug = query.get("p");
 
-  if (
-    allDefined(wikis, query.get("w")) &&
-    activeWiki === null &&
-    wikis.length !== 0
-  ) {
-    // We have no wiki, but one is specified in url and we have wikis
-    const wikiSlug = query.get("w");
-    dispatch(updateWikiBySlug(wikiSlug));
-  }
-  if (
-    allDefined(activeWiki, pages, query.get("p")) &&
-    activePage === null &&
-    pages.length !== 0
-  ) {
-    // We have no page, but one is specified in url and we have pages
-    const pageSlug = query.get("p");
-    setTimeout(() => {
-      dispatch(updatePageBySlug(pageSlug));
-    }, 500);
-  }
+  useEffect(() => {
+    if (
+      (allDefined(activeWiki?.slug) && urlWikiSlug !== activeWiki?.slug) ||
+      (allDefined(activePage?.slug) && urlPageSlug !== activePage?.slug)
+    ) {
+      const baseUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
+      const sanitizedWikiSlug = activeWiki?.slug || "";
+      const sanitizedPageSlug = activePage?.slug || "";
+      const queryString = `w=${sanitizedWikiSlug}&p=${sanitizedPageSlug}`;
+      const newUrl = `${baseUrl}?${queryString}`;
+      window.history.pushState({ path: newUrl }, "", newUrl);
+    }
 
-  if (
-    activeWiki?.slug !== query.get("w") ||
-    activePage?.slug !== query.get("p")
-  ) {
-    updateUrlBar(activeWiki?.slug, activePage?.slug);
-  }
+    if (
+      allDefined(urlWikiSlug) &&
+      activeWiki?.slug === undefined &&
+      wikis.length !== 0
+    ) {
+      // We have no wiki, but one is specified in url and we have wikis
+      dispatch(updateWikiBySlug(urlWikiSlug));
+      return;
+    }
+    if (
+      allDefined(activeWiki?.slug, pages, urlPageSlug) &&
+      activePage?.slug === undefined &&
+      pages.length !== 0
+    ) {
+      // We have no page, but one is specified in url and we have pages
+      setTimeout(() => {
+        dispatch(updatePageBySlug(urlPageSlug));
+      }, 100);
+    }
+  }, [
+    wikis,
+    pages,
+    activeWiki?.slug,
+    activePage?.slug,
+    urlWikiSlug,
+    urlPageSlug,
+    dispatch,
+  ]);
 
   let content = null;
   if (props.api.isLoggedIn() && activeWiki !== null) {

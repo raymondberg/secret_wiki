@@ -36,7 +36,10 @@ function App() {
         .then((res) => res.json())
         .then((returnedWikis) => {
           if (Array.isArray(returnedWikis)) {
-            dispatch(updateWikis(returnedWikis));
+            let wikis = returnedWikis.map((w) =>
+              Object.assign({ last_probe_time: Date.now() }, w)
+            );
+            dispatch(updateWikis(wikis));
           }
         });
     }

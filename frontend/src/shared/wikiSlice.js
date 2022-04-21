@@ -36,14 +36,19 @@ export const wikiSlice = createSlice({
       }
     },
     updateWiki: (state, message) => {
-      state.wiki = message.payload;
       state.page = null;
+      state.wiki = Object.assign(
+        {
+          last_probe_time: Date.now(),
+        },
+        message.payload
+      );
     },
     updateWikis: (state, message) => {
       state.wikis = message.payload;
       if (state.wiki !== null) {
-        state.wiki = state.wikis.filter((p) => p.id === state.wiki.id);
         state.page = null;
+        state.wiki = state.wikis.filter((p) => p.id === state.wiki.id);
       }
     },
     updateWikiBySlug: (state, message) => {

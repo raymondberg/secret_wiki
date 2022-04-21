@@ -87,7 +87,7 @@ export function SectionCollection(props) {
 
   useEffect(
     function () {
-      if (anyUndefined(activeWiki?.slug, activePage.slug)) return;
+      if (anyUndefined(activeWiki?.slug, activePage?.slug)) return;
 
       const controller = new AbortController();
       props.api
