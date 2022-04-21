@@ -149,17 +149,19 @@ async def wiki_section_create(
             content=section_create.content,
             section_index=section_create.section_index,
         )
-        db.add(section)
         if section.is_secret:
             if section.permissions is None:
                 raise HTTPException(
                     status_code=422, detail="Must specify permissions if restricted"
                 )
-        await db.commit()
-    async with db.begin_nested():
-        await db.refresh(section)
-        await section.set_permissions(*section_create.permissions or [])
         db.add(section)
+        await db.commit()
+
+    await db.refresh(section)
+    await section.set_permissions(*section_create.permissions or [])
+    async with db.begin_nested():
+        db.add(section)
+        await db.commit()
     return await models.Section.get(section.id)
 
 
