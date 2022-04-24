@@ -7,11 +7,13 @@ import UserActions from "./UserActions";
 
 import { useQuery } from "./url";
 import { useSelector, useDispatch } from "react-redux";
+import { useCookies } from "react-cookie";
 import { updatePageBySlug, updateWikiBySlug } from "../shared/wikiSlice";
 import allDefined from "../common.js";
 
 function Main(props) {
-  const [editMode, setEditMode] = useState(false);
+  const [cookies, setCookie] = useCookies(["edit_mode"]);
+  const [editMode, setEditModeLocal] = useState(cookies.edit_mode === "true");
   const [pageCreateModalShow, setPageCreateModalShow] = useState(false);
   const wikis = useSelector((state) => state.wiki.wikis);
   const pages = useSelector((state) => state.wiki.pages);
@@ -22,6 +24,11 @@ function Main(props) {
 
   const urlWikiSlug = query.get("w");
   const urlPageSlug = query.get("p");
+
+  function setEditMode(flag) {
+    setCookie("edit_mode", flag);
+    setEditModeLocal(flag);
+  }
 
   useEffect(() => {
     if (
