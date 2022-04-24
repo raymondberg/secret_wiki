@@ -87,6 +87,23 @@ div.page-section-gutter {
   border-radius: 1em;
 }
 
+.action-button {
+  background-color: #ebae7c;
+  border: none;
+  border-radius: 1em;
+}
+.action-button:hover {
+  background-color: #EEF;
+}
+
+div.page-section-gutter.always-visible {
+  background-color: #ebae7c;
+  background-image: url('./images/plus.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 1em;
+}
+
 div.page-section-gutter:hover {
   background-color: #EEF;
   background-image: url('./images/plus.png');

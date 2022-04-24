@@ -11,7 +11,7 @@ export function PageContent(props) {
           <PageTree api={props.api} />
           <button
             onClick={() => props.setPageCreateModalShow(true)}
-            className="page-gutter btn btn-primary"
+            className="page-gutter action-button"
           />
         </div>
       </div>

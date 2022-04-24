@@ -20,6 +20,7 @@ function SectionRender(props) {
         key={`gutter-${props.section.id}`}
         section={props.section}
         toggleEdit={props.toggleEdit}
+        isOnlySection={props.isOnlySection}
       />
     );
   } else {
@@ -34,6 +35,7 @@ function SectionRender(props) {
 }
 
 export function SectionList(props) {
+  const isOnlySection = props.sections.length === 1;
   return (
     <div id="sections">
       {props.sections.map((section) => (
@@ -43,6 +45,7 @@ export function SectionList(props) {
           toggleEdit={props.toggleEdit}
           destroySection={props.destroySection}
           updateSection={props.updateSection}
+          isOnlySection={isOnlySection}
         />
       ))}
     </div>
