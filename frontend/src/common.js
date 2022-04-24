@@ -8,12 +8,16 @@ export function anyUndefined(...args) {
   );
 }
 
+export function baseUrl() {
+  return `${window.location.protocol}//${window.location.host}`;
+}
+
+export function wikiUrl() {
+  let params = new URLSearchParams(window.location.search);
+  return `${baseUrl()}/?w=${params.get("w")}&p=`;
+}
+
 export function linkReplace(text) {
   let params = new URLSearchParams(window.location.search);
-  return text.replaceAll(
-    "(page:",
-    `(${window.location.protocol}//${window.location.host}/?w=${params.get(
-      "w"
-    )}&p=`
-  );
+  return text.replaceAll("(page:", `(${baseUrl()}/?w=${params.get("w")}&p=`);
 }

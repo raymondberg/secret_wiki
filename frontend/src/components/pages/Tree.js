@@ -3,6 +3,7 @@ import PageLink from "./Link";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updatePages, updatePageBySlug } from "../../shared/wikiSlice";
+import { wikiUrl } from "../../common.js";
 
 export default function PageTree(props) {
   const wiki = useSelector((state) => state.wiki.wiki);
@@ -51,13 +52,16 @@ export default function PageTree(props) {
     );
   }
 
-  if (pages !== undefined && pages.length !== 0) {
-    return (
-      <div id="wiki-list" className="p-2">
-        {pagesOrError()}
-      </div>
-    );
-  } else {
-    return <div />;
-  }
+  return (
+    <div id="wiki-list" className="p-2">
+      {pagesOrError()}
+      <hr />
+      <PageLink
+        key="builtin-help-page"
+        page={{ is_secret: false, title: "Wiki Guide" }}
+        isActive={activePage?.id === undefined}
+        gotoPage={(p) => (window.location.href = wikiUrl())}
+      />
+    </div>
+  );
 }

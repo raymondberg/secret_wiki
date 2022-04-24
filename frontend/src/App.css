@@ -61,7 +61,7 @@ a.header-wiki,a.tree-page {
 }
 
 h2.page-title {
-  padding: 1em;
+  padding: 1em 0 0 1em;
 }
 
 .page-edit-form {
@@ -124,6 +124,10 @@ div.section-squash {
 
 .section-button {
   width: 100%;
+}
+
+.clickable {
+  cursor: default;
 }
 
 .pencil {

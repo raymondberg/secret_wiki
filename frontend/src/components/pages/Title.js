@@ -2,7 +2,7 @@ import { useState } from "react";
 import Form from "react-bootstrap/Form";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import { useDispatch, useSelector } from "react-redux";
-import { getLock, EditIcon } from "../Icons";
+import { getLock } from "../Icons";
 import { SecretButton } from "../buttons/SecretButton";
 import { invalidatePagesCache, updatePageBySlug } from "../../shared/wikiSlice";
 
@@ -13,7 +13,7 @@ export function PageTitle(props) {
     setEditMode(!editMode);
   }
 
-  const editIcon = props.page.is_secret ? getLock() : <EditIcon />;
+  const permissionIcon = props.page.is_secret ? getLock() : <span />;
 
   if (editMode) {
     return (
@@ -29,11 +29,16 @@ export function PageTitle(props) {
     );
   } else {
     return (
-      <h2 className="page-title">
+      <h2
+        className={`page-title ${props.wikiInEditMode ? "clickable" : ""}`}
+        onDoubleClick={function () {
+          if (props.wikiInEditMode) {
+            toggleEditMode();
+          }
+        }}
+      >
         {props.page.title}
-        <span style={{ fontSize: ".75em" }} onClick={toggleEditMode}>
-          {editIcon}
-        </span>
+        <span style={{ fontSize: ".75em" }}>{permissionIcon}</span>
       </h2>
     );
   }

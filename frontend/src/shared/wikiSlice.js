@@ -14,7 +14,9 @@ export const wikiSlice = createSlice({
     },
     updatePageBySlug: (state, message) => {
       const pageSlug = message.payload;
-      if (pageSlug !== null) {
+      if (pageSlug === null) {
+        state.page = null;
+      } else {
         state.page = state.pages.filter((p) => p.slug === pageSlug)[0];
       }
     },

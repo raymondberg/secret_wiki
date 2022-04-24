@@ -1,6 +1,7 @@
 import { SectionCollection } from "../sections/Collection";
 import PageTree from "./Tree";
 import PageTitle from "./Title";
+import HelpPage from "../Help";
 
 export function PageContent(props) {
   return (
@@ -18,11 +19,15 @@ export function PageContent(props) {
         <div id="content">
           {props.page !== undefined && props.page !== null ? (
             <div>
-              <PageTitle page={props.page} api={props.api} />
+              <PageTitle
+                page={props.page}
+                api={props.api}
+                wikiInEditMode={props.editMode}
+              />
               <SectionCollection api={props.api} editMode={props.editMode} />
             </div>
           ) : (
-            ""
+            <HelpPage />
           )}
         </div>
       </div>
