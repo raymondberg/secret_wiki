@@ -1,3 +1,5 @@
+import logging
+
 from fastapi_users_db_sqlalchemy.guid import GUID
 from sqlalchemy import Boolean, Column, ForeignKey, String, and_, or_, select
 
@@ -5,6 +7,8 @@ import secret_wiki.schemas.wiki as schemas
 from secret_wiki.db import DB, Base
 
 from .wiki import Wiki
+
+logger = logging.getLogger(__file__)
 
 
 class Page(Base):
@@ -34,6 +38,31 @@ class Page(Base):
         for attr in ("title", "slug", "is_secret"):
             if (value := getattr(section_update, attr)) is not None:
                 setattr(self, attr, value)
+
+    @classmethod
+    async def fanout(self):
+        from .section import Section
+
+        sections = await Section.for_page(page=self)
+        total_sections = len(sections)
+        starting_index, max_index = 1000, 1000000
+        distance = max_index - starting_index
+        gap_size = distance // total_sections
+
+        before_sections = []
+        after_sections = []
+
+        async with DB() as db:
+            async with db.begin_nested():
+                for section in sections:
+                    before_sections.append(section.section_index)
+                    section.section_index = starting_index
+                    after_sections.append(section.section_index)
+                    db.add(section)
+                    starting_index += gap_size
+        logger.info("Before fanout indexes were %s", before_sections)
+        logger.info("After fanout indexes were %s", after_sections)
+        return sections
 
     @classmethod
     def filter(cls, user=None, page_id=None, wiki_id=None, wiki_slug=None, page_slug=None):

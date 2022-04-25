@@ -77,6 +77,19 @@ class Section(Base):
             return user.scalars().first()
 
     @classmethod
+    async def for_page(cls, page=None, page_id=None):
+        if not page and not page_id:
+            raise ValueError("Must specify one of page or page_id")
+        elif page:
+            page_id = page.id
+
+        async with DB() as db:
+            sections = await db.execute(
+                select(cls).where(cls.page_id == page_id).order_by("section_index")
+            )
+            return sections.scalars().unique().all()
+
+    @classmethod
     def filter(cls, user=None, wiki_slug=None, page_slug=None, section_id=None):
         query = select(cls)
         if not (wiki_slug and page_slug) and not section_id:

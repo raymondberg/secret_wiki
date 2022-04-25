@@ -123,6 +123,23 @@ async def update_page(
     return page_to_update
 
 
+@router.post("/w/{wiki_slug}/p/{page_slug}/fanout", response_model=List[schemas.Section])
+async def fanout_page(
+    wiki_slug: str,
+    page_slug: str,
+    db: AsyncSession = Depends(get_async_session),
+    user: schemas.User = Depends(current_active_user),
+):
+    page_result = await db.execute(
+        models.Page.filter(wiki_slug=wiki_slug, page_slug=page_slug, user=user)
+    )
+    page_to_update = page_result.scalars().first()
+    if not page_to_update:
+        raise HTTPException(status_code=404, detail="Page not found")
+
+    return await page_to_update.fanout()
+
+
 @router.get("/w/{wiki_slug}/p/{page_slug}/s", response_model=List[schemas.Section])
 async def wiki_sections(
     wiki_slug: str,

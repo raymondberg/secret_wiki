@@ -1,7 +1,7 @@
 import pytest
 from sqlalchemy import select
 
-from secret_wiki.models.wiki import Page
+from secret_wiki.models.wiki import Page, Section
 
 
 @pytest.mark.asyncio
@@ -136,3 +136,15 @@ async def test_admin_can_update_admin_only_page(admin_client, wikis, admin_only_
         f"/api/w/{wikis[0].slug}/p/{admin_only_page.slug}", json={"title": "an updated page"}
     )
     assert response.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_fanout(client, pages, sections):
+    ## This is what the fixture starts with
+    assert {s.section_index for s in sections} == {2, 5}
+    response = await client.post(f"/api/w/my_wiki/p/{pages[0].slug}/fanout")
+    assert response.status_code == 200
+    data = response.json()
+
+    assert [s["section_index"] for s in data] == [1000, 500500]
+    assert [s.section_index for s in await Section.for_page(pages[0])] == [1000, 500500]

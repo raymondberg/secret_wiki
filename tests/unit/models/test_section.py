@@ -39,3 +39,18 @@ async def test_filters_is_secret(db, wikis, pages, user, other_user, sections):
     await sections[0].set_permissions(schemas.SectionPermission(user=str(user.id), level="edit"))
     visible_sections = (await db.execute(query)).scalars().unique().all()
     assert sections[0] in visible_sections
+
+
+@pytest.mark.asyncio
+async def test_for_page(db, pages, sections):
+    sections_for_page = sorted(
+        [s for s in sections if s.page_id == pages[0].id], key=lambda x: x.section_index
+    )
+    # Must have some data for valid test
+    assert sections_for_page
+
+    assert await Section.for_page(page=pages[0]) == sections_for_page
+    assert await Section.for_page(page_id=pages[0].id) == sections_for_page
+
+    with pytest.raises(ValueError, match="specify one of"):
+        await Section.for_page()

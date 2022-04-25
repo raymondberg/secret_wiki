@@ -5,6 +5,8 @@ import SectionSquash from "./Squash";
 import { useSelector } from "react-redux";
 import { anyUndefined } from "../../common.js";
 
+const SECTION_SPACER = 10;
+
 function sectionFromAPI(apiSection) {
   return Object.assign(apiSection, {
     exists_on_server: true,
@@ -25,7 +27,19 @@ function gutterDefinition(sectionIndex) {
   };
 }
 
-const SECTION_SPACER = 10;
+function bunchesDetected(sections) {
+  let lastSectionIndex = null;
+  for (const section of sections) {
+    if (
+      lastSectionIndex !== null &&
+      lastSectionIndex > section.section_index - SECTION_SPACER
+    ) {
+      return true;
+    }
+    lastSectionIndex = section.section_index;
+  }
+  return false;
+}
 
 function minGutterIndex(sections) {
   const all_indexes = sections.map((s) => s.section_index);
@@ -139,19 +153,55 @@ export function SectionCollection(props) {
       .post(url, body)
       .then((response) => response.json())
       .then((section) => {
+        // Find the updated/new section
         const newSections = sections
-          .map((s) =>
-            s.id === sectionId
-              ? [
-                  gutterDefinition(section.section_index - 1),
-                  sectionFromAPI(section),
-                  gutterDefinition(section.section_index + 1),
-                ]
-              : s
-          )
+          .map(function (s) {
+            if (s.id === sectionId) {
+              const newSection = sectionFromAPI(section);
+              // If this was an update, just change the section
+              if (existsOnServer) {
+                return newSection;
+              } else {
+                // If this was a create, interleave some new gutters
+                return [
+                  gutterDefinition(section.section_index - SECTION_SPACER),
+                  newSection,
+                  gutterDefinition(section.section_index + SECTION_SPACER),
+                ];
+              }
+            } else {
+              return s;
+            }
+          })
           .flat();
         setSections(newSections);
-        // editMode: false,
+
+        if (bunchesDetected(sections)) {
+          console.log("fanning out sections");
+          props.api
+            .post(`w/${activeWiki.slug}/p/${activePage.slug}/fanout`)
+            .then((response) => response.json())
+            .then((returnedSections) => {
+              // Update in place since the relative positions shouldn't change during fanout
+              // This doesn't actually work, but I'm leaving it here for future generations to figure
+              // out how to fanout live without wiping total object state.
+              for (const section in returnedSections.values()) {
+                const sectionToUpdate = sections.find(
+                  (s) => s.id === section.id
+                );
+                if (sectionToUpdate !== undefined) {
+                  sectionToUpdate.section_index = section.section_index;
+                } else {
+                  console.log(
+                    "Could not locate",
+                    section.id,
+                    "amidst",
+                    sections
+                  );
+                }
+              }
+            });
+        }
       });
   }
 

@@ -15,6 +15,7 @@ requests = "*"
 faker = "*"
 mypy = "*"
 sqlalchemy-stubs = "*"
+factory-boy = "*"
 
 [packages]
 aiofiles = "*"

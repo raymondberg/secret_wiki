@@ -1,7 +1,8 @@
 import pytest
 
-import secret_wiki.schemas as schemas
-from secret_wiki.models.wiki import Page
+from secret_wiki import schemas
+from secret_wiki.models.wiki import Page, Section
+from tests.resources.factories import SectionFactory
 
 
 @pytest.mark.asyncio
@@ -13,3 +14,24 @@ async def test_can_updatePage(pages):
     assert page.title == "Dragon"
     assert page.slug == "dragon"
     assert page.is_secret
+
+
+@pytest.mark.asyncio
+async def test_fanout(db, pages):
+    page = pages[0]
+    db.add_all([SectionFactory(page_id=page.id, section_index=50) for _ in range(10)])
+    await db.commit()
+
+    await page.fanout()
+    assert [s.section_index for s in await Section.for_page(page)] == [
+        1000,
+        100900,
+        200800,
+        300700,
+        400600,
+        500500,
+        600400,
+        700300,
+        800200,
+        900100,
+    ]
