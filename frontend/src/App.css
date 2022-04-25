@@ -121,9 +121,19 @@ div.page-section-public:hover {
   background-color: #50D8D7;
 }
 
+div.page-section-restricted {
+  color: #900;
+}
+
 div.page-section-restricted:hover {
   background-color: #F7B7C9;
+  color: #000;
 }
+
+.secret-text{
+  color: #900;
+}
+
 
 div.page-section {
   margin: 1em;
