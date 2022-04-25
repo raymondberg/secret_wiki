@@ -29,7 +29,7 @@ export function PageTitle(props) {
     );
   } else {
     return (
-      <h2
+      <h1
         className={`page-title ${props.wikiInEditMode ? "clickable" : ""}`}
         onDoubleClick={function () {
           if (props.wikiInEditMode) {
@@ -39,7 +39,7 @@ export function PageTitle(props) {
       >
         {props.page.title}
         <span style={{ fontSize: ".75em" }}>{permissionIcon}</span>
-      </h2>
+      </h1>
     );
   }
 }

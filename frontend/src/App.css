@@ -60,8 +60,8 @@ a.header-wiki,a.tree-page {
   cursor: pointer;
 }
 
-h2.page-title {
-  padding: 1em 0 0 1em;
+h1.page-title {
+  padding: 1em 0 0 .5em;
 }
 
 .page-edit-form {
@@ -97,6 +97,7 @@ div.page-section-gutter {
 }
 
 div.page-section-gutter.always-visible {
+  margin-top:2em;
   background-color: #ebae7c;
   background-image: url('./images/plus.png');
   background-repeat: no-repeat;
