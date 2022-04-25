@@ -76,6 +76,8 @@ users:
   oauth_accounts: []
 wikis:
 - id: 6f15b91f-cd5d-4e6b-94c5-c666c63e20c6
-  slug: Mulan
+  name: Mulan
+  slug: mulan
 - id: 08fc7e0d-af76-4f7d-98f8-79d163f228ec
-  slug: Lion King
+  name: Lion King
+  slug: lion-king

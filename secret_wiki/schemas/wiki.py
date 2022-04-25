@@ -83,6 +83,7 @@ class Section(SectionCreate):
 
 class Wiki(BaseModel):
     id: UUID
+    name: str
     slug: str
 
     class Config:

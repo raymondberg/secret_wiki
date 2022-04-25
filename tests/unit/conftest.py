@@ -152,8 +152,8 @@ async def admin_only_section(db, pages: List[Page]) -> Section:
 async def wikis(db: AsyncSession) -> List[Wiki]:
     db.add_all(
         [
-            Wiki(id=uuid.uuid4(), slug="my_wiki"),
-            Wiki(id=uuid.uuid4(), slug="your_wiki"),
+            Wiki(id=uuid.uuid4(), slug="my_wiki", name="My Wiki"),
+            Wiki(id=uuid.uuid4(), slug="your_wiki", name="Your Wiki"),
         ]
     )
     await db.commit()

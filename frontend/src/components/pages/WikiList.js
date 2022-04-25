@@ -36,7 +36,7 @@ function WikiLink(props) {
         props.handleWikiChange(props.wiki);
       }}
     >
-      {props.wiki.slug}
+      {props.wiki.name}
     </span>
   );
 }

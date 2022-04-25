@@ -60,8 +60,10 @@ users:
   oauth_accounts: []
 wikis:
 - id: {wikis[0].id}
+  name: {wikis[0].name}
   slug: {wikis[0].slug}
 - id: {wikis[1].id}
+  name: {wikis[1].name}
   slug: {wikis[1].slug}
 """
     )
