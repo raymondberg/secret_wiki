@@ -10,6 +10,7 @@ async def test_list_wikis(client, wikis):
     data = response.json()
     assert {d["id"] for d in data} == {str(w.id) for w in wikis}
     assert {d["slug"] for d in data} == {w.slug for w in wikis}
+    assert {d["name"] for d in data} == {w.name for w in wikis}
 
 
 @pytest.mark.asyncio

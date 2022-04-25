@@ -1,5 +1,6 @@
 from typing import List
 
+import sqlalchemy.exc
 from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy.orm import relationship
 
@@ -34,6 +35,25 @@ async def get_page(
     if not page:
         raise HTTPException(status_code=404, detail="no such wiki or page")
     return page
+
+
+async def get_section(
+    section_id: str,
+    db: AsyncSession = Depends(get_async_session),
+) -> AsyncGenerator[models.Section, None]:
+    section = await models.Section.get(section_id, db=db)
+    if not section:
+        raise HTTPException(status_code=404, detail="no such section")
+    return section
+
+
+async def get_section_for_update(
+    section: models.Section = Depends(get_section),
+    user: schemas.User = Depends(current_active_user),
+) -> AsyncGenerator[models.Section, None]:
+    if not user.can_update_section(section):
+        raise HTTPException(status_code=404, detail="Section not found")
+    return section
 
 
 @router.get("/w", response_model=List[schemas.Wiki])
@@ -195,36 +215,23 @@ async def wiki_section_create(
 
 @router.post("/w/{wiki_slug}/p/{page_slug}/s/{section_id}", response_model=schemas.Section)
 async def update_section(
-    section_id: str,
-    section: schemas.SectionUpdate,
+    update_request: schemas.SectionUpdate,
+    section: models.Section = Depends(get_section_for_update),
     db: AsyncSession = Depends(get_async_session),
-    user: schemas.User = Depends(current_active_user),
 ):
-    section_result = await db.execute(
-        models.Section.filter(section_id=section_id, user=user).order_by("section_index")
-    )
-    updated_section = section_result.scalars().first()
-    if not updated_section or not user.can_update_section(updated_section):
-        raise HTTPException(status_code=404, detail="Section not found")
-
     async with db.begin_nested():
-        updated_section.update(section)
-        db.add(updated_section)
-    await updated_section.set_permissions(*section.permissions or [])
-    await db.refresh(updated_section)
-    return updated_section
+        section.update(update_request)
+        db.add(section)
+    await section.set_permissions(*update_request.permissions or [])
+    await db.refresh(section)
+    return section
 
 
 @router.delete("/w/{wiki_slug}/p/{page_slug}/s/{section_id}")
 async def delete_section(
-    section_id: str,
+    section: models.Section = Depends(get_section_for_update),
     db: AsyncSession = Depends(get_async_session),
-    user: schemas.User = Depends(current_active_user),
 ):
-    query = models.Section.filter(section_id=section_id, user=user).order_by("section_index")
-    section = (await db.execute(query)).scalars().first()
-    if not section or not user.can_update_section(section):
-        raise HTTPException(status_code=404, detail="Section not found")
     db.sync_session.delete(section)
     await db.commit()
     return Response(status_code=204)

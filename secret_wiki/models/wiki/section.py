@@ -64,14 +64,18 @@ class Section(Base):
 
     @classmethod
     def all(cls):
-        return select(cls)
+        return select(cls).order_by(cls.section_index)
 
     @property
     def permissions(self):
         return self.section_permissions
 
     @classmethod
-    async def get(cls, id):
+    async def get(cls, id, db=None):
+        """There has to be a better way"""
+        if db:
+            user = await db.execute(select(cls).where(cls.id == id))
+            return user.scalars().first()
         async with DB() as db:
             user = await db.execute(select(cls).where(cls.id == id))
             return user.scalars().first()

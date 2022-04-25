@@ -2,13 +2,13 @@ import pytest
 import pytest_asyncio
 
 import secret_wiki.schemas.wiki as schemas
-from secret_wiki.db import User
 from secret_wiki.models.wiki.section import Section, SectionPermission
+from tests.resources.factories import UserFactory
 
 
 @pytest_asyncio.fixture
 async def other_user(db, fake):
-    user = User(id=fake.uuid4(), email=fake.email(), hashed_password="blah")
+    user = UserFactory()
     db.add(user)
     await db.commit()
     return user
@@ -49,8 +49,12 @@ async def test_for_page(db, pages, sections):
     # Must have some data for valid test
     assert sections_for_page
 
-    assert await Section.for_page(page=pages[0]) == sections_for_page
-    assert await Section.for_page(page_id=pages[0].id) == sections_for_page
+    assert [s.id for s in await Section.for_page(page=pages[0])] == [
+        s.id for s in sections_for_page
+    ]
+    assert [s.id for s in await Section.for_page(page_id=pages[0].id)] == [
+        s.id for s in sections_for_page
+    ]
 
     with pytest.raises(ValueError, match="specify one of"):
         await Section.for_page()

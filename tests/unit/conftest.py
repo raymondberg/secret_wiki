@@ -12,6 +12,7 @@ from sqlalchemy.orm import selectinload, sessionmaker
 import secret_wiki.models.wiki as models
 from secret_wiki.db import Base, User, async_session, get_async_session
 from secret_wiki.models.wiki import Page, Section, Wiki
+from tests.resources.factories import PageFactory, SectionFactory, WikiFactory
 
 TEST_DB_URL = "sqlite+aiosqlite:///./test.db"
 
@@ -79,8 +80,8 @@ def override_get_db(db):
 async def pages(db: AsyncSession, wikis: List[Wiki]) -> List[Page]:
     wiki = wikis[0]
     pages = [
-        Page(wiki_id=wiki.id, id=uuid.uuid4(), slug="page_1", title="Page One"),
-        Page(wiki_id=wiki.id, id=uuid.uuid4(), slug="page_2", title="Page Two"),
+        PageFactory(wiki_id=wiki.id, slug="page_1", title="Page One"),
+        PageFactory(wiki_id=wiki.id, slug="page_2", title="Page Two"),
     ]
     db.add_all(pages)
     await db.commit()
@@ -92,9 +93,8 @@ async def pages(db: AsyncSession, wikis: List[Wiki]) -> List[Page]:
 @pytest_asyncio.fixture
 async def admin_only_page(db, wikis):
     wiki = wikis[0]
-    admin_only = Page(
+    admin_only = PageFactory(
         wiki_id=wiki.id,
-        id=uuid.uuid4(),
         slug="admin_only_page",
         title="Admin Only Page",
         is_secret=True,
@@ -110,14 +110,11 @@ async def sections(db, pages: List[Page]) -> List[Section]:
     page = pages[0]
 
     sections = [
-        Section(
-            id=uuid.uuid4(),
+        SectionFactory(
             page_id=page.id,
             section_index=5,
-            content="A later section",
         ),
-        Section(
-            id=uuid.uuid4(),
+        SectionFactory(
             page_id=page.id,
             section_index=2,
             content="An earlier section",
@@ -125,20 +122,15 @@ async def sections(db, pages: List[Page]) -> List[Section]:
     ]
     db.add_all(sections)
     await db.commit()
-    await db.refresh(sections[0])
-    await db.refresh(sections[1])
-
-    return sections
+    return await Section.for_page(page)
 
 
 @pytest_asyncio.fixture
 async def admin_only_section(db, pages: List[Page]) -> Section:
     page = pages[0]
-    admin_section = Section(
-        id=uuid.uuid4(),
+    admin_section = SectionFactory(
         page_id=page.id,
         is_secret=True,
-        section_index=5,
         content="Admin only section",
     )
     db.add(admin_section)
@@ -150,19 +142,21 @@ async def admin_only_section(db, pages: List[Page]) -> Section:
 
 @pytest_asyncio.fixture
 async def wikis(db: AsyncSession) -> List[Wiki]:
-    db.add_all(
-        [
-            Wiki(id=uuid.uuid4(), slug="my_wiki", name="My Wiki"),
-            Wiki(id=uuid.uuid4(), slug="your_wiki", name="Your Wiki"),
-        ]
-    )
+    wikis = [
+        WikiFactory(slug="my_wiki", name="My Wiki"),
+        WikiFactory(slug="your_wiki", name="Your Wiki"),
+    ]
+    db.add_all(wikis)
     await db.commit()
 
-    wikis = await db.execute(
-        select(Wiki).where(Wiki.slug.in_({"my_wiki", "your_wiki"})).order_by("slug")
-    )
+    await db.refresh(wikis[0])
+    await db.refresh(wikis[1])
+    return wikis
+    # wikis = await db.execute(
+    #     select(Wiki).where(Wiki.slug.in_({"my_wiki", "your_wiki"})).order_by("slug")
+    # )
 
-    return wikis.scalars().all()
+    # return wikis.scalars().all()
 
 
 @pytest_asyncio.fixture

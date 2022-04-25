@@ -113,12 +113,13 @@ async def test_update_page(client, db, wikis, pages):
 
     assert data["id"]
     assert data["title"] == "an updated page"
-    assert data["slug"] == page.slug
+    assert data["slug"] == "an-updated-page"
     assert data["is_secret"]
     assert data["wiki_id"] == str(wikis[0].id)
 
     await db.refresh(page)
     assert page.title == "an updated page"
+    assert page.slug == "an-updated-page"
     assert page.is_secret
 
 

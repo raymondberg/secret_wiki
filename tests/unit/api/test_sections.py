@@ -1,6 +1,5 @@
 import pytest
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy import select
 
 from secret_wiki.models.wiki import Section
 
@@ -17,7 +16,7 @@ async def test_list_sections(client, sections):
 
 @pytest.mark.asyncio
 async def test_list_cannot_list_admin_only_sections(client, admin_only_section):
-    response = await client.get("/api/w/my_wiki/p/page_1/s")
+    response = await client.get("/api/w/my_wiki/p/{pages[0].slug}/s")
     assert response.status_code == 200
 
     data = response.json()
@@ -25,9 +24,9 @@ async def test_list_cannot_list_admin_only_sections(client, admin_only_section):
 
 
 @pytest.mark.asyncio
-async def test_create_sections(client, db, pages):
+async def test_create_sections(client, pages):
     response = await client.post(
-        "/api/w/my_wiki/p/page_1/s",
+        f"/api/w/my_wiki/p/{pages[0].slug}/s",
         json={
             "content": "Some new content",
         },
@@ -35,17 +34,18 @@ async def test_create_sections(client, db, pages):
 
     assert response.status_code == 200
     data = response.json()
+    assert data["id"]
     assert data["content"] == "Some new content"
 
-    sections = await db.execute(select(Section).filter_by(content="Some new content"))
-    assert sections.scalars().first()
+    section = await Section.get(data["id"])
+    assert section.content == "Some new content"
 
 
 @pytest.mark.asyncio
-async def test_create_multiple_sections_without_collision(client, db, pages):
+async def test_create_multiple_sections_without_collision(client, pages):
     for _ in range(3):
         response = await client.post(
-            "/api/w/my_wiki/p/page_1/s",
+            f"/api/w/my_wiki/p/{pages[0].slug}/s",
             json={
                 "content": "Some new content",
             },
@@ -57,7 +57,7 @@ async def test_create_multiple_sections_without_collision(client, db, pages):
 
 
 @pytest.mark.asyncio
-async def test_create_sections_without_pages_raises_404(client, db):
+async def test_create_sections_without_pages_raises_404(client):
     response = await client.post(
         "/api/w/my_wiki/p/unreal-page/s",
         json={
@@ -68,9 +68,9 @@ async def test_create_sections_without_pages_raises_404(client, db):
 
 
 @pytest.mark.asyncio
-async def test_create_sections_with_admin_only(admin_client, db, user_id, pages):
+async def test_create_sections_with_admin_only(admin_client, user_id, pages):
     response = await admin_client.post(
-        "/api/w/my_wiki/p/page_1/s",
+        f"/api/w/my_wiki/p/{pages[0].slug}/s",
         json={
             "content": "Some new content",
             "is_secret": True,
@@ -86,19 +86,19 @@ async def test_create_sections_with_admin_only(admin_client, db, user_id, pages)
     assert response.status_code == 200
     data = response.json()
 
+    assert data["id"]
     assert data["content"] == "Some new content"
     assert data["is_secret"]
 
-    sections = await db.execute(
-        select(Section).filter_by(content="Some new content", is_secret=True)
-    )
-    assert sections.scalars().first()
+    section = await Section.get(data["id"])
+    assert section.content == "Some new content"
+    assert section.is_secret
 
 
 @pytest.mark.asyncio
-async def test_create_sections_with_admin_only_doesnt_work_without_permissions(client, db, pages):
+async def test_create_sections_with_admin_only_doesnt_work_without_permissions(client, pages):
     response = await client.post(
-        "/api/w/my_wiki/p/page_1/s",
+        f"/api/w/my_wiki/p/{pages[0].slug}/s",
         json=[
             {
                 "content": "Some new content",
@@ -111,7 +111,7 @@ async def test_create_sections_with_admin_only_doesnt_work_without_permissions(c
 
 
 @pytest.mark.asyncio
-async def test_post_sections(client, db, sections):
+async def test_update_sections(client, db, sections):
     section = sections[0]
 
     section.content = section.content + "\n\nbut better"
@@ -123,8 +123,8 @@ async def test_post_sections(client, db, sections):
     data = response.json()
     assert data["content"] == section.content
 
-    sections = await db.execute(select(Section).filter_by(id=section.id))
-    assert sections.scalars().first().content == section.content
+    await db.refresh(section)
+    assert section.content == section.content
 
 
 @pytest.mark.asyncio
@@ -161,22 +161,20 @@ async def test_post_sections_can_just_do_section_index(client, db, sections):
     data = response.json()
     assert data["section_index"] == 94321
 
-    sections = await db.execute(select(Section).filter_by(id=section.id))
-    assert sections.scalars().first().section_index == 94321
+    await db.refresh(section)
+    assert section.section_index == 94321
 
 
 @pytest.mark.asyncio
-async def test_delete_section(client, db, sections):
+async def test_delete_section(client, sections):
     section = sections[0]
 
     response = await client.delete(f"/api/w/my_wiki/p/page_1/s/{section.id}")
     assert response.status_code == 204, f"received {response.status_code}: {response.content}"
 
-    sections = await db.execute(select(Section).filter_by(id=section.id))
-    result = sections.scalars().first()
-    assert result is None
+    assert await Section.get(section.id) is None
 
 
 @pytest.mark.skip("skipped for time")
-async def test_delete_section_fails_without_permissions(client, db, sections):
+async def test_delete_section_fails_without_permissions():
     pass

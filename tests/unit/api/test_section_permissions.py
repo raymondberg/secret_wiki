@@ -2,12 +2,12 @@ import pytest
 import pytest_asyncio
 
 import secret_wiki.schemas.wiki as schemas
-from secret_wiki.db import User
+from tests.resources.factories import UserFactory
 
 
 @pytest_asyncio.fixture
-async def users(db, fake):
-    users = [User(id=fake.uuid4(), email=fake.email(), hashed_password="blah") for u in range(2)]
+async def users(db):
+    users = [UserFactory() for _ in range(2)]
     db.add_all(users)
     await db.commit()
     return users
@@ -32,7 +32,7 @@ async def get_section_list(client, expected_count=2):
 
 @pytest.mark.asyncio
 async def test_user_informed_of_view_restrictions(db, client, sections, user_id):
-    user_included_secret = next(s for s in sections if s.content == "An earlier section")
+    user_included_secret = sections[0]
     async with db.begin_nested():
         user_included_secret.is_secret = True
         db.add(user_included_secret)
@@ -41,8 +41,8 @@ async def test_user_informed_of_view_restrictions(db, client, sections, user_id)
     )
 
     data = await get_section_list(client)
-    assert not next(s for s in data if s["content"] == "A later section")["is_secret"]
-    assert next(s for s in data if s["content"] == "An earlier section")["is_secret"]
+    assert next(s for s in data if s["id"] == str(sections[0].id))["is_secret"]
+    assert not next(s for s in data if s["id"] == str(sections[1].id))["is_secret"]
 
 
 @pytest.mark.skip("not yet supported")
