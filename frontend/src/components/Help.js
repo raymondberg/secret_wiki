@@ -118,6 +118,11 @@ export default function HelpPage() {
           theater even though the section describing the "spoiler" is hidden in
           a secret.
         </p>
+        <h4>Pro tips?</h4>
+        <p>
+          Keyboard shortcuts are limited but growing. Try "ctrl-t" on Mac to
+          jump to the Searchbar.
+        </p>
       </div>
     </div>
   );

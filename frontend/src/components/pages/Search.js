@@ -1,16 +1,32 @@
-import { useState } from "react";
-import Form from "react-bootstrap/Form";
-import ButtonGroup from "react-bootstrap/ButtonGroup";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getLock, EditIcon } from "../Icons";
-import { SecretButton } from "../buttons/SecretButton";
-import { invalidatePagesCache, updatePageBySlug } from "../../shared/wikiSlice";
+import { updatePageBySlug } from "../../shared/wikiSlice";
 import ReactSearchBox from "react-search-box";
 
 export default function Search(props) {
   const [data, setData] = useState([]);
   const activeWiki = useSelector((state) => state.wiki.wiki);
   const dispatch = useDispatch();
+  const placeholder = "Search...";
+
+  const handleKeyPress = useCallback((event) => {
+    if (event.ctrlKey === true && event.key === "t") {
+      const result = document.querySelector(
+        `input[placeholder="${placeholder}"]`
+      );
+      result.focus();
+    }
+  }, []);
+
+  useEffect(() => {
+    //          attach the event listener
+    document.addEventListener("keydown", handleKeyPress);
+
+    // remove the event listener
+    return () => {
+      document.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [handleKeyPress]);
 
   function retrieveData(term) {
     if (term.length > 1) {
@@ -45,7 +61,7 @@ export default function Search(props) {
   return (
     <div id="wiki-list" className="p-2">
       <ReactSearchBox
-        placeholder="Search..."
+        placeholder={placeholder}
         value="Doe"
         data={data}
         onChange={retrieveData}
