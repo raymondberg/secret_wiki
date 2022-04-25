@@ -34,10 +34,14 @@ script/update
 ## Provisioning
 
 You must create users using the console at this time. A helper function
-exists to make this easier:
+exists to make this easier. You can just call the function or provide inputs
+to configure the user:
 
 ```
 script/shell
 
-> create_user(email= , password= , is_superuser=False, is_verified=True)
+> create_user(email="person@example.com", password="person", is_superuser=False)
 ```
+
+`is_superuser` is what is what determines "global readability" of secrets.
+You cannot keep a secret from a superuser.
