@@ -5,11 +5,20 @@ import WikiList from "./pages/WikiList";
 import Search from "./pages/Search";
 import UserActions from "./UserActions";
 
-import { useQuery } from "./url";
 import { useSelector, useDispatch } from "react-redux";
 import { useCookies } from "react-cookie";
 import { updatePageBySlug, updateWikiBySlug } from "../shared/wikiSlice";
 import allDefined from "../common.js";
+
+function updateUrl(wikiSlug, pageSlug) {
+  console.log("Updating url with ", wikiSlug, pageSlug);
+  const baseUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
+  const sanitizedWikiSlug = wikiSlug || "";
+  const sanitizedPageSlug = pageSlug || "";
+  const queryString = `w=${sanitizedWikiSlug}&p=${sanitizedPageSlug}`;
+  const newUrl = `${baseUrl}?${queryString}`;
+  window.history.pushState({ path: newUrl }, "", newUrl);
+}
 
 function Main(props) {
   const [cookies, setCookie] = useCookies(["edit_mode"]);
@@ -19,11 +28,13 @@ function Main(props) {
   const pages = useSelector((state) => state.wiki.pages);
   const activeWiki = useSelector((state) => state.wiki.wiki);
   const activePage = useSelector((state) => state.wiki.page);
-  const dispatch = useDispatch();
-  const query = useQuery();
+  const activeWikiSlug = activeWiki?.slug;
 
-  const urlWikiSlug = query.get("w");
-  const urlPageSlug = query.get("p");
+  const dispatch = useDispatch();
+  const searchParams = new URLSearchParams(window.location.search);
+
+  const urlWikiSlug = searchParams.get("w");
+  const urlPageSlug = searchParams.get("p");
 
   function setEditMode(flag) {
     setCookie("edit_mode", flag);
@@ -31,21 +42,17 @@ function Main(props) {
   }
 
   useEffect(() => {
+    console.log(activeWikiSlug, urlWikiSlug);
     if (
-      (allDefined(activeWiki?.slug) && urlWikiSlug !== activeWiki?.slug) ||
+      (allDefined(activeWikiSlug) && urlWikiSlug !== activeWikiSlug) ||
       (allDefined(activePage?.slug) && urlPageSlug !== activePage?.slug)
     ) {
-      const baseUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
-      const sanitizedWikiSlug = activeWiki?.slug || "";
-      const sanitizedPageSlug = activePage?.slug || "";
-      const queryString = `w=${sanitizedWikiSlug}&p=${sanitizedPageSlug}`;
-      const newUrl = `${baseUrl}?${queryString}`;
-      window.history.pushState({ path: newUrl }, "", newUrl);
+      updateUrl(activeWikiSlug, activePage?.slug);
     }
 
     if (
       allDefined(urlWikiSlug) &&
-      activeWiki?.slug === undefined &&
+      activeWikiSlug === undefined &&
       wikis.length !== 0
     ) {
       // We have no wiki, but one is specified in url and we have wikis
@@ -53,7 +60,7 @@ function Main(props) {
       return;
     }
     if (
-      allDefined(activeWiki?.slug, pages, urlPageSlug) &&
+      allDefined(activeWikiSlug, pages, urlPageSlug) &&
       activePage?.slug === undefined &&
       pages.length !== 0
     ) {
@@ -65,7 +72,7 @@ function Main(props) {
   }, [
     wikis,
     pages,
-    activeWiki?.slug,
+    activeWikiSlug,
     activePage?.slug,
     urlWikiSlug,
     urlPageSlug,
@@ -79,6 +86,8 @@ function Main(props) {
         page={activePage}
         api={props.api}
         editMode={editMode}
+        // Hacky solution to prevent guide page loads during refresh/link; remove with #42
+        skipGuide={urlPageSlug !== undefined}
         setPageCreateModalShow={setPageCreateModalShow}
       />
     );

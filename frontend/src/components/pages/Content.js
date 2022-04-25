@@ -26,6 +26,8 @@ export function PageContent(props) {
               />
               <SectionCollection api={props.api} editMode={props.editMode} />
             </div>
+          ) : props.skipGuide ? (
+            ""
           ) : (
             <HelpPage />
           )}
