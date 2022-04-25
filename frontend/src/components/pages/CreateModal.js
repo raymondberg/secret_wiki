@@ -50,8 +50,12 @@ export default function PageCreateModal(props) {
     <Modal
       show={props.shouldShow}
       onHide={props.handleClose}
+      onEntered={() => {
+        document.getElementById("create-modal-title").focus();
+      }}
       backdrop="static"
-      keyboard={false}
+      keyboard={true}
+      autoFocus={false}
     >
       <Modal.Header closeButton>
         <Modal.Title>Create Page</Modal.Title>
@@ -65,6 +69,8 @@ export default function PageCreateModal(props) {
               </div>
               <div className="col-md-9 py-3">
                 <input
+                  id="create-modal-title"
+                  autoFocus={true}
                   type="text"
                   name="page_title"
                   onChange={handleChange}
