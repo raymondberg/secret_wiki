@@ -46,6 +46,7 @@ export function PageTitle(props) {
 
 function TitleEditForm(props) {
   const [isSecret, setIsSecret] = useState(props.page.is_secret);
+  const [parentPageId, setParentPageId] = useState(props.page.parent_page_id);
   const [title, setTitle] = useState(props.page.title);
   const [slug, setSlug] = useState(props.page.slug);
   const activeWiki = useSelector((state) => state.wiki.wiki);
@@ -61,6 +62,7 @@ function TitleEditForm(props) {
         title,
         slug,
         is_secret: isSecret,
+        parent_page_id: parentPageId,
       };
       props.toggleEditMode();
       props.api
@@ -87,6 +89,11 @@ function TitleEditForm(props) {
           <Form.Control
             value={slug}
             onChange={(e) => setSlug(e.target.value)}
+          />
+          Parent:
+          <Form.Control
+            value={parentPageId}
+            onChange={(e) => setParentPageId(e.target.value)}
           />
         </div>
         <div className="col-md-5">
