@@ -28,11 +28,13 @@ async def test_export_wikis(db, wikis, pages, sections, user):
 pages:
 - id: {pages[0].id}
   is_secret: {bformat(pages[0].is_secret)}
+  parent_page_id: null
   slug: {pages[0].slug}
   title: {pages[0].title}
   wiki_id: {pages[0].wiki_id}
 - id: {pages[1].id}
   is_secret: {bformat(pages[1].is_secret)}
+  parent_page_id: null
   slug: {pages[1].slug}
   title: {pages[1].title}
   wiki_id: {pages[1].wiki_id}

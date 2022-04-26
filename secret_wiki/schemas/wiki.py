@@ -20,6 +20,7 @@ class PermissionLevel(enum.Enum):
 class PageUpdate(BaseModel):
     title: str
     slug: str = None  # type: ignore
+    parent_page_id: Optional[UUID]
     is_secret: Optional[bool] = False
 
     @validator("slug", pre=True, always=True)
@@ -37,6 +38,7 @@ class Page(BaseModel):
     slug: str
     title: str
     is_secret: bool
+    parent_page_id: Optional[UUID]
 
     class Config:
         orm_mode = True

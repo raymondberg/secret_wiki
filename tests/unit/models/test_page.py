@@ -9,11 +9,20 @@ from tests.resources.factories import SectionFactory
 async def test_can_updatePage(pages):
     page = pages[0]
 
-    page.update(schemas.PageUpdate(title="Dragon", slug="dragon", is_secret=True))
+    page.update(
+        schemas.PageUpdate(
+            title="Dragon", slug="dragon", is_secret=True, parent_page_id=pages[1].id
+        )
+    )
 
     assert page.title == "Dragon"
     assert page.slug == "dragon"
+    assert page.parent_page_id == pages[1].id
     assert page.is_secret
+
+    page.update(schemas.PageUpdate(title="Dragon"))
+
+    assert page.parent_page_id is None
 
 
 @pytest.mark.asyncio

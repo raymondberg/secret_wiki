@@ -4,6 +4,7 @@ import ButtonGroup from "react-bootstrap/ButtonGroup";
 import { useDispatch, useSelector } from "react-redux";
 import { getLock } from "../Icons";
 import { SecretButton } from "../buttons/SecretButton";
+import PageLinkDropdown from "../dropdowns/PageLink";
 import { invalidatePagesCache, updatePageBySlug } from "../../shared/wikiSlice";
 
 export function PageTitle(props) {
@@ -46,6 +47,7 @@ export function PageTitle(props) {
 
 function TitleEditForm(props) {
   const [isSecret, setIsSecret] = useState(props.page.is_secret);
+  const [parentPageId, setParentPageId] = useState(props.page.parent_page_id);
   const [title, setTitle] = useState(props.page.title);
   const [slug, setSlug] = useState(props.page.slug);
   const activeWiki = useSelector((state) => state.wiki.wiki);
@@ -61,6 +63,7 @@ function TitleEditForm(props) {
         title,
         slug,
         is_secret: isSecret,
+        parent_page_id: parentPageId,
       };
       props.toggleEditMode();
       props.api
@@ -68,7 +71,7 @@ function TitleEditForm(props) {
         .then((res) => res.json())
         .then(function (data) {
           dispatch(invalidatePagesCache());
-          dispatch(updatePageBySlug(null));
+          dispatch(updatePageBySlug({ slug: slug, data: data }));
         });
     }
   }
@@ -87,6 +90,11 @@ function TitleEditForm(props) {
           <Form.Control
             value={slug}
             onChange={(e) => setSlug(e.target.value)}
+          />
+          Parent:
+          <PageLinkDropdown
+            value={parentPageId}
+            onChange={(e) => setParentPageId(e.value)}
           />
         </div>
         <div className="col-md-5">

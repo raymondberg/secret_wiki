@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { updatePageBySlug } from "../../shared/wikiSlice";
+import { pickPageBySlug } from "../../shared/wikiSlice";
 import ReactSearchBox from "react-search-box";
 
 export default function Search(props) {
@@ -68,7 +68,7 @@ export default function Search(props) {
         clearOnSelect={true}
         // match everything
         fuseConfigs={{ threshold: 1.0 }}
-        onSelect={(record) => dispatch(updatePageBySlug(record.item.key))}
+        onSelect={(record) => dispatch(pickPageBySlug(record.item.key))}
       />
     </div>
   );

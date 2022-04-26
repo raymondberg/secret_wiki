@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import allDefined from "../common.js";
 
 export const wikiSlice = createSlice({
   name: "wiki",
@@ -12,7 +13,7 @@ export const wikiSlice = createSlice({
     updatePage: (state, message) => {
       state.page = message.payload;
     },
-    updatePageBySlug: (state, message) => {
+    pickPageBySlug: (state, message) => {
       const pageSlug = message.payload;
       if (pageSlug === null) {
         state.page = null;
@@ -20,16 +21,24 @@ export const wikiSlice = createSlice({
         state.page = state.pages.filter((p) => p.slug === pageSlug)[0];
       }
     },
+    updatePageBySlug: (state, message) => {
+      const pageSlug = message.payload.slug;
+      const page = message.payload.data;
+      if (allDefined(pageSlug, page)) {
+        state.page = page;
+        state.pages = state.pages
+          .filter((p) => p.slug !== pageSlug)
+          .concat([page]);
+      }
+    },
     addPage: (state, message) => {
       const page = message.payload;
-      const pagesBefore = state.pages.filter((p) => p.title < page.title);
-      const pagesAfter = state.pages.filter((p) => p.title > page.title);
       state.page = page;
-      state.pages = pagesBefore.concat([page]).concat(pagesAfter);
+      state.pages = state.pages.concat([page]);
     },
     invalidatePagesCache: (state, message) => {
       state.page = null;
-      state.pages = [];
+      state.pages = state.pages.map((x) => x);
     },
     updatePages: (state, message) => {
       state.pages = message.payload;
@@ -65,6 +74,7 @@ export const wikiSlice = createSlice({
 export const {
   addPage,
   invalidatePagesCache,
+  pickPageBySlug,
   updatePage,
   updatePageBySlug,
   updatePages,
