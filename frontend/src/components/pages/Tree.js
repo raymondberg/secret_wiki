@@ -1,17 +1,71 @@
 import React from "react";
-import PageLink from "./Link";
+import { PageLink, fromObject } from "./Link";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updatePages, updatePageBySlug } from "../../shared/wikiSlice";
 import { wikiUrl } from "../../common.js";
+
+function buildPageLinkData(pages) {
+  let pageLinks = [];
+  let pagesToSort = pages;
+
+  function findParent(id, collection) {
+    for (const index in collection) {
+      const pageLink = collection[index];
+      if (pageLink.id === id) {
+        return pageLink;
+      }
+      const result = findParent(pageLink.children);
+      if (result !== undefined) {
+        return result;
+      }
+    }
+  }
+
+  const convertToPageLink = (page) => ({
+    id: page.id,
+    slug: page.slug,
+    title: page.title,
+    is_secret: page.is_secret,
+    page: page,
+    children: [],
+  });
+
+  while (pagesToSort.length > 0) {
+    let unplaceablePages = [];
+    for (const index in pagesToSort) {
+      const page = pagesToSort[index];
+      if (page.parent_page_id === null) {
+        pageLinks.push(convertToPageLink(page));
+      } else {
+        const parentObject = findParent(page.parent_page_id, pageLinks);
+        if (parentObject !== undefined) {
+          parentObject.children.push(convertToPageLink(page));
+        } else {
+          unplaceablePages.push(page);
+        }
+      }
+    }
+    pagesToSort = unplaceablePages;
+  }
+
+  return pageLinks;
+}
 
 export default function PageTree(props) {
   const wiki = useSelector((state) => state.wiki.wiki);
   const pages = useSelector((state) => state.wiki.pages);
   const activePage = useSelector((state) => state.wiki.page);
   const [error, setError] = useState(null);
+  const [pageLinkData, setPageLinkData] = useState(null);
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (Array.isArray(pages) && pages.length > 0) {
+      setPageLinkData(buildPageLinkData(pages));
+    }
+  }, [pages]);
 
   useEffect(() => {
     if (wiki?.slug === undefined) return;
@@ -37,17 +91,22 @@ export default function PageTree(props) {
   function pagesOrError() {
     if (error !== null) {
       return error;
+    } else if (pageLinkData !== null) {
+      return pageLinkData.map((l) =>
+        fromObject(l, (s) => dispatch(updatePageBySlug(s)))
+      );
     } else {
-      return pages.map(linkRender);
+      return [];
     }
   }
-  function linkRender(page) {
+
+  function linkRender(pageLinkObject) {
     return (
       <PageLink
-        key={page.id}
-        page={page}
-        isActive={activePage?.id !== undefined && page.id === activePage.id}
-        gotoPage={(p) => dispatch(updatePageBySlug(p))}
+        key={pageLinkObject.id}
+        data={pageLinkObject}
+        activePageId={activePage?.id}
+        gotoPage={(p) => dispatch(updatePageBySlug(p.page))}
       />
     );
   }
@@ -58,8 +117,8 @@ export default function PageTree(props) {
       <hr />
       <PageLink
         key="builtin-help-page"
-        page={{ is_secret: false, title: "Wiki Guide" }}
-        isActive={activePage?.id === undefined}
+        data={{ is_secret: false, title: "Wiki Guide", children: [] }}
+        activePageId={activePage?.id}
         gotoPage={(p) => (window.location.href = wikiUrl())}
       />
     </div>

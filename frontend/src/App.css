@@ -43,6 +43,7 @@ body {
 
 .tree-page {
   display: block;
+  padding: 0 0 0 1em;
   cursor: pointer;
   color: #243;
   font-family: Trebuchet;

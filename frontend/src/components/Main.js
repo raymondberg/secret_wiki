@@ -42,7 +42,6 @@ function Main(props) {
   }
 
   useEffect(() => {
-    console.log(activeWikiSlug, urlWikiSlug);
     if (
       (allDefined(activeWikiSlug) && urlWikiSlug !== activeWikiSlug) ||
       (allDefined(activePage?.slug) && urlPageSlug !== activePage?.slug)
