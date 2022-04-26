@@ -1,5 +1,29 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getLock } from "../Icons";
+
+export function convertToPageLink(page) {
+  return {
+    id: page.id,
+    slug: page.slug,
+    title: page.title,
+    is_secret: page.is_secret,
+    page: page,
+    children: [],
+  };
+}
+
+export function findParent(id, collection) {
+  for (const index in collection) {
+    const pageLink = collection[index];
+    if (pageLink.id === id) {
+      return pageLink;
+    }
+    const result = findParent(id, pageLink.children);
+    if (result !== undefined) {
+      return result;
+    }
+  }
+}
 
 export function fromObject(pageLinkObject, activePageId, gotoPage) {
   return (
@@ -14,6 +38,18 @@ export function fromObject(pageLinkObject, activePageId, gotoPage) {
 
 export function PageLink(props) {
   const [showChildren, setShowChildren] = useState(false);
+  const [isActivePage, setIsActivePage] = useState(false);
+
+  useEffect(() => {
+    const shouldBeActive = props.activePageId === props.data.id;
+    setIsActivePage(shouldBeActive);
+    if (
+      shouldBeActive ||
+      findParent(props.activePageId, props.data.children) !== undefined
+    ) {
+      setShowChildren(true);
+    }
+  }, [props.activePageId, props.data.id, props.data.children]);
 
   const prefix =
     props.data.children.length > 0 ? (
@@ -40,11 +76,8 @@ export function PageLink(props) {
     return "";
   }
 
-  const isActivePage = props.activePageId === props.data.id;
-
-  console.log(props.activePageId, props.data.id);
   return (
-    <div className={"tree-page " + (isActivePage ? "text-bold" : "")}>
+    <div className="tree-page">
       <div className="d-flex align-items-left px-0">
         <span
           className="d-inline-block"
@@ -53,7 +86,7 @@ export function PageLink(props) {
           {prefix}
         </span>{" "}
         <span
-          className="d-inline-block"
+          className={"d-inline-block " + (isActivePage ? "text-bold" : "")}
           onClick={(e) => props.gotoPage(props.data.slug)}
         >
           {props.data.title} {lock}

@@ -1,5 +1,5 @@
 import React from "react";
-import { PageLink, fromObject } from "./Link";
+import { PageLink, fromObject, convertToPageLink, findParent } from "./Link";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updatePages, pickPageBySlug } from "../../shared/wikiSlice";
@@ -10,28 +10,6 @@ const MAX_NESTED_PAGE_DEPTH = 4;
 function buildPageLinkData(pages) {
   let pageLinks = [];
   let pagesToSort = pages;
-
-  function findParent(id, collection) {
-    for (const index in collection) {
-      const pageLink = collection[index];
-      if (pageLink.id === id) {
-        return pageLink;
-      }
-      const result = findParent(id, pageLink.children);
-      if (result !== undefined) {
-        return result;
-      }
-    }
-  }
-
-  const convertToPageLink = (page) => ({
-    id: page.id,
-    slug: page.slug,
-    title: page.title,
-    is_secret: page.is_secret,
-    page: page,
-    children: [],
-  });
 
   let attempts = 0;
   while (pagesToSort.length > 0 && attempts <= MAX_NESTED_PAGE_DEPTH) {
@@ -118,7 +96,7 @@ export default function PageTree(props) {
       {pagesOrError()}
       <hr />
       <PageLink
-        key="builtin-help-page"
+        key={`builtin-help-page-for-${activePage?.id}`}
         data={{ is_secret: false, title: "Wiki Guide", children: [] }}
         activePageId={activePage?.id}
         gotoPage={(p) => (window.location.href = wikiUrl())}
