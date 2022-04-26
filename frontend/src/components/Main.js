@@ -86,7 +86,7 @@ function Main(props) {
         api={props.api}
         editMode={editMode}
         // Hacky solution to prevent guide page loads during refresh/link; remove with #42
-        skipGuide={urlPageSlug !== undefined}
+        skipGuide={urlPageSlug !== ""}
         setPageCreateModalShow={setPageCreateModalShow}
       />
     );
