@@ -223,3 +223,7 @@ div.section-squash {
   right: 4px;
   top: 2px
 }
+
+.text-bold {
+  font-weight: bold
+}

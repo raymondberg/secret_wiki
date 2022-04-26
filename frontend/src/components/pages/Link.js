@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { getLock } from "../Icons";
 
-export function fromObject(pageLinkObject, gotoPage) {
+export function fromObject(pageLinkObject, activePageId, gotoPage) {
   return (
     <PageLink
       key={pageLinkObject.id}
       data={pageLinkObject}
+      activePageId={activePageId}
       gotoPage={gotoPage}
     />
   );
@@ -30,15 +31,20 @@ export function PageLink(props) {
     if (showChildren && props.data.children.length > 0) {
       return (
         <div className="px-3">
-          {props.data.children.map((l) => fromObject(l, props.gotoPage))}
+          {props.data.children.map((l) =>
+            fromObject(l, props.activePageId, props.gotoPage)
+          )}
         </div>
       );
     }
     return "";
   }
 
+  const isActivePage = props.activePageId === props.data.id;
+
+  console.log(props.activePageId, props.data.id);
   return (
-    <div className="tree-page font-bold">
+    <div className={"tree-page " + (isActivePage ? "text-bold" : "")}>
       <div className="d-flex align-items-left px-0">
         <span
           className="d-inline-block"

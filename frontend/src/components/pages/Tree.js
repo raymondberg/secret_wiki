@@ -106,7 +106,7 @@ export default function PageTree(props) {
       return error;
     } else if (pageLinkData !== null) {
       return pageLinkData.map((l) =>
-        fromObject(l, (s) => dispatch(pickPageBySlug(s)))
+        fromObject(l, activePage?.id, (s) => dispatch(pickPageBySlug(s)))
       );
     } else {
       return [];
