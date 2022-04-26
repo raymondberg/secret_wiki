@@ -71,7 +71,7 @@ function TitleEditForm(props) {
         .then((res) => res.json())
         .then(function (data) {
           dispatch(invalidatePagesCache());
-          dispatch(updatePageBySlug(null));
+          dispatch(updatePageBySlug({ slug: slug, data: data }));
         });
     }
   }

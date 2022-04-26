@@ -7,7 +7,7 @@ import UserActions from "./UserActions";
 
 import { useSelector, useDispatch } from "react-redux";
 import { useCookies } from "react-cookie";
-import { updatePageBySlug, updateWikiBySlug } from "../shared/wikiSlice";
+import { pickPageBySlug, updateWikiBySlug } from "../shared/wikiSlice";
 import allDefined from "../common.js";
 
 function updateUrl(wikiSlug, pageSlug) {
@@ -65,7 +65,7 @@ function Main(props) {
     ) {
       // We have no page, but one is specified in url and we have pages
       setTimeout(() => {
-        dispatch(updatePageBySlug(urlPageSlug));
+        dispatch(pickPageBySlug(urlPageSlug));
       }, 100);
     }
   }, [

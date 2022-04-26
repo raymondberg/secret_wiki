@@ -2,7 +2,7 @@ import React from "react";
 import { PageLink, fromObject } from "./Link";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { updatePages, updatePageBySlug } from "../../shared/wikiSlice";
+import { updatePages, pickPageBySlug } from "../../shared/wikiSlice";
 import { wikiUrl } from "../../common.js";
 
 const MAX_NESTED_PAGE_DEPTH = 4;
@@ -106,7 +106,7 @@ export default function PageTree(props) {
       return error;
     } else if (pageLinkData !== null) {
       return pageLinkData.map((l) =>
-        fromObject(l, (s) => dispatch(updatePageBySlug(s)))
+        fromObject(l, (s) => dispatch(pickPageBySlug(s)))
       );
     } else {
       return [];
