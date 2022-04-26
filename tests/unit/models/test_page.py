@@ -20,6 +20,10 @@ async def test_can_updatePage(pages):
     assert page.parent_page_id == pages[1].id
     assert page.is_secret
 
+    page.update(schemas.PageUpdate(title="Dragon"))
+
+    assert page.parent_page_id is None
+
 
 @pytest.mark.asyncio
 async def test_fanout(db, pages):

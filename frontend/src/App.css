@@ -210,7 +210,7 @@ div.section-squash {
   content: "";
   border-bottom: 2px solid;
   border-right: 2px solid;
-  transform: rotate(-45deg);
+  transform: rotate(-45deg) scale(0.75, 0.75);
   right: 6px;
   top: 4px
 }
@@ -219,7 +219,7 @@ div.section-squash {
   content: "";
   border-bottom: 2px solid;
   border-right: 2px solid;
-  transform: rotate(45deg);
+  transform: rotate(45deg) scale(0.75, 0.75);
   right: 4px;
   top: 2px
 }

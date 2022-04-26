@@ -36,9 +36,11 @@ class Page(Base):
             return user.scalars().first()
 
     def update(self, update_object):
-        for attr in ("title", "slug", "is_secret", "parent_page_id"):
+        for attr in ("title", "slug", "is_secret"):
             if (value := getattr(update_object, attr)) is not None:
                 setattr(self, attr, value)
+        ## Required on EVERY update or assumed null
+        self.parent_page_id = update_object.parent_page_id
 
     @classmethod
     async def fanout(self):

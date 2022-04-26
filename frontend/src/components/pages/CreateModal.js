@@ -3,13 +3,14 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import { SecretButton } from "../buttons/SecretButton";
+import PageLinkDropdown from "../dropdowns/PageLink";
 import { useSelector, useDispatch } from "react-redux";
 import { addPage, updatePageBySlug } from "../../shared/wikiSlice";
 
 export default function PageCreateModal(props) {
   const [title, setTitle] = useState(null);
   const [slug, setSlug] = useState(null);
-  const [parentPageId, setPageParentId] = useState(null);
+  const [parentPageId, setParentPageId] = useState(null);
   const [isSecret, setIsSecret] = useState(false);
   const activeWiki = useSelector((state) => state.wiki.wiki);
   const dispatch = useDispatch();
@@ -34,7 +35,7 @@ export default function PageCreateModal(props) {
       .then(function (page) {
         setTitle(null);
         setSlug(null);
-        setPageParentId(null);
+        setParentPageId(null);
         dispatch(addPage(page));
         dispatch(updatePageBySlug(slug));
         props.handleClose();
@@ -46,8 +47,6 @@ export default function PageCreateModal(props) {
       setTitle(event.target.value);
     } else if (event.target.name === "page_slug") {
       setSlug(event.target.value);
-    } else if (event.target.name === "page_parent_page_id") {
-      setPageParentId(event.target.value);
     } else if (event.target.name === "isSecret") {
       setIsSecret(!isSecret);
       event.target.blur();
@@ -100,11 +99,9 @@ export default function PageCreateModal(props) {
                 <em>Parent: (optional)</em>
               </div>
               <div className="col-md-9 py-4">
-                <input
-                  type="text"
-                  name="page_parent_page_id"
-                  onChange={handleChange}
-                  value={parentPageId ? parentPageId : ""}
+                <PageLinkDropdown
+                  value={parentPageId}
+                  onChange={(e) => setParentPageId(e.value)}
                 />
               </div>
             </div>

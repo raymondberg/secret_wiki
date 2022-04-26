@@ -5,6 +5,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { updatePages, updatePageBySlug } from "../../shared/wikiSlice";
 import { wikiUrl } from "../../common.js";
 
+const MAX_NESTED_PAGE_DEPTH = 4;
+
 function buildPageLinkData(pages) {
   let pageLinks = [];
   let pagesToSort = pages;
@@ -15,7 +17,7 @@ function buildPageLinkData(pages) {
       if (pageLink.id === id) {
         return pageLink;
       }
-      const result = findParent(pageLink.children);
+      const result = findParent(id, pageLink.children);
       if (result !== undefined) {
         return result;
       }
@@ -31,7 +33,9 @@ function buildPageLinkData(pages) {
     children: [],
   });
 
-  while (pagesToSort.length > 0) {
+  let attempts = 0;
+  while (pagesToSort.length > 0 && attempts <= MAX_NESTED_PAGE_DEPTH) {
+    attempts += 1;
     let unplaceablePages = [];
     for (const index in pagesToSort) {
       const page = pagesToSort[index];
@@ -47,6 +51,15 @@ function buildPageLinkData(pages) {
       }
     }
     pagesToSort = unplaceablePages;
+  }
+  // Pages with incorrect parents
+  if (pagesToSort.length > 0) {
+    window.alert(
+      `Warning: some pages invalid/self-referencing or too-deep nesting (4 level max).\n\n Update these to avoid performance issues and remove this popup:\n\n ${pagesToSort.map(
+        (p) => p.slug
+      )}`
+    );
+    pageLinks.push(...pagesToSort.map(convertToPageLink));
   }
 
   return pageLinks;
@@ -98,17 +111,6 @@ export default function PageTree(props) {
     } else {
       return [];
     }
-  }
-
-  function linkRender(pageLinkObject) {
-    return (
-      <PageLink
-        key={pageLinkObject.id}
-        data={pageLinkObject}
-        activePageId={activePage?.id}
-        gotoPage={(p) => dispatch(updatePageBySlug(p.page))}
-      />
-    );
   }
 
   return (
