@@ -9,6 +9,7 @@ import { addPage, updatePageBySlug } from "../../shared/wikiSlice";
 export default function PageCreateModal(props) {
   const [title, setTitle] = useState(null);
   const [slug, setSlug] = useState(null);
+  const [parentPageId, setPageParentId] = useState(null);
   const [isSecret, setIsSecret] = useState(false);
   const activeWiki = useSelector((state) => state.wiki.wiki);
   const dispatch = useDispatch();
@@ -23,12 +24,17 @@ export default function PageCreateModal(props) {
       body.slug = slug;
     }
 
+    if (parentPageId !== null) {
+      body.parent_page_id = parentPageId;
+    }
+
     props.api
       .post(`w/${activeWiki.slug}/p`, body)
       .then((response) => response.json())
       .then(function (page) {
         setTitle(null);
         setSlug(null);
+        setPageParentId(null);
         dispatch(addPage(page));
         dispatch(updatePageBySlug(slug));
         props.handleClose();
@@ -40,6 +46,8 @@ export default function PageCreateModal(props) {
       setTitle(event.target.value);
     } else if (event.target.name === "page_slug") {
       setSlug(event.target.value);
+    } else if (event.target.name === "page_parent_page_id") {
+      setPageParentId(event.target.value);
     } else if (event.target.name === "isSecret") {
       setIsSecret(!isSecret);
       event.target.blur();
@@ -88,9 +96,20 @@ export default function PageCreateModal(props) {
                   value={slug ? slug : ""}
                 />
               </div>
+              <div className="col-md-3 py-4">
+                <em>Parent: (optional)</em>
+              </div>
+              <div className="col-md-9 py-4">
+                <input
+                  type="text"
+                  name="page_parent_page_id"
+                  onChange={handleChange}
+                  value={parentPageId ? parentPageId : ""}
+                />
+              </div>
             </div>
           </div>
-          <div className="col-md-3 py-3">
+          <div className="col-md-3 py-3 px-0">
             <ButtonGroup vertical size="lg">
               <Button variant="primary" onClick={handlePageCreate}>
                 Create

@@ -99,6 +99,7 @@ async def create_wiki_page(
             slug=page_create.slug,
             title=page_create.title,
             is_secret=page_create.is_secret,
+            parent_page_id=page_create.parent_page_id,
         )
         db.add(page)
     return page

@@ -18,6 +18,7 @@ class Page(Base):
     wiki_id = Column(GUID, ForeignKey("wikis.id"))
     slug = Column(String, unique=True)
     title = Column(String)
+    parent_page_id = Column(GUID)
     is_secret = Column(Boolean, default=False)
 
     @classmethod
@@ -34,9 +35,9 @@ class Page(Base):
             user = await db.execute(select(cls).where(cls.id == id))
             return user.scalars().first()
 
-    def update(self, section_update):
-        for attr in ("title", "slug", "is_secret"):
-            if (value := getattr(section_update, attr)) is not None:
+    def update(self, update_object):
+        for attr in ("title", "slug", "is_secret", "parent_page_id"):
+            if (value := getattr(update_object, attr)) is not None:
                 setattr(self, attr, value)
 
     @classmethod
