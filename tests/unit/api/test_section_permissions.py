@@ -2,6 +2,7 @@ import pytest
 import pytest_asyncio
 
 import secret_wiki.schemas.wiki as schemas
+from secret_wiki.models.wiki.section import Section
 from tests.resources.factories import UserFactory
 
 
@@ -111,3 +112,22 @@ async def test_user_can_see_sections_and_permissions_for_them(
 
     assert data[0]["id"] == str(sections[0].id)
     assert data[0]["permissions"] == [{"user": str(user_id), "level": "edit"}]
+
+
+@pytest.mark.asyncio
+async def test_delete_section_succeeds_even_if_it_has_permissions_attached(
+    db, admin_client, user_id, permissions, sections
+):
+    section = sections[0]
+    async with db.begin_nested():
+        section.is_secret = True
+        db.add(section)
+
+    await section.set_permissions(schemas.SectionPermission(user=str(user_id), level="edit"))
+    # This is annoying, but I guess because I mocked the db it's not getting refreshed
+    await db.refresh(section)
+
+    response = await admin_client.delete(f"/api/w/my_wiki/p/page_1/s/{section.id}")
+    assert response.status_code == 204, f"received {response.status_code}: {response.content}"
+
+    assert await Section.get(section.id) is None

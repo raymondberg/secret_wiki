@@ -26,8 +26,16 @@ from .wiki import Wiki
 class SectionPermission(Base):
     __tablename__ = "section_permissions"
 
-    section_id = Column(Integer, ForeignKey("sections.id", ondelete="CASCADE"), primary_key=True)
-    user_id = Column(GUID, ForeignKey("user.id", ondelete="CASCADE"), primary_key=True)
+    section_id = Column(
+        Integer,
+        ForeignKey("sections.id", ondelete="CASCADE"),
+        primary_key=True,
+    )
+    user_id = Column(
+        GUID,
+        ForeignKey("user.id", ondelete="CASCADE"),
+        primary_key=True,
+    )
     level = Column(Enum(schemas.PermissionLevel), default=schemas.PermissionLevel.EDIT)
 
     @property
@@ -58,7 +66,9 @@ class Section(Base):
     section_index = Column(Integer, default=5000)
     is_secret = Column(Boolean, default=False)
     content = Column(Text)
-    section_permissions = relationship("SectionPermission", lazy="joined")
+    section_permissions = relationship(
+        "SectionPermission", cascade="all, delete-orphan", lazy="joined"
+    )
 
     page_id = Column(GUID, ForeignKey("pages.id"))
 

@@ -173,8 +173,3 @@ async def test_delete_section(client, sections):
     assert response.status_code == 204, f"received {response.status_code}: {response.content}"
 
     assert await Section.get(section.id) is None
-
-
-@pytest.mark.skip("skipped for time")
-async def test_delete_section_fails_without_permissions():
-    pass

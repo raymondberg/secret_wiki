@@ -233,6 +233,6 @@ async def delete_section(
     section: models.Section = Depends(get_section_for_update),
     db: AsyncSession = Depends(get_async_session),
 ):
-    db.sync_session.delete(section)
+    await db.delete(section)
     await db.commit()
     return Response(status_code=204)
