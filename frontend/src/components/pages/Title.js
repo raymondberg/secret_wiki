@@ -71,7 +71,13 @@ function TitleEditForm(props) {
         .then((res) => res.json())
         .then(function (data) {
           dispatch(invalidatePagesCache());
-          dispatch(updatePageBySlug({ slug: slug, data: data }));
+          dispatch(
+            updatePageBySlug({
+              slug: slug,
+              data: data,
+              oldSlug: props.page.slug,
+            })
+          );
         });
     }
   }

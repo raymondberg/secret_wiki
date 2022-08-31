@@ -27,7 +27,9 @@ export const wikiSlice = createSlice({
       if (allDefined(pageSlug, page)) {
         state.page = page;
         state.pages = state.pages
-          .filter((p) => p.slug !== pageSlug)
+          .filter(
+            (p) => p.slug !== pageSlug && p.slug !== message.payload.oldSlug
+          )
           .concat([page]);
       }
     },
