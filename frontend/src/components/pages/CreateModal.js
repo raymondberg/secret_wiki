@@ -100,6 +100,7 @@ export default function PageCreateModal(props) {
               <div className="col-md-9 py-4">
                 <PageLinkDropdown
                   value={parentPageId}
+                  isCreate={true}
                   onChange={(e) => setParentPageId(e.value)}
                 />
               </div>
