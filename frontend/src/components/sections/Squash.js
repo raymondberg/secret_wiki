@@ -1,4 +1,4 @@
-import marked from "marked";
+import { marked } from "marked";
 import DOMPurify from "dompurify";
 import { linkReplace } from "../../common.js";
 

@@ -1,5 +1,5 @@
 import DOMPurify from "dompurify";
-import marked from "marked";
+import { marked } from "marked";
 import { linkReplace } from "../../common.js";
 
 export function markdownContent(text) {
