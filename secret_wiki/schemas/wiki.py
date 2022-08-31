@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field, validator
 
 
 def to_identifier(var_string):
-    return re.sub(r"\W|^(?=\d)", "-", var_string).lower()
+    return re.sub(r"\W+|^(?=\d)+", "-", var_string).strip("-").lower()
 
 
 class PermissionLevel(enum.Enum):
