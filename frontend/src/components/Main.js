@@ -96,6 +96,7 @@ function Main(props) {
         page={activePage}
         api={props.api}
         editMode={editMode}
+        secretMode={secretMode}
         // Hacky solution to prevent guide page loads during refresh/link; remove with #42
         skipGuide={urlPageSlug !== ""}
         setPageCreateModalShow={setPageCreateModalShow}
