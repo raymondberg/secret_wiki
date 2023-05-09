@@ -40,7 +40,7 @@ function Main(props) {
   const urlPageSlug = searchParams.get("p");
 
   function setSecretMode(flag) {
-    setCookie("secret_mode", flag);
+    setCookie("secret_mode", flag, { secure: true, sameSite: "strict" });
     setSecretModeLocal(flag);
     if (!flag && editMode) {
       setEditMode(flag);
@@ -48,7 +48,7 @@ function Main(props) {
   }
 
   function setEditMode(flag) {
-    setCookie("edit_mode", flag);
+    setCookie("edit_mode", flag, { secure: true, sameSite: "strict" });
     setEditModeLocal(flag);
   }
 
