@@ -13,6 +13,7 @@ export default function UserActions(props) {
           />
           <EditModeToggle
             editMode={props.editMode}
+            isDisabled={!props.secretMode}
             setEditMode={props.setEditMode}
           />
           <LogoutButton logout={props.api.logout} />
