@@ -158,7 +158,7 @@ div.section-squash {
   cursor: default;
 }
 
-.pencil {
+.pencil, .eyeball {
   padding-top: .3em;
 }
 

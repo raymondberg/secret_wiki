@@ -21,8 +21,11 @@ function updateUrl(wikiSlug, pageSlug) {
 }
 
 function Main(props) {
-  const [cookies, setCookie] = useCookies(["edit_mode"]);
+  const [cookies, setCookie] = useCookies(["edit_mode", "secret_mode"]);
   const [editMode, setEditModeLocal] = useState(cookies.edit_mode === "true");
+  const [secretMode, setSecretModeLocal] = useState(
+    cookies.secret_mode === "true"
+  );
   const [pageCreateModalShow, setPageCreateModalShow] = useState(false);
   const wikis = useSelector((state) => state.wiki.wikis);
   const pages = useSelector((state) => state.wiki.pages);
@@ -35,6 +38,14 @@ function Main(props) {
 
   const urlWikiSlug = searchParams.get("w");
   const urlPageSlug = searchParams.get("p");
+
+  function setSecretMode(flag) {
+    setCookie("secret_mode", flag);
+    setSecretModeLocal(flag);
+    if (!flag && editMode) {
+      setEditMode(flag);
+    }
+  }
 
   function setEditMode(flag) {
     setCookie("edit_mode", flag);
@@ -104,7 +115,9 @@ function Main(props) {
           <UserActions
             api={props.api}
             editMode={editMode}
+            secretMode={secretMode}
             setEditMode={setEditMode}
+            setSecretMode={setSecretMode}
           />
         </div>
       </div>

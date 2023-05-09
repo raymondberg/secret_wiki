@@ -1,4 +1,5 @@
 import EditModeToggle from "./buttons/EditModeToggle";
+import SecretModeToggle from "./buttons/SecretModeToggle";
 import LogoutButton from "./buttons/LogoutButton";
 
 export default function UserActions(props) {
@@ -6,6 +7,10 @@ export default function UserActions(props) {
     <div id="status" className="p-2">
       <div className="row">
         <div className="d-md-flex header-section p-0 px-3">
+          <SecretModeToggle
+            secretMode={props.secretMode}
+            setSecretMode={props.setSecretMode}
+          />
           <EditModeToggle
             editMode={props.editMode}
             setEditMode={props.setEditMode}
