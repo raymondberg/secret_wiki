@@ -1,18 +1,17 @@
 import React from "react";
 import Toggle from "react-toggle";
 
-export default function EditModeToggle(props) {
+export default function SecretModeToggle(props) {
   return (
     <div id="status" className="p-2">
       <label>
         <Toggle
-          checked={props.editMode}
-          disabled={props.isDisabled}
+          defaultChecked={props.secretMode}
           icons={{
-            checked: <div className="pencil">✏️</div>,
+            checked: <div className="eyeball">👁</div>,
             unchecked: null,
           }}
-          onChange={(e) => props.setEditMode(e.target.checked)}
+          onChange={(e) => props.setSecretMode(e.target.checked)}
         />
       </label>
     </div>

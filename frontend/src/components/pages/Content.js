@@ -24,7 +24,11 @@ export function PageContent(props) {
                 api={props.api}
                 wikiInEditMode={props.editMode}
               />
-              <SectionCollection api={props.api} editMode={props.editMode} />
+              <SectionCollection
+                api={props.api}
+                editMode={props.editMode}
+                secretMode={props.secretMode}
+              />
             </div>
           ) : props.skipGuide ? (
             ""

@@ -21,8 +21,11 @@ function updateUrl(wikiSlug, pageSlug) {
 }
 
 function Main(props) {
-  const [cookies, setCookie] = useCookies(["edit_mode"]);
+  const [cookies, setCookie] = useCookies(["edit_mode", "secret_mode"]);
   const [editMode, setEditModeLocal] = useState(cookies.edit_mode === "true");
+  const [secretMode, setSecretModeLocal] = useState(
+    cookies.secret_mode === "true"
+  );
   const [pageCreateModalShow, setPageCreateModalShow] = useState(false);
   const wikis = useSelector((state) => state.wiki.wikis);
   const pages = useSelector((state) => state.wiki.pages);
@@ -36,8 +39,16 @@ function Main(props) {
   const urlWikiSlug = searchParams.get("w");
   const urlPageSlug = searchParams.get("p");
 
+  function setSecretMode(flag) {
+    setCookie("secret_mode", flag, { secure: true, sameSite: "strict" });
+    setSecretModeLocal(flag);
+    if (!flag && editMode) {
+      setEditMode(flag);
+    }
+  }
+
   function setEditMode(flag) {
-    setCookie("edit_mode", flag);
+    setCookie("edit_mode", flag, { secure: true, sameSite: "strict" });
     setEditModeLocal(flag);
   }
 
@@ -85,6 +96,7 @@ function Main(props) {
         page={activePage}
         api={props.api}
         editMode={editMode}
+        secretMode={secretMode}
         // Hacky solution to prevent guide page loads during refresh/link; remove with #42
         skipGuide={urlPageSlug !== ""}
         setPageCreateModalShow={setPageCreateModalShow}
@@ -104,7 +116,9 @@ function Main(props) {
           <UserActions
             api={props.api}
             editMode={editMode}
+            secretMode={secretMode}
             setEditMode={setEditMode}
+            setSecretMode={setSecretMode}
           />
         </div>
       </div>

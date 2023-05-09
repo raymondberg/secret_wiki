@@ -219,7 +219,10 @@ export function SectionCollection(props) {
   } else {
     return (
       <div id="content">
-        <SectionSquash sections={sections.filter((s) => !s.is_gutter)} />
+        <SectionSquash
+          sections={sections.filter((s) => !s.is_gutter)}
+          secretMode={props.secretMode}
+        />
       </div>
     );
   }
