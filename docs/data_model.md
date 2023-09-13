@@ -8,6 +8,7 @@ erDiagram
     Page {
         bool is_secret  "Determines non-GM access"
     }
+    Page }o--|| Page : "may be subordinate to"
     Page ||--o{ Section : contains
     Section {
         bool is_secret  "Determines non-GM access"
