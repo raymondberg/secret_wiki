@@ -1,60 +1,280 @@
 pages:
 - id: aecad56c-fb23-4a45-b612-2defd7910c9b
   is_secret: false
-  slug: mulan
-  title: Mulan
+  parent_page_id: null
+  slug: mystery-inc
+  title: Mystery Inc
   wiki_id: 6f15b91f-cd5d-4e6b-94c5-c666c63e20c6
-- id: 2f066e0b-67ea-44b4-8c9f-4614ae147e47
+- id: 863356da-b2a3-467c-b9d4-1c8a5defe761
   is_secret: false
-  slug: mushu
-  title: Mushu (Dragon)
+  parent_page_id: aecad56c-fb23-4a45-b612-2defd7910c9b
+  slug: scoob
+  title: Scooby Doo
   wiki_id: 6f15b91f-cd5d-4e6b-94c5-c666c63e20c6
-- id: e3445ecf-d463-42e9-a199-59b6860583b9
+- id: 5a4185de-94b5-4df5-834a-6946c8fbf102
   is_secret: false
-  slug: fa
-  title: Grandmother Fa
+  parent_page_id: aecad56c-fb23-4a45-b612-2defd7910c9b
+  slug: fred
+  title: Fred Jones
+  wiki_id: 6f15b91f-cd5d-4e6b-94c5-c666c63e20c6
+- id: 80ddd0d1-43d8-4ca3-ba81-5e087d22ceca
+  is_secret: false
+  parent_page_id: aecad56c-fb23-4a45-b612-2defd7910c9b
+  slug: shaggy
+  title: Shaggy Rogers
+  wiki_id: 6f15b91f-cd5d-4e6b-94c5-c666c63e20c6
+- id: 8757f816-c3f0-422e-b395-4d678d92dba4
+  is_secret: false
+  parent_page_id: null
+  slug: episode-1
+  title: Episode One - What a Knight for a Knight
+  wiki_id: 6f15b91f-cd5d-4e6b-94c5-c666c63e20c6
+- id: 1719e021-aa9c-4ec5-8b34-5856a776e11d
+  is_secret: true
+  parent_page_id: 8757f816-c3f0-422e-b395-4d678d92dba4
+  slug: jameson-hyde-white
+  title: Jameson Hyde White
+  wiki_id: 6f15b91f-cd5d-4e6b-94c5-c666c63e20c6
+- id: 6f61aa44-f641-452e-a666-6dc5e199dff4
+  is_secret: false
+  parent_page_id: aecad56c-fb23-4a45-b612-2defd7910c9b
+  slug: velma
+  title: ' Velma Dinkley'
+  wiki_id: 6f15b91f-cd5d-4e6b-94c5-c666c63e20c6
+- id: f984355c-504a-40ad-8260-8bc1e450288e
+  is_secret: false
+  parent_page_id: aecad56c-fb23-4a45-b612-2defd7910c9b
+  slug: daphne
+  title: Daphne Blake
+  wiki_id: 6f15b91f-cd5d-4e6b-94c5-c666c63e20c6
+- id: e0793db9-1068-4839-80f1-67acffd30f5c
+  is_secret: false
+  parent_page_id: null
+  slug: coolesville
+  title: Coolesville
+  wiki_id: 6f15b91f-cd5d-4e6b-94c5-c666c63e20c6
+- id: 4bdcfa48-7d19-4ac6-9494-837a388bfa18
+  is_secret: false
+  parent_page_id: e0793db9-1068-4839-80f1-67acffd30f5c
+  slug: county-museum
+  title: County Museum
+  wiki_id: 6f15b91f-cd5d-4e6b-94c5-c666c63e20c6
+- id: 60f5b997-2c52-4f24-9c23-66678e877a08
+  is_secret: false
+  parent_page_id: 8757f816-c3f0-422e-b395-4d678d92dba4
+  slug: mr-wickles
+  title: Mr. Wickles
+  wiki_id: 6f15b91f-cd5d-4e6b-94c5-c666c63e20c6
+- id: 1307e3f9-e7a9-436b-aecc-652487aec3af
+  is_secret: true
+  parent_page_id: 8757f816-c3f0-422e-b395-4d678d92dba4
+  slug: black-knight
+  title: Black Knight
   wiki_id: 6f15b91f-cd5d-4e6b-94c5-c666c63e20c6
 sections:
-- content: Mulan dons the outfit of a warrior and heads off to live a life of deception
-    as the warrior [Ping](page:ping)
-  id: 9fa06806-899e-4727-af23-ee64bf9ac070
+- content: aka Freddie/Freddy - The boisterous de facto leader of the gang
+  id: 2507ab8e-d226-4a85-ae6c-4a0e33c38e8f
+  is_secret: false
+  page_id: 5a4185de-94b5-4df5-834a-6946c8fbf102
+  permissions: []
+  section_index: 1000
+- content: No place is more happening than Coolesville. Home to the [County Museum](page:county-museum)
+    and [Mystery Inc](page:mystery-inc).
+  id: 734c8574-6706-4363-b259-004ab56715ea
+  is_secret: false
+  page_id: e0793db9-1068-4839-80f1-67acffd30f5c
+  permissions: []
+  section_index: 42625
+- content: 'A traditional English suit of armor. It is black with a red plume on the
+    helmet. '
+  id: 321116a8-8bcd-4a3b-8d84-cda9dc925252
+  is_secret: false
+  page_id: 1307e3f9-e7a9-436b-aecc-652487aec3af
+  permissions: []
+  section_index: 84250
+- content: "The County Museum is host to various exhibits, such as an American Indian
+    costume, Chinese statues, dinosaur skeletons, animal statues, armory, mummies,
+    paintings and World War I relics such as a tank and biplane. \n\nIt has a small
+    staff of three, with [Mr. Wickles](page:mr-wickles) as the curator and head of
+    the Museum."
+  id: c678455a-607d-4cdd-b381-3e19cbe32378
+  is_secret: false
+  page_id: 4bdcfa48-7d19-4ac6-9494-837a388bfa18
+  permissions: []
+  section_index: 125875
+- content: '## Secret Room
+
+
+    Behind a sarcophagus is a room containing many canvases and a half painted copy
+    of another painting. It is a dark room and has only one other door. '
+  id: 12fc00cd-7c0c-445a-929d-7f7f29cf4a6b
   is_secret: true
-  page_id: aecad56c-fb23-4a45-b612-2defd7910c9b
-  permissions:
-  - level: edit
-    user: 99758ad2-9c0c-4059-a767-3dbe6f4f5c07
-  section_index: 4000
-- content: '## ABOUT
+  page_id: 4bdcfa48-7d19-4ac6-9494-837a388bfa18
+  permissions: []
+  section_index: 167500
+- content: 'An archaeologist from London, England. '
+  id: 1f8ceca9-32e7-46d8-a8ef-efc0adc765ca
+  is_secret: false
+  page_id: 1719e021-aa9c-4ec5-8b34-5856a776e11d
+  permissions: []
+  section_index: 209125
+- content: "## Recounting the Kidnapping\n\nJameson was kidnapped by someone who hit
+    him on the head. When he awoke, he was tied up in what turned out to be an artifact.
+    He could see out of the artifact as [Mystery Inc](page:mystery-inc) was being
+    chased by the [Black Knight](page:black-knight). \n\nThe only thing he lost in
+    all of this were his Jewler's glasses."
+  id: 0d9acef1-f5f5-4664-9629-a697a2ed0003
+  is_secret: true
+  page_id: 1719e021-aa9c-4ec5-8b34-5856a776e11d
+  permissions: []
+  section_index: 250750
+- content: '## Kidnapper
 
-    Mulan is a humble noble with an old dad and a [Grandmother Fa](page:fa). She also
-    has a friend named [Mushu](page:mushu).'
-  id: 00693491-dda1-48d9-8313-b742c6e62c3a
+
+    The real kidnapper was [Mr. Wickles](page:mr-wickles) who knocked him out, and
+    kidnapped him, and brought him to [County Museum](page:county-museum). '
+  id: 86d361f9-ad44-4bb8-b158-4b0dcafa0538
+  is_secret: false
+  page_id: 1719e021-aa9c-4ec5-8b34-5856a776e11d
+  permissions: []
+  section_index: 292375
+- content: The curator of the [County Museum](page:county-museum).
+  id: d8ce5456-d98e-42c9-8048-14415cb48fd5
+  is_secret: false
+  page_id: 60f5b997-2c52-4f24-9c23-66678e877a08
+  permissions: []
+  section_index: 334000
+- content: '## Living?
+
+
+    It comes alive on nights when the Moon is full.'
+  id: 4f2e34e6-acf2-4700-b294-16b1a33f505d
+  is_secret: false
+  page_id: 1307e3f9-e7a9-436b-aecc-652487aec3af
+  permissions: []
+  section_index: 375625
+- content: '## Personality
+
+
+    The Black Knight seeks to terrorize anyone its path. He could also emit creepy
+    growls.  It is very strong and agile given the effects of full armor on normal
+    humans.'
+  id: 994c3494-0590-4ed1-b53f-831217a3e65b
+  is_secret: true
+  page_id: 1307e3f9-e7a9-436b-aecc-652487aec3af
+  permissions: []
+  section_index: 417250
+- content: '## Identity
+
+
+    The Knight is actually [Mr. Wickles](page:mr-wickles) in disguise. He used it
+    to transport the kidnapped [Jameson Hyde White](page:jameson-hyde-white).'
+  id: 4b54222b-3fce-4a29-96d4-adb424a0ad8a
+  is_secret: true
+  page_id: 1307e3f9-e7a9-436b-aecc-652487aec3af
+  permissions: []
+  section_index: 458875
+- content: '## Personality
+
+
+    Wickles is a friendly and superstitious man.'
+  id: 9cb45fc7-f7a8-411d-95fe-7e48898c63c4
+  is_secret: false
+  page_id: 60f5b997-2c52-4f24-9c23-66678e877a08
+  permissions: []
+  section_index: 500500
+- content: While walking along one night, [Scooby Doo](page:scoob) and [Shaggy Rogers](page:shaggy)
+    happen across an abandoned truck with a package meant for the [County Museum](page:county-museum).
+    The package and the truck shine brightly in the full moonlight.
+  id: 432ab82a-1673-4e12-aa99-59223470acdb
+  is_secret: false
+  page_id: 8757f816-c3f0-422e-b395-4d678d92dba4
+  permissions: []
+  section_index: 542125
+- content: '## Appearance
+
+
+    Wickles is a stocky, balding, middle-aged man with thick framed black glasses.'
+  id: 7275aaf8-c504-4c6e-8d50-c9692f9c7f5e
+  is_secret: false
+  page_id: 60f5b997-2c52-4f24-9c23-66678e877a08
+  permissions: []
+  section_index: 583750
+- content: '## Secret Scheme
+
+
+    He dressed up as the [Black Knight](page:black-knight) to scare visitors away
+    during his art forgery scheme. He also kidnapped [Jameson Hyde White](page:jameson-hyde-white)
+    and stuck him in an exhibit to prevent him from finding out about his scheme before
+    his expected arrival.'
+  id: 3c1bd5a8-7d2e-4699-a2f3-4dcf976c71a5
+  is_secret: true
+  page_id: 60f5b997-2c52-4f24-9c23-66678e877a08
+  permissions: []
+  section_index: 625375
+- content: The clear-minded brains of the operation who really needs a glasses strap
+    or contacts.
+  id: 052359c1-99f8-455b-b747-9988f453e870
+  is_secret: false
+  page_id: 6f61aa44-f641-452e-a666-6dc5e199dff4
+  permissions: []
+  section_index: 667000
+- content: aka Scoob - The cowardly, often lucky Dog
+  id: de4eae58-2c5c-4fa8-a286-cf840b3a8384
+  is_secret: false
+  page_id: 863356da-b2a3-467c-b9d4-1c8a5defe761
+  permissions: []
+  section_index: 708625
+- content: '## Speech
+
+
+    It is unclear whether Scooby''s speech is understandable by humans beyond just
+    "grunt". He can break the fourth wall, but at all times other characters can decide
+    they simply don''t understand what he is saying.'
+  id: 58b9ebb9-fa16-47e2-9104-d19220e303a5
+  is_secret: false
+  page_id: 863356da-b2a3-467c-b9d4-1c8a5defe761
+  permissions: []
+  section_index: 750250
+- content: '## Film
+
+
+    Scooby is a film connoisseur. He recently watched '
+  id: 3ba02402-cc73-4ce5-840c-b40523af5fef
+  is_secret: false
+  page_id: 863356da-b2a3-467c-b9d4-1c8a5defe761
+  permissions: []
+  section_index: 791875
+- content: Mystery Incorporated, often shortened to Mystery Inc., are an amateur crime-solving
+    group of friends. Their mystery solving began as preadolescents in the city of
+    Coolsville, and eventually across the globe.
+  id: caf98f09-a272-4606-8ac2-1770179e43ec
   is_secret: false
   page_id: aecad56c-fb23-4a45-b612-2defd7910c9b
   permissions: []
-  section_index: 3000
-- content: '## ABOUT
-
-    He''s a cute little dragon that hangs around with [Mulan](page:mulan).'
-  id: a2791e99-2803-429b-b274-c203a2ce330e
-  is_secret: True
-  page_id: 2f066e0b-67ea-44b4-8c9f-4614ae147e47
-  permissions: []
-  section_index: 3000
-- content: '## Facts
-
-    * Voiced by a famous person
-
-    * Red...I think
-
-    * Has 4 legs
-
-    * Very cowardly, but improves over the film'
-  id: c26b7086-c87b-4884-8eed-86b14a8a0cf1
+  section_index: 833500
+- content: 'aka Shag - The "aloof" and "hungry", bumbling, kind-hearted friend to
+    [Scooby Doo](page:scoob) '
+  id: 9356b52f-813b-4c75-8def-c3f36fca8520
   is_secret: false
-  page_id: 2f066e0b-67ea-44b4-8c9f-4614ae147e47
+  page_id: 80ddd0d1-43d8-4ca3-ba81-5e087d22ceca
   permissions: []
-  section_index: 4000
+  section_index: 875125
+- content: 'aka Daph - The fashion-loving danger prone member of [Mystery Inc](page:mystery-inc) '
+  id: ba95bd89-0ad8-4c81-835a-572f7ff24db2
+  is_secret: false
+  page_id: f984355c-504a-40ad-8260-8bc1e450288e
+  permissions: []
+  section_index: 916750
+- content: '## The Family Business
+
+
+    On more than one occasion, Daphne has been put in charge of her father''s arcade. '
+  id: f17f5e0d-0df4-4306-bd5a-7450b937cd0b
+  is_secret: true
+  page_id: f984355c-504a-40ad-8260-8bc1e450288e
+  permissions: []
+  section_index: 958375
 users:
 - email: trusted@example.com
   id: 99758ad2-9c0c-4059-a767-3dbe6f4f5c07
@@ -76,8 +296,5 @@ users:
   oauth_accounts: []
 wikis:
 - id: 6f15b91f-cd5d-4e6b-94c5-c666c63e20c6
-  name: Mulan
-  slug: mulan
-- id: 08fc7e0d-af76-4f7d-98f8-79d163f228ec
-  name: Lion King
-  slug: lion-king
+  name: Scooby Doo
+  slug: scooby
