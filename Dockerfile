@@ -1,9 +1,10 @@
 FROM node:21-alpine as statics_build
 
-COPY . /var/app
+COPY ./frontend /var/app/frontend
 WORKDIR /var/app/frontend
 
-RUN npm install && npm run build
+RUN npm install
+RUN npm run build
 
 
 FROM python:3.8
