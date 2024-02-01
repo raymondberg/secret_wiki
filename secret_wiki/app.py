@@ -31,15 +31,15 @@ for router_config in auth_routers:
 
 app.router.routes.append(
     Mount(
-        "/",
+        "/static",
         app=StaticFiles(directory=project_root / "static", html=True),
-        name="root_static",
+        name="static",
     ),
 )
 app.router.routes.append(
     Mount(
-        "/static",
+        "/",
         app=StaticFiles(directory=project_root / "static", html=True),
-        name="static",
+        name="root_static",
     ),
 )
