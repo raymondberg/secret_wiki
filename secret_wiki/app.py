@@ -33,6 +33,13 @@ app.router.routes.append(
     Mount(
         "/",
         app=StaticFiles(directory=project_root / "static", html=True),
+        name="root_static",
+    ),
+)
+app.router.routes.append(
+    Mount(
+        "/static",
+        app=StaticFiles(directory=project_root / "static", html=True),
         name="static",
     ),
 )
