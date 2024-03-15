@@ -10,11 +10,11 @@ export default function PageLinkDropdown(props) {
   let defaultOption = "None";
 
   if (props.isCreate) {
-    baseOptions.push({
-      value: defaultParentPage.id,
-      label: defaultParentPage.title,
-    });
     if (defaultParentPage) {
+      baseOptions.push({
+        value: defaultParentPage.id,
+        label: defaultParentPage.title,
+      });
       defaultOption = defaultParentPage.title;
     }
   }
