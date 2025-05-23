@@ -8,14 +8,16 @@ RUN npm run build
 
 
 FROM python:3.8
+COPY --from=ghcr.io/astral-sh/uv:0.6.6 /uv /bin/uv
+ENV UV_PYTHON_INSTALL_DIR=/opt/uv/python
 
 WORKDIR /var/app
 
-COPY Pipfile Pipfile.lock /var/app/
+COPY pyproject.toml uv.lock /var/app/
 
-RUN pip install pipenv && pipenv install --system --deploy
+RUN uv venv && uv sync --frozen --no-install-project
 
 COPY . /var/app
 COPY --from=statics_build /var/app/frontend/build/* /var/app/secret_wiki/static/
 
-CMD pipenv run uvicorn secret_wiki.app:app --host 0.0.0.0 --port 8080 --reload --reload-dir secret_wiki --log-level trace
+CMD uv run uvicorn secret_wiki.app:app --host 0.0.0.0 --port 8080 --reload --reload-dir secret_wiki --log-level trace
